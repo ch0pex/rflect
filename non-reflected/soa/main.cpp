@@ -8,6 +8,8 @@
 #include <cassert>
 #include <iostream>
 
+#include "common/math.hpp"
+
 /// *** Implementation, this will be needed till expansions are fully implemented
 namespace __impl {
   template<auto... vals>
@@ -124,7 +126,7 @@ namespace layout  {
 
     struct soa {
         template<class T, std::size_t N>
-        using array = struct_of_arrays_impl<T, N>::impl;
+        using array = typename struct_of_arrays_impl<T, N>::impl;
 
         template<class T, template<class> class _Alloc>
         using vector = struct_of_vectors_impl<T, _Alloc>::impl;

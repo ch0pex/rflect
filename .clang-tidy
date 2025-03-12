@@ -1,0 +1,41 @@
+Checks: '-*,
+bugprone-*,
+cert-*,
+cppcoreguidelines-*,
+-cppcoreguidelines-avoid-magic-numbers,
+hicpp-*.
+misc-*,
+modernize-*,
+performance-*,
+readability-*,
+-readability-magic-numbers,
+-readability-uppercase-literal-suffix
+-misc-include-cleaner,
+-modernize-use-trailing-return-type,
+-*-avoid-c-arrays
+-readability-redundant-access-specifiers,
+-readability-braces-around-statements,
+-readability-identifier-length'
+
+
+CheckOptions:
+  bugprone-assert-side-effect.AssertMacros: 'assert,Expects,Ensures'
+  bugprone-easily-swappable-parameters.MinimumLength: 3
+  bugprone-implicit-widening-of-multiplication-result.UseCXXStaticCastsInCppSources: true
+  bugprone-implicit-widening-of-multiplication-result.UseCXXHeadersInCppSources: true
+  bugprone-misplaced-widening-cast.CheckImplicitCasts: true
+  cppcoreguidelines-pro-type-member-init.UseAssignment: false
+  misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic: true
+  modernize-deprecated-headers.CheckHeaderFile: true
+  readability-function-cognitive-complexity.Threshold: 50
+  readability-function-cognitive-complexity.Threshold.DescribeBasicIncrements: true
+  readability-function-size.LineThreshold: 75
+  readability-function-size.ParameterThreshold: 4
+  readability-identifier-length.MinimumParameterNameLength: 1
+
+
+WarningsAsErrors: '*'
+
+HeaderFileExtensions: [ '', 'hpp' ]
+
+FormatStyle: file

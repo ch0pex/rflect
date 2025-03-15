@@ -8,7 +8,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include_directories(.)
+include_directories(src)
+include_directories(src/common)
 
 add_compile_options(
         -std=c++26
@@ -19,13 +20,16 @@ add_compile_options(
         -freflection-latest
         -fexpansion-statements
         -fno-access-contexts
+        -Wall
+        -Wextra
+        -g
 )
+
+#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -O3 -ffast-math -ftree-vectorize -fprefetch-loop-arrays")
 
 link_directories(/usr/lib/llvm-18/lib)
 link_libraries(c++ c++abi)
 
-add_subdirectory(non-reflected)
-add_subdirectory(reflected)
+add_subdirectory(src)
 
-enable_testing()
 add_subdirectory(tests)

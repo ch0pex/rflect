@@ -12,7 +12,7 @@
  */
 
 
-#include "common/math.hpp"
+#include "math/math.hpp"
 
 #include <iostream>
 

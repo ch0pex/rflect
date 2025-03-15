@@ -8,7 +8,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "common/math.hpp"
+#include "math/math.hpp"
 
 /// *** Implementation, this will be needed till expansions are fully implemented
 namespace __impl {

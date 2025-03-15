@@ -10,6 +10,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(doctest)
 
+enable_testing()
 
 macro(add_sim_utest test_name test_src)
     list(APPEND TEST_FLAGS "--duration=true")

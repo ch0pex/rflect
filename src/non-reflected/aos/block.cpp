@@ -4,12 +4,7 @@
 namespace sim {
 
   /**
-   * Agrega una partícula al bloque.
-   *
-   * @param id Identificador único de la partícula.
-   * @param position Posición de la partícula en coordenadas 3D.
-   * @param hv Vector de características (hv) de la partícula.
-   * @param velocity Vector de velocidad de la partícula.
+   * Adds a particle to the block
    */
   void Block::AddParticle(Particle & particle) {
     particles_.push_back(particle);
@@ -22,8 +17,6 @@ namespace sim {
   /**
   * Calcula las densidades de las partículas en el bloque en función de la distancia entre las partículas y el radio de suavizado ('particles_params').
   *
-  * Este método permite calcular y actualizar las densidades de las partículas en el bloque, teniendo en cuenta sus interacciones con otras partículas dentro del mismo bloque y con partículas de bloques adyacentes.
-  *
   * @param particles_params Los parámetros de las partículas que incluyen el radio de suavizado.
   * @param adjacents Un vector que almacena los índices de bloques adyacentes.
   * @param blocks Un vector de bloques conteniendo partículas.
@@ -32,11 +25,11 @@ namespace sim {
   void Block::CalcDensities(ParticlesData const & particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks) {
     for (size_t i = 0; i < particles_.size(); ++i) {
       for (size_t j = i + 1; j < particles_.size(); ++j) { // Evitamos repetir calculos entre particulas inicializando j=i+1
-        Particle::incrementDensities(particles_params, particles_[i], particles_[j]);
+        incrementDensities(particles_params, particles_[i], particles_[j]);
       }
       for (auto const adjacent_index : adjacents) {
           for(auto& particle_j : blocks[adjacent_index].GetParticles()){
-            Particle::incrementDensities(particles_params, particles_[i], particle_j);
+            incrementDensities(particles_params, particles_[i], particle_j);
           }
       }
       particles_[i].transformDensity(particles_params);
@@ -58,11 +51,11 @@ namespace sim {
   void Block::CalcAccelerations(const ParticlesData& particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks) {
     for (size_t i = 0; i < particles_.size(); ++i) {
       for (size_t j = i + 1; j < particles_.size(); ++j) {  // Evitamos repetir calculos entre particulas inicializando j=i+1
-        Particle::incrementAccelerations(particles_params, particles_[i], particles_[j]);
+        incrementAccelerations(particles_params, particles_[i], particles_[j]);
       }
       for (auto const adjacent_index : adjacents) {
         for (auto & particle_j : blocks[adjacent_index].GetParticles()) {
-          Particle::incrementAccelerations(particles_params, particles_[i], particle_j);
+          incrementAccelerations(particles_params, particles_[i], particle_j);
         }
       }
     }

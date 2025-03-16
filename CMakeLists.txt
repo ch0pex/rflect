@@ -22,10 +22,11 @@ add_compile_options(
         -fno-access-contexts
         -Wall
         -Wextra
-        -g
 )
 
-#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -O3 -ffast-math -ftree-vectorize -fprefetch-loop-arrays")
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O2 -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -O3 -ffast-math -ftree-vectorize -fprefetch-loop-arrays")
 
 link_directories(/usr/lib/llvm-18/lib)
 link_libraries(c++ c++abi)

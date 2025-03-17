@@ -31,7 +31,7 @@ struct ParticlesData {
 
 struct Particle {
   Particle(u64 const id, math::vec3 const pos, math::vec3 const hv, math::vec3 const vel) :
-    id(id), position(pos), hv(hv), velocity(vel), acceleration(gravity), density(0) { }
+    id(id), position(pos), hv(hv), velocity(vel), acceleration(gravity) { }
 
   Particle(Particle const& other) :
     id(other.id), position(other.position), hv(other.hv), velocity(other.velocity), acceleration(gravity), density(0) {
@@ -45,12 +45,12 @@ struct Particle {
   math::vec3 position;
   math::vec3 hv;
   math::vec3 velocity;
-  math::vec3 acceleration;
-  math::scalar density;
+  math::vec3 acceleration {gravity};
+  math::scalar density {0};
 };
 
 inline math::scalar densityIncrement(ParticlesData const& particles_params, math::scalar const squared_distance) {
-  return pow(particles_params.smoothing_pow_2 - squared_distance, 3);
+  return std::pow(particles_params.smoothing_pow_2 - squared_distance, 3);
 }
 
 /**
@@ -70,7 +70,7 @@ inline auto accelerationIncrement(
 ) {
 
   math::scalar const distance = squared_distance > min_distance ? std::sqrt(squared_distance) : min_distance_sqrt;
-  math::vec3 const left = (particle_i.position - particle_j.position) * params.mass_pressure_05 *
+  math::vec3 const left       = (particle_i.position - particle_j.position) * params.mass_pressure_05 *
                           (std::pow(params.smoothing - distance, 2) / distance) *
                           (particle_i.density + particle_j.density - density_times_2);
 
@@ -90,7 +90,7 @@ inline void incrementDensities(ParticlesData const& particles_params, Particle& 
   if (math::scalar const squared_distance = squaredDistance(particle_i.position, particle_j.position);
       squared_distance < particles_params.smoothing_pow_2) {
     // Incremento de densidades basado en la distancia
-    double const density_increment = densityIncrement(particles_params, squared_distance);
+    math::scalar const density_increment = densityIncrement(particles_params, squared_distance);
     particle_i.density += density_increment;
     particle_j.density += density_increment;
   }

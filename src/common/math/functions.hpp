@@ -268,12 +268,15 @@ constexpr auto rotation(Mat4x4<T> mat) -> Vec3<T> {
     return {pitch, yaw, roll};
 }
 
-constexpr scalar squaredDistance(vector auto const v_i, vector auto const v_j){
+scalar squaredDistance(vector auto const v_i, vector auto const v_j){
     const scalar x = v_i.x - v_j.x;
     const scalar y = v_i.y - v_j.y;
     const scalar z = v_i.z - v_j.z;
-    return (x * x) + (y * y) + (z * z);
+    return std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2);
 }
+
+
+
 
 
 

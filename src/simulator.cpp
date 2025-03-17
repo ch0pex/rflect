@@ -14,7 +14,7 @@ namespace sim {
    * @return Devuelve SUCCESS (0) si los argumentos pasados por el usuario eran correctos o bien el
    * error correspondiente
    */
-  sim::error_code Simulator::ParseArgs() {
+  error_code Simulator::ParseArgs() {
     error_code err = success;
 
     err = args_parser_.CheckCount();
@@ -35,16 +35,15 @@ namespace sim {
    * fichero de entrada y se inicializa el grid con dicha informacion
    * @return
    */
-  sim::error_code Simulator::InitSim() {
-    sim::error_code err = success;
-    std::vector<Particle> particles;
+  error_code Simulator::InitSim() {
+    error_code err = success;
     int num_particles = 0;
     double ppm        = 0.0;
 
     err = init_file_.ReadHeader(ppm, num_particles);
     if (err != success) { return (err); }
 
-    particles = init_file_.ReadParticles();
+    std::vector<Particle> particles = init_file_.ReadParticles();
     grid_.emplace(num_particles, ppm, particles);
     return (err);
   }
@@ -54,7 +53,7 @@ namespace sim {
    * veces como el usuario indico por argumento
    * @return
    */
-  sim::error_code Simulator::ProcessSim() {
+  error_code Simulator::ProcessSim() {
     for (int i = 0; i < nts_; i++) {
       if (i > 0) {
         grid_->repositioning();
@@ -72,14 +71,14 @@ namespace sim {
    * especificado por parametro
    * @return
    */
-  sim::error_code Simulator::StoreResults() {
-    int const num_particles = grid_->getNumParticles();
-    std::vector<Particle *> results(num_particles);
+  error_code Simulator::StoreResults() {
+    int const num_particles = grid_->numParticles();
+    std::vector<Particle const*> results(num_particles);
 
-    final_file_.WriteHeader(num_particles, grid_->getParticlesPerMeter());
+    final_file_.WriteHeader(num_particles, grid_->particlesPerMeter());
 
     for (auto & block : grid_->getBlocks()) {
-      for (auto & particle : block.GetParticles()) { results[particle.id] = &particle; }
+      for (auto & particle : block.particles) { results[particle.id] = &particle; }
     }
 
     final_file_.WriteParticles(results);

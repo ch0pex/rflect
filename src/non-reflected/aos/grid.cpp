@@ -28,7 +28,7 @@ Grid::Grid(int np, math::scalar ppm, std::vector<Particle>& particles) :
   for (auto& particle: particles) {
     size_t const block_index =
         getBlockIndex(particle.position); // Coger la posicion de la particula comprobar en que bloque le toca
-    blocks_[block_index].AddParticle(particle); // Anadir la particula a dicho bloque
+    blocks_[block_index].addParticle(particle); // Anadir la particula a dicho bloque
   }
 
   // Se calculan los bloques adjacentes para cada bloque y tambien determina que bloques son limites Cx, Cy, Cz
@@ -47,8 +47,8 @@ void Grid::repositioning() {
   std::vector<Block> aux(num_blocks_);
 
   for (auto& block: blocks_) {
-    for (auto& particle: block.GetParticles()) {
-      aux[getBlockIndex(particle.position)].AddParticle(particle);
+    for (auto& particle: block.particles) {
+      aux[getBlockIndex(particle.position)].addParticle(particle);
     }
   }
   blocks_ = std::move(aux);
@@ -65,12 +65,12 @@ void Grid::calculateAccelerations() {
 
   for (size_t block_index = 0; block_index < num_blocks_; ++block_index) {
     // Se calculan la densidad y aceleracion entre las particulas de un mismo bloque y bloques adjacentes
-    blocks_[block_index].CalcDensities(particles_param_, adjacent_blocks_[block_index], blocks_);
+    blocks_[block_index].calcDensities(particles_param_, adjacent_blocks_[block_index], blocks_);
   }
 
   for (size_t block_index = 0; block_index < num_blocks_; ++block_index) {
     // Se calcula la aceleracion entre las particulas de un mismo bloque y bloques adjacentes
-    blocks_[block_index].CalcAccelerations(particles_param_, adjacent_blocks_[block_index], blocks_);
+    blocks_[block_index].calcAccelerations(particles_param_, adjacent_blocks_[block_index], blocks_);
   }
 }
 
@@ -80,7 +80,7 @@ void Grid::calculateAccelerations() {
  */
 void Grid::processCollisions() {
   for (auto& [index, limits]: grid_limits_) {
-    blocks_[index].ProcessCollisions(limits);
+    blocks_[index].processCollisions(limits);
   }
 }
 
@@ -90,7 +90,7 @@ void Grid::processCollisions() {
  */
 void Grid::moveParticles() {
   for (auto& block: blocks_) {
-    block.MoveParticles();
+    block.moveParticles();
   }
 }
 
@@ -100,7 +100,7 @@ void Grid::moveParticles() {
  */
 void Grid::processLimits() {
   for (auto& [index, limits]: grid_limits_) {
-    blocks_[index].ProcessLimits(limits);
+    blocks_[index].processLimits(limits);
   }
 }
 
@@ -141,9 +141,6 @@ size_t Grid::getBlockIndex(math::vec3 const particle_pos) const {
   );
 }
 
-/**
- * Mensaje de inicializacion de la simulacion
- */
 void Grid::initMessage() const {
   std::cout << "Number of particles: " << num_particles << "\n";
   std::cout << "Particles per meter: " << particles_param_.particles_per_meter << "\n";

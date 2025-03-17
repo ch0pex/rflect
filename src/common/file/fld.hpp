@@ -46,7 +46,7 @@ namespace sim {
 
       error_code WriteHeader(int np, double ppm);
 
-      error_code WriteParticles(std::vector<Particle *> & particles);
+      error_code WriteParticles(std::vector<Particle const*> & particles);
 
       operator bool() const;
 

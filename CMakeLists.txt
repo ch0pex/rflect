@@ -14,6 +14,7 @@ include_directories(src/common)
 add_compile_options(
         -std=c++26
         -nostdinc++
+        -L/usr/lib/llvm-18/lib
         -I/home/chope/reflection/install/include/c++/v1/
         -I/home/chope/reflection/install/include/x86_64-unknown-linux-gnu/c++/v1/
         -I/usr/lib/llvm-18/lib/clang/18/include
@@ -26,7 +27,7 @@ add_compile_options(
 
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O2 -fno-omit-frame-pointer")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -O3 -ffast-math -ftree-vectorize -fprefetch-loop-arrays")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native -O3 -ffast-math -ftree-vectorize")
 
 link_directories(/usr/lib/llvm-18/lib)
 link_libraries(c++ c++abi)

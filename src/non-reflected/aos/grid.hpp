@@ -25,13 +25,13 @@ namespace sim {
 
       void processLimits();
 
-      [[nodiscard]] int getNumParticles() const { return num_particles; }
+      [[nodiscard]] i32 numParticles() const { return num_particles; }
 
-      [[nodiscard]] math::scalar getParticlesPerMeter() const { return particles_param_.particles_per_meter; }
+      [[nodiscard]] math::scalar particlesPerMeter() const { return particles_param_.particles_per_meter; }
 
-      [[nodiscard]] std::vector<Block> & getBlocks() { return blocks_; }
+      [[nodiscard]] std::vector<Block> const& getBlocks() { return blocks_; }
 
-      const ParticlesData& getParameters() { return particles_param_; };
+      [[nodiscard]] ParticlesData const& getParameters() const { return particles_param_; };
 
     private:
       void initMessage() const;

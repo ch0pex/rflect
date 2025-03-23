@@ -1,11 +1,11 @@
 #pragma once
 
-#include <utils/constants.hpp>
+#include "utils/constants.hpp"
 
 
 #include "math/math.hpp"
 
-#include <utils/primitive_types.hpp>
+#include "utils/primitive_types.hpp"
 
 namespace sim {
 
@@ -31,22 +31,18 @@ struct ParticlesData {
 
 struct Particle {
   Particle(u64 const id, math::vec3 const pos, math::vec3 const hv, math::vec3 const vel) :
-    id(id), position(pos), hv(hv), velocity(vel), acceleration(gravity) { }
-
-  Particle(Particle const& other) :
-    id(other.id), position(other.position), hv(other.hv), velocity(other.velocity), acceleration(gravity), density(0) {
-  }
+    position(pos), hv(hv), velocity(vel), acceleration(gravity), id(id) { }
 
   void transformDensity(ParticlesData const& particles_params) {
     density = (density + particles_params.smoothing_pow_6) * particles_params.transform_density_constant;
   }
 
-  u64 id;
   math::vec3 position;
   math::vec3 hv;
   math::vec3 velocity;
   math::vec3 acceleration {gravity};
   math::scalar density {0};
+  u64 id;
 };
 
 inline math::scalar densityIncrement(ParticlesData const& particles_params, math::scalar const squared_distance) {

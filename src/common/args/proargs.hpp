@@ -17,9 +17,9 @@ namespace sim {
 
       error_code CheckOpenFiles(ifld & init_file, ofld & final_file);
 
-      std::string GetInitPath() const { return args_.at(2); };
+      [[nodiscard]] std::string GetInitPath() const { return args_.at(2); };
 
-      std::string GetFinalPath() const { return args_.at(3); };
+      [[nodiscard]] std::string GetFinalPath() const { return args_.at(3); };
 
     private:
       std::vector<char const *> args_;

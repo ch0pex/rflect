@@ -14,7 +14,7 @@ namespace {
  * @param particle La partícula que se está evaluando para colisiones en la dirección X.
  * @param limits Un conjunto que almacena los límites del espacio en el que se encuentran las partículas.
  */
-void CollisionsX(Particle& particle, std::set<Limits> const& limits) {
+void collisions_x(Particle& particle, std::set<Limits> const& limits) {
   math::scalar x      = 0.0;
   math::scalar x_diff = 0.0;
   // Verifica si el conjunto de límites contiene el límite CX0.
@@ -50,7 +50,7 @@ void CollisionsX(Particle& particle, std::set<Limits> const& limits) {
  * @param particle La partícula que se está evaluando para colisiones en la dirección Y.
  * @param limits Un conjunto que almacena los límites del espacio en el que se encuentran las partículas.
  */
-void CollisionsY(Particle& particle, std::set<Limits> const& limits) {
+void collisions_y(Particle& particle, std::set<Limits> const& limits) {
   math::scalar y      = 0.0;
   math::scalar y_diff = 0.0;
 
@@ -81,7 +81,7 @@ void CollisionsY(Particle& particle, std::set<Limits> const& limits) {
  * @param particle La partícula que se está evaluando para colisiones en la dirección Z.
  * @param limits Un conjunto que almacena los límites del espacio en el que se encuentran las partículas.
  */
-void CollisionsZ(Particle& particle, std::set<Limits> const& limits) {
+void collisions_z(Particle& particle, std::set<Limits> const& limits) {
   math::scalar z      = 0.0;
   math::scalar z_diff = 0.0;
   if (limits.contains(CZ0)) {
@@ -111,7 +111,7 @@ void CollisionsZ(Particle& particle, std::set<Limits> const& limits) {
  * @param particle La partícula que se está evaluando en relación a los límites en la dirección X.
  * @param limits Un conjunto que almacena los límites del espacio en el que se encuentran las partículas.
  */
-void LimitsX(Particle& particle, std::set<Limits> const& limits) {
+void limits_x(Particle& particle, std::set<Limits> const& limits) {
   double dx = 0.0;
   if (limits.contains(CX0)) {
     dx = particle.position.x - bottom_limit.x;
@@ -142,7 +142,7 @@ void LimitsX(Particle& particle, std::set<Limits> const& limits) {
  * @param particle La partícula que se está evaluando en relación a los límites en la dirección Y.
  * @param limits Un conjunto que almacena los límites del espacio en el que se encuentran las partículas.
  */
-void Block::LimitsY(Particle& particle, std::set<Limits> const& limits) {
+void limits_y(Particle& particle, std::set<Limits> const& limits) {
   double dy = 0.0;
   if (limits.contains(CY0)) {
     dy = particle.position.y - bottom_limit.y;
@@ -173,7 +173,7 @@ void Block::LimitsY(Particle& particle, std::set<Limits> const& limits) {
  * @param particle La partícula que se está evaluando en relación a los límites en la dirección Z.
  * @param limits Un conjunto que almacena los límites del espacio en el que se encuentran las partículas.
  */
-void Block::LimitsZ(Particle& particle, std::set<Limits> const& limits) {
+void limits_z(Particle& particle, std::set<Limits> const& limits) {
   double dz = 0.0;
   if (limits.contains(CZ0)) {
     dz = particle.position.z - bottom_limit.z;
@@ -261,9 +261,9 @@ void Block::calcAccelerations(
  */
 void Block::processCollisions(std::set<Limits>& limits) {
   for (auto& particle: particles) {
-    CollisionsX(particle, limits);
-    CollisionsY(particle, limits);
-    CollisionsZ(particle, limits);
+    collisions_x(particle, limits);
+    collisions_y(particle, limits);
+    collisions_z(particle, limits);
   }
 }
 
@@ -285,9 +285,9 @@ void Block::moveParticles() {
 
 void Block::processLimits(std::set<Limits>& limits) {
   for (auto& particle: particles) {
-    LimitsX(particle, limits);
-    LimitsY(particle, limits);
-    LimitsZ(particle, limits);
+    limits_x(particle, limits);
+    limits_y(particle, limits);
+    limits_z(particle, limits);
   }
 }
 

@@ -19,48 +19,6 @@
 
 namespace sim {
 
-/// *** Implementation, this will be needed till expansions are fully implemented
-namespace detail {
-  template<auto... vals>
-  struct replicator_type {
-    template<typename F>
-      constexpr void operator>>(F body) const {
-        (body.template operator()<vals>(), ...);
-      }
-  };
-
-  template<auto... vals>
-  replicator_type<vals...> replicator = {};
-}
-
-template<typename R>
-consteval auto expand(R range) {
-  std::vector<std::meta::info> args;
-  for (auto r : range) {
-    args.push_back(reflect_value(r));
-  }
-  return substitute(^^detail::replicator, args);
-}
-
-/************ This will work fine when expansion statements are finished
-    constexpr view at(std::size_t index) {
-        view value;
-        template for (constexpr std::meta::info member : nonstatic_data_members_of(^view)) {
-            value.[:member:] = &data_.[:member_named<container>(identifier_of(member)):];
-        }
-        return value;
-    }
-
-    constexpr void push_back(T const& item) {
-        template for (constexpr std::meta::info member : nonstatic_data_members_of(^container)) {
-            data_.[:member:].push_back(item.[:member_named<T>(identifier_of(member)):]);
-        }
-    }
-    */
-
-/// *** Meanwhile will have to use this workaround ***
-#define template_for(elem_name, elements)  [:expand(elements):] >> [&]<auto elem_name>
-
 template<typename T>
 consteval auto member_number(u64 number) {
   return std::meta::nonstatic_data_members_of(^^T)[number];

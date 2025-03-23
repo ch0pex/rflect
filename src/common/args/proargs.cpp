@@ -56,13 +56,13 @@ namespace sim {
    * abrir el archivo final se devuelve FINAL_FILE_ERR (-4) y SUCCESS (0) en caso de exito
    */
   error_code Proargs::CheckOpenFiles(sim::ifld & init_file, sim::ofld & final_file) {
-    init_file.Open(GetInitPath());
+    init_file.open(GetInitPath());
     if (!init_file) {
       std::cout << "Error: Cannot open " << args_.at(2) << " for reading\n";
       return (init_file_err);
     }
 
-    final_file.Open(GetFinalPath());
+    final_file.open(GetFinalPath());
     if (!final_file) {
       std::cout << "Error: Cannot open " << args_.at(3) << " for writing\n";
       return final_file_err;

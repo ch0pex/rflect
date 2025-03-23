@@ -1,8 +1,8 @@
 #pragma once
 
-#include "args/proargs.hpp"
-#include "utils/error.hpp"
-#include "file/fld.hpp"
+#include "common/args/proargs.hpp"
+#include "common/file/fld.hpp"
+#include "common/utils/error.hpp"
 
 #include "grid.hpp"
 
@@ -10,27 +10,30 @@
 #include <span>
 
 namespace sim {
-  /**
-   * Clase que representa al simulador de fluidos, contiene todos los metodos para ejecutar las
-   * distintas fases de la simulaicon asi como el grid, los ficheros y el numero de iteraciones
-   */
-  class Simulator {
-    public:
-      explicit Simulator(std::span<char const *> args_view);
 
-      error_code ParseArgs();
 
-      error_code InitSim();
 
-      error_code ProcessSim();
+/**
+ * Simulator main class
+ */
+class Simulator {
+public:
+  explicit Simulator(std::span<char const*> args_view);
 
-      error_code StoreResults();
+  error_code parseArgs();
 
-    private:
-      Proargs args_parser_;
-      ifld init_file_;
-      ofld final_file_;
-      std::optional<Grid> grid_;
-      int nts_;
-  };
-}  // namespace sim
+  error_code initSim();
+
+  error_code process();
+
+  error_code storeResults();
+
+private:
+  Proargs args_parser_;
+  ifld init_file_;
+  ofld final_file_;
+  std::optional<Grid> grid_;
+  int nts_;
+};
+
+} // namespace sim

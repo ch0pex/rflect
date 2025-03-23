@@ -1,18 +1,9 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.30)
 project(sim-tests)
 
-include(FetchContent)
+find_package(doctest REQUIRED)
 
-FetchContent_Declare(
-        doctest
-        GIT_REPOSITORY https://github.com/doctest/doctest.git
-        GIT_TAG v2.4.11
-)
-FetchContent_MakeAvailable(doctest)
-
-enable_testing()
-
-macro(add_sim_utest test_name test_src)
+macro(add_sim_test test_name test_src)
     list(APPEND TEST_FLAGS "--duration=true")
 
     set(JUNIT_DIR "${PROJECT_BINARY_DIR}/junit")
@@ -26,16 +17,7 @@ macro(add_sim_utest test_name test_src)
     add_executable(${test_exe_name} ${test_src})
     target_link_libraries(${test_exe_name} PRIVATE doctest::doctest)
     add_test(${test_name} ${test_exe_name} ${TEST_FLAGS})
-endmacro(add_sim_utest)
+endmacro(add_sim_test)
 
-macro(add_sim_ftest test_name test_src)
-    set(test_exe_name "sim_${test_name}")
-    include(../Source/cmake/editor.cmake)
-    include(../Source/cmake/engine.cmake)
-    set(BASE "${CMAKE_CURRENT_SOURCE_DIR}/../Source")
-    list(TRANSFORM EDITOR_SOURCES PREPEND "${BASE}/")
-    list(TRANSFORM ENGINE_SOURCES PREPEND "${BASE}/")
-    add_executable(${test_exe_name} ${test_src} ) # TODO
-endmacro(add_sim_ftest)
-
-add_sim_utest(utest_math utest/math.cpp)
+add_sim_test(functional_test ftest/main.cpp)
+add_sim_test(utest_math utest/math.cpp)

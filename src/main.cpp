@@ -1,9 +1,11 @@
 
 #include "simulator.hpp"
+#include "common/utils/error.hpp"
 
 #include <chrono>
-#include <span>
 #include <iostream>
+#include <span>
+
 
 
 int main(int const argc, char const* argv[]) {
@@ -11,13 +13,13 @@ int main(int const argc, char const* argv[]) {
   auto const init          = std::chrono::high_resolution_clock::now();
 
   sim::Simulator fluid_sim {args_view};
-  sim::error_code err      = fluid_sim.ParseArgs();
+  sim::error_code err      = fluid_sim.parseArgs();
 
   if (err == 0) {
-    err = fluid_sim.InitSim();
+    err = fluid_sim.initSim();
     if (err == 0) {
-      fluid_sim.ProcessSim();
-      fluid_sim.StoreResults();
+      fluid_sim.process();
+      fluid_sim.storeResults();
     }
   }
   auto const end                            = std::chrono::high_resolution_clock::now();

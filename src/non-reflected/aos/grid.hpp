@@ -1,58 +1,60 @@
-#pragma once
+#ifndef ARQUICOMP_P1_GRID_HPP
+#define ARQUICOMP_P1_GRID_HPP
 
 #include "block.hpp"
 #include "particle.hpp"
 #include "math/vector.hpp"
-#include "utils/constants.hpp"
-#include "utils/primitive_types.hpp"
 
 #include <vector>
+#include "utils/constants.hpp"
 #include <map>
 #include <set>
 
 namespace sim {
   class Grid {
     public:
-      Grid(int np, math::scalar ppm, std::vector<Particle> & particles);
+      Grid(int np, double ppm, std::vector<Particle> & particles);
 
-      void repositioning();
+      void Repositioning();
+      // Calcula las aceleraciones de las partículas.
+      void CalculateAccelerations();
+      // Procesa colisiones entre partículas.
+      void ProcessCollisions();
 
-      void calculateAccelerations();
+      void MoveParticles();
 
-      void processCollisions();
+      void ProcessLimits();
 
-      void moveParticles();
+      [[nodiscard]] int GetNumParticles() const;
 
-      void processLimits();
+      [[nodiscard]] double GetParticlesPerMeter() const;
 
-      [[nodiscard]] i32 numParticles() const { return num_particles; }
+      [[nodiscard]] std::vector<Block> & GetBlocks();
 
-      [[nodiscard]] math::scalar particlesPerMeter() const { return particles_param_.particles_per_meter; }
-
-      [[nodiscard]] std::vector<Block> const& getBlocks() { return blocks_; }
-
-      [[nodiscard]] ParticlesData const& getParameters() const { return particles_param_; };
+      const ParticlesData& GetParameters();
 
     private:
-      void initMessage() const;
+      void InitMessage() const;
 
-      [[nodiscard]] u64 getBlockIndex(math::vec3 particle_pos) const;
+      size_t GetBlockIndex(vec3d & particle_pos) const;
 
-      void calculateAdjacentAndLimitBlocks(size_t index);
+      void CalculateAdjacentAndLimitBlocks(size_t index);
 
-      [[nodiscard]] bool blockInBounds(math::Vec3<i32> block_pos) const;
+      [[nodiscard]] bool BlockInBounds(const vec3<int>& block_pos) const;
 
-      void addBlockToLimits(size_t index, math::Vec3<i32> neighbor_pos);
+      void AddBlockToLimits(size_t index, const vec3<int>& neighbor_pos);
 
       int num_particles;
       ParticlesData particles_param_;
 
-      math::Vec3<u64> grid_size_;  // n_x, n_y, n_z
-      math::vec3 block_size_;        // s_x, s_y, s_z
-      u64 num_blocks_;
+      vec3<size_t> grid_size_;  // n_x, n_y, n_z
+      vec3d block_size_;        // s_x, s_y, s_z
+      size_t num_blocks_;
 
       std::vector<Block> blocks_;
-      std::vector<std::vector<u64>> adjacent_blocks_;
+      std::vector<std::vector<size_t>> adjacent_blocks_;
       std::map<size_t, std::set<Limits>> grid_limits_;
   };
 }  // namespace sim
+
+#endif  // ARQUICOMP_P1_GRID_HPP

@@ -1,18 +1,18 @@
-/************************************************************************
- * Copyright (c) 2024 Alvaro Cabrera Barrio
- * This code is licensed under MIT license (see LICENSE.txt for details)
- ************************************************************************/
-/**
- * @file math.hpp
- * @version 1.0
- * @date 02/03/2024
- * @brief Math
- *
- * Math includes
- */
+#ifndef FLUID_MATH_HPP
+#define FLUID_MATH_HPP
 
-#pragma once
+#include <cmath>
 
-#include "operators.hpp"
-#include "matrix.hpp"
-#include "vector.hpp"
+#include "math/vector.hpp"
+#include "utils/constants.hpp"
+#include "particle.hpp"
+
+
+namespace sim::math {
+  double DensityIncrement(const ParticlesData& particles_params, double squared_distance);
+  vec3d AccelerationIncrement(const ParticlesData& params, const Particle& particle_i, const Particle& particle_j, double squared_distance);
+
+}
+
+
+#endif  // FLUID_MATH_HPP

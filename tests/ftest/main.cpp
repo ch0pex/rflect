@@ -34,13 +34,13 @@ sim::error_code run_sim(std::span<char const*> const args) {
   auto const init = std::chrono::high_resolution_clock::now();
 
   sim::Simulator fluid_sim {args};
-  sim::error_code err = fluid_sim.parseArgs();
+  sim::error_code err = fluid_sim.ParseArgs();
 
   if (err == 0) {
-    err = fluid_sim.initSim();
+    err = fluid_sim.InitSim();
     if (err == 0) {
-      fluid_sim.process();
-      fluid_sim.storeResults();
+      fluid_sim.ProcessSim();
+      fluid_sim.StoreResults();
     }
   }
   auto const end                            = std::chrono::high_resolution_clock::now();
@@ -72,7 +72,7 @@ void test_simulation(std::string_view file_name, sim::i8 iterations) {
   std::string const it            = std::to_string(iterations);
 
   std::array args {"binary_name", it.c_str(), input_file.c_str(), out_file.c_str()};
-  DOCTEST_CHECK(run_sim(args) == sim::error_code::success);
+  DOCTEST_CHECK(run_sim(args) == sim::error_code::SUCCESS);
   DOCTEST_CHECK(compare_files(out_file, expected_file));
   REQUIRE(std::filesystem::remove_all(tmp_dir));
 }

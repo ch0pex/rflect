@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ARQUICOMP_P1_PROARGS_HPP
+#define ARQUICOMP_P1_PROARGS_HPP
 
 #include "file/fld.hpp"
 #include "utils/error.hpp"
@@ -11,17 +12,19 @@ namespace sim {
     public:
       explicit Proargs(std::span<char const *> args);
 
-      [[nodiscard]] error_code CheckCount() const;
+      [[nodiscard]] sim::error_code CheckCount() const;
 
-      error_code CheckNts(int & nts);
+      sim::error_code CheckNts(int & nts);
 
-      error_code CheckOpenFiles(ifld & init_file, ofld & final_file);
+      sim::error_code CheckOpenFiles(sim::ifld & init_file, sim::ofld & final_file);
 
-      [[nodiscard]] std::string GetInitPath() const { return args_.at(2); };
+      inline std::string GetInitPath() { return args_.at(2); };
 
-      [[nodiscard]] std::string GetFinalPath() const { return args_.at(3); };
+      inline std::string GetFinalPath() { return args_.at(3); };
 
     private:
       std::vector<char const *> args_;
   };
 }  // namespace sim
+
+#endif  // ARQUICOMP_P1_PROARGS_HPP

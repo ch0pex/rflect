@@ -1,5 +1,7 @@
 #include "simulator.hpp"
 
+#include <cstddef>
+
 namespace sim {
   /**
    * Constructor de la calse simulador
@@ -14,11 +16,11 @@ namespace sim {
    * @return Devuelve SUCCESS (0) si los argumentos pasados por el usuario eran correctos o bien el
    * error correspondiente
    */
-  error_code Simulator::parseArgs() {
-    error_code err = success;
+  sim::error_code Simulator::ParseArgs() {
+    error_code err = SUCCESS;
 
     err = args_parser_.CheckCount();
-    if (err != success) {
+    if (err != SUCCESS) {  //[[likely]] o [[unlikely]]?
       return (err);
     }
 
@@ -26,7 +28,7 @@ namespace sim {
     if (err != 0) { return (err); }
 
     err = args_parser_.CheckOpenFiles(init_file_, final_file_);
-    if (err != success) { return (err); }
+    if (err != SUCCESS) { return (err); }
     return (err);
   }
 
@@ -35,15 +37,16 @@ namespace sim {
    * fichero de entrada y se inicializa el grid con dicha informacion
    * @return
    */
-  error_code Simulator::initSim() {
-    error_code err = success;
+  sim::error_code Simulator::InitSim() {
+    sim::error_code err = SUCCESS;
+    std::vector<Particle> particles;
     int num_particles = 0;
     double ppm        = 0.0;
 
-    err = init_file_.readHeader(ppm, num_particles);
-    if (err != success) { return (err); }
+    err = init_file_.ReadHeader(ppm, num_particles);
+    if (err != SUCCESS) { return (err); }
 
-    std::vector<Particle> particles = init_file_.readParticles();
+    particles = init_file_.ReadParticles();
     grid_.emplace(num_particles, ppm, particles);
     return (err);
   }
@@ -53,17 +56,17 @@ namespace sim {
    * veces como el usuario indico por argumento
    * @return
    */
-  error_code Simulator::process() {
+  sim::error_code Simulator::ProcessSim() {
     for (int i = 0; i < nts_; i++) {
       if (i > 0) {
-        grid_->repositioning();
+        grid_->Repositioning();
       }
-      grid_->calculateAccelerations();
-      grid_->processCollisions();
-      grid_->moveParticles();
-      grid_->processLimits();
+      grid_->CalculateAccelerations();
+      grid_->ProcessCollisions();
+      grid_->MoveParticles();
+      grid_->ProcessLimits();
     }
-    return (success);
+    return (SUCCESS);
   }
 
   /**
@@ -71,20 +74,18 @@ namespace sim {
    * especificado por parametro
    * @return
    */
-  error_code Simulator::storeResults() {
-    int const num_particles = grid_->numParticles();
-    std::vector<Particle const*> results(num_particles);
+  sim::error_code Simulator::StoreResults() {
+    int const num_particles = grid_->GetNumParticles();
+    std::vector<Particle *> results(num_particles);
 
-    if (final_file_.writeHeader(num_particles, grid_->particlesPerMeter()) != success) {
-      return final_file_err;
-    };
+    final_file_.WriteHeader(num_particles, grid_->GetParticlesPerMeter());
 
-    for (auto const& block : grid_->getBlocks()) {
-      for (auto const& particle : block.particles) { results[particle.id] = &particle; }
+    for (auto & block : grid_->GetBlocks()) {
+      for (auto & particle : block.GetParticles()) { results[particle.id] = &particle; }
     }
 
-    final_file_.writeParticles(results);
-    return (success);
+    final_file_.WriteParticles(results);
+    return (SUCCESS);
   }
 
 }  // namespace sim

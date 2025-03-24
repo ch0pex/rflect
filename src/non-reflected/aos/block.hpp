@@ -1,29 +1,41 @@
-#pragma once
-
 #include "particle.hpp"
 #include "utils/constants.hpp"
 
-#include <set>
 #include <vector>
+#include <set>
 
 namespace sim {
+  class Block {
+    public:
+      Block() = default;
 
-struct Block {
-  Block() = default;
+      void AddParticle(Particle & particle);
 
-  void addParticle(Particle const& particle) { particles.emplace_back(particle); }
+      [[nodiscard]] std::vector<Particle> & GetParticles();
 
-  void calcDensities(ParticlesData const& particles_params, std::vector<size_t>& adjacent, std::vector<Block>& blocks);
+      void CalcDensities(ParticlesData const & particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks);
 
-  void calcAccelerations(ParticlesData const& params, std::vector<size_t>& adjacent, std::vector<Block>& blocks);
+      void CalcAccelerations(ParticlesData const & particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks);
 
-  void processCollisions(std::set<Limits>& limits);
+      void ProcessCollisions(std::set<Limits>& limits);
 
-  void processLimits(std::set<Limits>& limits);
+      void ProcessLimits(std::set<Limits>& limits);
 
-  void moveParticles();
+      void MoveParticles();
 
-  std::vector<Particle> particles;
-};
+    private:
+      static void CollisionsX(Particle& particle, const std::set<Limits>& limits);
 
-} // namespace sim
+      static void CollisionsY(Particle& particle, const std::set<Limits>& limits);
+
+      static void CollisionsZ(Particle& particle, const std::set<Limits>& limits);
+
+      static void LimitsX(Particle& particle, const std::set<Limits>& limits);
+
+      static void LimitsY(Particle& particle, const std::set<Limits>& limits);
+
+      static void LimitsZ(Particle& particle, const std::set<Limits>& limits);
+
+      std::vector<Particle> particles_; 
+  };
+}  // namespace sim

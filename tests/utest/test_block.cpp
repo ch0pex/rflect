@@ -7,14 +7,14 @@ namespace sim {
 constexpr math::vec3 kInitialPositionOffset = math::vec3(-0.06649009138345718, -0.07730470597743988, -0.059135954827070236);
 constexpr math::vec3 kHvVector = math::vec3(4.0, 5.0, 6.0);
 constexpr math::vec3 kVelocityIncrement = math::vec3(1.0, 8.0, 9.0);
-constexpr double def_position = 100.0;
+constexpr math::scalar def_position = 100.0;
 
   // Test para probar colisiones
   TEST(Block, TestCollisionZ) {
     // Creación de un bloque opcional y un conjunto de límites
     Block block;
     std::set<Limits> limits = {CZN};
-    constexpr double expected_acceleration = -2999388.0000000005;
+    constexpr math::scalar expected_acceleration = -2999388.0000000005;
 
     // Configuración de una partícula específica para el test
     constexpr size_t particle_id = 1;
@@ -29,7 +29,7 @@ constexpr double def_position = 100.0;
     // Se añade la partícula al bloque y se procesan las colisiones
     block.AddParticle(particle);
     block.ProcessCollisions(limits);
-    const double new_acceleration = block.GetParticles()[0].acceleration.z;
+    const math::scalar new_acceleration = block.GetParticles()[0].acceleration.z;
     ASSERT_EQ(new_acceleration, expected_acceleration);
   }
 
@@ -37,7 +37,7 @@ constexpr double def_position = 100.0;
     // Creación de un bloque opcional y un conjunto de límites
     Block block;
     std::set<Limits> limits = {CXN};
-    constexpr double expected_acceleration = -2998304.0000000005;
+    constexpr math::scalar expected_acceleration = -2998304.0000000005;
     // Configuración de una partícula específica para el test
     constexpr size_t particle_id = 1;
     math::vec3 position = kInitialPositionOffset;
@@ -51,7 +51,7 @@ constexpr double def_position = 100.0;
     // Se añade la partícula al bloque y se procesan las colisiones
     block.AddParticle(particle);
     block.ProcessCollisions(limits);
-    const double new_acceleration = block.GetParticles()[0].acceleration.x;
+    const math::scalar new_acceleration = block.GetParticles()[0].acceleration.x;
     ASSERT_EQ(new_acceleration, expected_acceleration);
   }
 
@@ -59,7 +59,7 @@ constexpr double def_position = 100.0;
     // Creación de un bloque opcional y un conjunto de límites
     Block block;
     std::set<Limits> limits = {CYN};
-    constexpr double expected_acceleration = -2998189.8000000003;
+    constexpr math::scalar expected_acceleration = -2998189.8000000003;
     // Configuración de una partícula específica para el test
     constexpr size_t particle_id = 1;
     math::vec3 position = kInitialPositionOffset;
@@ -73,7 +73,7 @@ constexpr double def_position = 100.0;
     // Se añade la partícula al bloque y se procesan las colisiones
     block.AddParticle(particle);
     block.ProcessCollisions(limits);
-    const double new_acceleration = block.GetParticles()[0].acceleration.y;
+    const math::scalar new_acceleration = block.GetParticles()[0].acceleration.y;
     ASSERT_EQ(new_acceleration, expected_acceleration);
   }
 
@@ -82,7 +82,7 @@ constexpr double def_position = 100.0;
     // Creación de un bloque opcional y un conjunto de límites
     Block block;
     std::set<Limits> limits = {CZN};
-    constexpr double position_expected = -99.87; // Posicion en Z esperada despues de ProcessLimits
+    constexpr math::scalar position_expected = -99.87; // Posicion en Z esperada despues de ProcessLimits
 
     // Configuración de una partícula específica para el test
     constexpr size_t particle_id = 1;
@@ -97,7 +97,7 @@ constexpr double def_position = 100.0;
     // Se añade la partícula al bloque y se procesan las colisiones
     block.AddParticle(particle);
     block.ProcessLimits(limits);
-    const double new_position = block.GetParticles()[0].position.z;
+    const math::scalar new_position = block.GetParticles()[0].position.z;
     ASSERT_EQ(new_position, position_expected);
   }
 
@@ -105,7 +105,7 @@ constexpr double def_position = 100.0;
     // Creación de un bloque opcional y un conjunto de límites
     Block block;
     std::set<Limits> limits = {CXN};
-    constexpr double position_expected = -99.87; // Posicion en X esperada despues de ProcessLimits
+    constexpr math::scalar position_expected = -99.87; // Posicion en X esperada despues de ProcessLimits
     // Configuración de una partícula específica para el test
     constexpr size_t particle_id = 1;
     math::vec3 position = kInitialPositionOffset;
@@ -119,7 +119,7 @@ constexpr double def_position = 100.0;
     // Se añade la partícula al bloque y se procesan las colisiones
     block.addParticle(particle);
     block.processLimits(limits);
-    const double new_position = block.getParticles()[0].position.x;
+    const math::scalar new_position = block.getParticles()[0].position.x;
     ASSERT_EQ(new_position, position_expected);
   }
 
@@ -127,7 +127,7 @@ constexpr double def_position = 100.0;
     // Creación de un bloque opcional y un conjunto de límites
     Block block;
     std::set<Limits> limits = {CYN};
-    constexpr double position_expected = -99.800000000000011; // Posicion en y esperada despues de ProcessLimits
+    constexpr math::scalar position_expected = -99.800000000000011; // Posicion en y esperada despues de ProcessLimits
     // Configuración de una partícula específica para el test
     constexpr size_t particle_id = 1;
     math::vec3 position = kInitialPositionOffset;
@@ -141,7 +141,7 @@ constexpr double def_position = 100.0;
     // Se añade la partícula al bloque y se procesan las colisiones
     block.AddParticle(particle);
     block.ProcessLimits(limits);
-    const double new_position = block.GetParticles()[0].position.y;
+    const math::scalar new_position = block.GetParticles()[0].position.y;
     ASSERT_EQ(new_position, position_expected);
   }
 } // namespace sim

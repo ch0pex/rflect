@@ -110,8 +110,8 @@ namespace sim {
   * @param limits Un conjunto que almacena los límites del espacio en el que se encuentran las partículas.
   */
   void Block::CollisionsX(Particle& particle, const std::set<Limits>& limits) {
-    double x = 0.0;
-    double x_diff = 0.0;
+    math::scalar x = 0.0;
+    math::scalar x_diff = 0.0;
     // Verifica si el conjunto de límites contiene el límite CX0.
     if (limits.contains(cx0)) {
       x = particle.position.x + particle.hv.x * time_step;
@@ -146,8 +146,8 @@ namespace sim {
   * @param limits Un conjunto que almacena los límites del espacio en el que se encuentran las partículas.
   */
   void Block::CollisionsY(Particle& particle, const std::set<Limits> & limits) {
-    double y = 0.0;
-    double y_diff = 0.0;
+    math::scalar y = 0.0;
+    math::scalar y_diff = 0.0;
 
     if (limits.contains(cy0)) {
       y = particle.position.y + particle.hv.y * time_step;
@@ -176,8 +176,8 @@ namespace sim {
   * @param limits Un conjunto que almacena los límites del espacio en el que se encuentran las partículas.
   */
   void Block::CollisionsZ(Particle& particle, const std::set<Limits> & limits) {
-    double z = 0.0;
-    double z_diff = 0.0;
+    math::scalar z = 0.0;
+    math::scalar z_diff = 0.0;
     if (limits.contains(cz0)) {
       z = particle.position.z + particle.hv.z * time_step;
       z_diff = particle_size - (z - bottom_limit.z);
@@ -214,7 +214,7 @@ namespace sim {
   * @param limits Un conjunto que almacena los límites del espacio en el que se encuentran las partículas.
   */
   void Block::LimitsX(Particle & particle, const std::set<Limits> & limits) {
-    double dx = 0.0;
+    math::scalar dx = 0.0;
     if (limits.contains(cx0)) {
       dx = particle.position.x - bottom_limit.x;
       if (dx < 0) {
@@ -244,7 +244,7 @@ namespace sim {
   * @param limits Un conjunto que almacena los límites del espacio en el que se encuentran las partículas.
    */
   void Block::LimitsY(Particle & particle, const std::set<Limits> & limits) {
-    double dy = 0.0;
+    math::scalar dy = 0.0;
     if (limits.contains(cy0)) {
       dy = particle.position.y - bottom_limit.y;
       if (dy < 0) {
@@ -274,7 +274,7 @@ namespace sim {
   * @param limits Un conjunto que almacena los límites del espacio en el que se encuentran las partículas.
    */
   void Block::LimitsZ(Particle & particle, const std::set<Limits> & limits) {
-    double dz = 0.0;
+    math::scalar dz = 0.0;
     if (limits.contains(cz0)) {
       dz = particle.position.z - bottom_limit.z;
       if (dz < 0) {

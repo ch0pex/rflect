@@ -17,9 +17,9 @@ namespace sim {
 
       sim::error_code CheckOpenFiles(sim::ifld & init_file, sim::ofld & final_file);
 
-      inline std::string GetInitPath() { return args_.at(2); };
+      std::string GetInitPath() { return args_.at(2); };
 
-      inline std::string GetFinalPath() { return args_.at(3); };
+      std::string GetFinalPath() { return args_.at(3); };
 
     private:
       std::vector<char const *> args_;

@@ -12,15 +12,15 @@ namespace sim {
    * @param ppm: partiuclas por metro
    * @param particles: vector de particulas que contiene el grid
    */
-  Grid::Grid(int np, double ppm, std::vector<Particle> & particles)
+  Grid::Grid(int np, math::scalar ppm, std::vector<Particle> & particles)
     : num_particles(np), particles_param_(ppm),
       grid_size_({static_cast<unsigned long>(std::floor((top_limit.x - bottom_limit.x) / particles_param_.smoothing)),
                   static_cast<unsigned long>(std::floor((top_limit.y - bottom_limit.y) / particles_param_.smoothing)),
                   static_cast<unsigned long>(std::floor((top_limit.z - bottom_limit.z) / particles_param_.smoothing))}),
       block_size_({
-        (top_limit.x - bottom_limit.x) / static_cast<double>(grid_size_.x),
-        (top_limit.y - bottom_limit.y) / static_cast<double>(grid_size_.y),
-        (top_limit.z - bottom_limit.z) / static_cast<double>(grid_size_.z),
+        (top_limit.x - bottom_limit.x) / static_cast<math::scalar>(grid_size_.x),
+        (top_limit.y - bottom_limit.y) / static_cast<math::scalar>(grid_size_.y),
+        (top_limit.z - bottom_limit.z) / static_cast<math::scalar>(grid_size_.z),
       }),
       num_blocks_(grid_size_.x * grid_size_.y * grid_size_.z), blocks_(num_blocks_),
       adjacent_blocks_(num_blocks_) {
@@ -110,25 +110,25 @@ namespace sim {
    */
   size_t Grid::GetBlockIndex(math::vec3 & particle_pos) const {
     // i,j,k posicion del bloque en la malla --> pasarlo al indice del bloque
-    double pos_i = std::floor((particle_pos.x - bottom_limit.x) / block_size_.x);
-    double pos_j = std::floor((particle_pos.y - bottom_limit.y) / block_size_.y);
-    double pos_k = std::floor((particle_pos.z - bottom_limit.z) / block_size_.z);
+    math::scalar pos_i = std::floor((particle_pos.x - bottom_limit.x) / block_size_.x);
+    math::scalar pos_j = std::floor((particle_pos.y - bottom_limit.y) / block_size_.y);
+    math::scalar pos_k = std::floor((particle_pos.z - bottom_limit.z) / block_size_.z);
 
     // Asegura que las coordenadas estén dentro de los límites de la cuadrícula
     if (pos_i < 0) {
       pos_i = 0;
-    } else if (pos_i >= static_cast<double>(grid_size_.x)) {
-      pos_i = static_cast<double>(grid_size_.x) - 1;
+    } else if (pos_i >= static_cast<math::scalar>(grid_size_.x)) {
+      pos_i = static_cast<math::scalar>(grid_size_.x) - 1;
     }
     if (pos_j < 0) {
       pos_j = 0;
-    } else if (pos_j >= static_cast<double>(grid_size_.y)) {
-      pos_j = static_cast<double>(grid_size_.y) - 1;
+    } else if (pos_j >= static_cast<math::scalar>(grid_size_.y)) {
+      pos_j = static_cast<math::scalar>(grid_size_.y) - 1;
     }
     if (pos_k < 0) {
       pos_k = 0;
-    } else if (pos_k >= static_cast<double>(grid_size_.z)) {
-      pos_k = static_cast<double>(grid_size_.z) - 1;
+    } else if (pos_k >= static_cast<math::scalar>(grid_size_.z)) {
+      pos_k = static_cast<math::scalar>(grid_size_.z) - 1;
     }
     return (static_cast<size_t>(pos_i) + static_cast<size_t>(pos_j) * grid_size_.x +
             static_cast<size_t>(pos_k) * grid_size_.x * grid_size_.y);
@@ -217,7 +217,7 @@ namespace sim {
     return num_particles;
   }
 
-  double Grid::GetParticlesPerMeter() const {
+  math::scalar Grid::GetParticlesPerMeter() const {
     return particles_param_.particles_per_meter;
   }
 

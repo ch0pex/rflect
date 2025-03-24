@@ -17,18 +17,18 @@ namespace sim {
     public:
       explicit Simulator(std::span<char const *> args_view);
 
-      sim::error_code ParseArgs();
+      error_code ParseArgs();
 
-      sim::error_code InitSim();
+      error_code InitSim();
 
-      sim::error_code ProcessSim();
+      error_code ProcessSim();
 
-      sim::error_code StoreResults();
+      error_code StoreResults();
 
     private:
-      sim::Proargs args_parser_;
-      sim::ifld init_file_;
-      sim::ofld final_file_;
+      Proargs args_parser_;
+      ifld init_file_;
+      ofld final_file_;
       std::optional<Grid> grid_;
       int nts_;
   };

@@ -23,7 +23,7 @@ int main(int const argc, char const* argv[]) {
     }
   }
   auto const end                            = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<double> const total = end - init;
+  std::chrono::duration<sim::math::scalar> const total = end - init;
   std::cout << "Execution time: " << total << "\n";
 
   return err;

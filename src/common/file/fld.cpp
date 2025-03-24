@@ -56,14 +56,14 @@ namespace sim {
    * @return Si el numero de particulas es menor que 0 o no coincide con las particulas encontradas
    * en el archivo se devuelve PARTICLE_NUM_ERR (-5), en caso de exito se devuelve SUCCESS (0)
    */
-  sim::error_code ifld::ReadHeader(double & ppm, int & np) {
+  sim::error_code ifld::ReadHeader(math::scalar & ppm, int & np) {
     float tmp = 0.0F;
 
     input_file_.seekg(0, std::ifstream::beg);
     // el siguiente comentario está justificado para esta parte de la práctica por el profesorado
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     input_file_.read(reinterpret_cast<char *>(&tmp), sizeof(float));
-    ppm = static_cast<double>(tmp);
+    ppm = static_cast<math::scalar>(tmp);
     // el siguiente comentario está justificado para esta parte de la práctica por el profesorado
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     input_file_.read(reinterpret_cast<char *>(&np), sizeof(float));
@@ -161,7 +161,7 @@ namespace sim {
   * @param ppm Cantidad de partículas por metro (partículas por metro).
   * @return Un código de error que indica el resultado de la operación.
   */
-  sim::error_code ofld::WriteHeader(int np, double ppm) {
+  sim::error_code ofld::WriteHeader(int np, math::scalar ppm) {
     // Convierte ppm a un valor de punto flotante y escribe el número de partículas y ppm en el archivo de salida.
     auto particle_per_meter = static_cast<float>(ppm);
     // el siguiente comentario está justificado para esta parte de la práctica por el profesorado

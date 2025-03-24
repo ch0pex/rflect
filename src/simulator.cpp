@@ -41,7 +41,7 @@ namespace sim {
     sim::error_code err = success;
     std::vector<Particle> particles;
     int num_particles = 0;
-    double ppm        = 0.0;
+    math::scalar ppm        = 0.0;
 
     err = init_file_.ReadHeader(ppm, num_particles);
     if (err != success) { return (err); }

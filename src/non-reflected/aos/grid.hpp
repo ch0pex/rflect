@@ -12,7 +12,7 @@
 namespace sim {
   class Grid {
     public:
-      Grid(int np, double ppm, std::vector<Particle> & particles);
+      Grid(int np, math::scalar ppm, std::vector<Particle> & particles);
 
       void Repositioning();
       // Calcula las aceleraciones de las partículas.
@@ -26,7 +26,7 @@ namespace sim {
 
       [[nodiscard]] int GetNumParticles() const;
 
-      [[nodiscard]] double GetParticlesPerMeter() const;
+      [[nodiscard]] math::scalar GetParticlesPerMeter() const;
 
       [[nodiscard]] std::vector<Block> & GetBlocks();
 

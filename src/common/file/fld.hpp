@@ -20,7 +20,7 @@ namespace sim {
 
       void Close();
 
-      sim::error_code ReadHeader(double & ppm, int & np);
+      sim::error_code ReadHeader(math::scalar & ppm, int & np);
 
       std::vector<Particle> ReadParticles();
 
@@ -44,7 +44,7 @@ namespace sim {
 
       void Close();
 
-      sim::error_code WriteHeader(int np, double ppm);
+      sim::error_code WriteHeader(int np, math::scalar ppm);
 
       sim::error_code WriteParticles(std::vector<Particle *> & particles);
 

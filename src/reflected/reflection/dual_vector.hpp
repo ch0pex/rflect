@@ -209,11 +209,11 @@ private:
 //  template<typename T>
 //  using proxy_type = ParticleProxy<T>;
 //
-//  double position;
-//  double velocity;
-//  double acceleration;
-//  double hv;
-//  double density;
+//  math::scalar position;
+//  math::scalar velocity;
+//  math::scalar acceleration;
+//  math::scalar hv;
+//  math::scalar density;
 //};
 //
 //int main(int argc, char* argv[]) {

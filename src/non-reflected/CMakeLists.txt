@@ -5,7 +5,6 @@ function(add_sim_lib name)
             PRIVATE
             aos/grid.cpp
             aos/block.cpp
-            aos/particle.cpp
             ../common/args/proargs.cpp
             ../common/file/fld.cpp
             ../simulator.cpp

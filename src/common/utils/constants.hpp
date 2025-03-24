@@ -16,6 +16,9 @@ namespace sim {
   constexpr double min_distance = 0.000000000001; //10^-12
   constexpr double min_collision_diff =  0.0000000001; //10^-10
   constexpr math::vec3 gravity = {0.0, -9.8, 0.0};
+  constexpr math::scalar pi_times_64 = 64.0 * std::numbers::pi;
+  constexpr math::scalar density_times_2   = 2.0 * density;   // p
+  const math::scalar min_distance_sqrt = std::sqrt(min_distance); //10^-12
 
   // File constants
   constexpr size_t header_size = 8;

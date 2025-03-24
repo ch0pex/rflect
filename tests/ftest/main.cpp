@@ -46,6 +46,7 @@ sim::error_code run_sim(std::span<char const*> const args) {
   auto const end                            = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double> const total = end - init;
   std::cout << "Execution time: " << total << "\n";
+  std::cout << "---------------------------------------\n";
 
   return err;
 }

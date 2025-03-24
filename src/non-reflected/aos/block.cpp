@@ -33,14 +33,14 @@ namespace sim {
   void Block::CalcDensities(ParticlesData const & particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks) {
     for (size_t i = 0; i < particles_.size(); ++i) {
       for (size_t j = i + 1; j < particles_.size(); ++j) { // Evitamos repetir calculos entre particulas inicializando j=i+1
-        Particle::IncrementDensities(particles_params, particles_[i], particles_[j]);
+        incrementDensities(particles_params, particles_[i], particles_[j]);
       }
       for(auto& adjacent_index : adjacents) {
           for(auto& particle_j : blocks[adjacent_index].GetParticles()){
-            Particle::IncrementDensities(particles_params, particles_[i], particle_j);
+            incrementDensities(particles_params, particles_[i], particle_j);
           }
       }
-      particles_[i].TransformDenisty(particles_params);
+      particles_[i].transformDensity(particles_params);
     }
   }
 
@@ -59,11 +59,11 @@ namespace sim {
   void Block::CalcAccelerations(const ParticlesData& particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks) {
     for (size_t i = 0; i < particles_.size(); ++i) {
       for (size_t j = i + 1; j < particles_.size(); ++j) {  // Evitamos repetir calculos entre particulas inicializando j=i+1
-        Particle::IncrementAccelerations(particles_params, particles_[i], particles_[j]);
+        incrementAccelerations(particles_params, particles_[i], particles_[j]);
       }
       for (auto & adjacent_index : adjacents) {
         for (auto & particle_j : blocks[adjacent_index].GetParticles()) {
-          Particle::IncrementAccelerations(particles_params, particles_[i], particle_j);
+          incrementAccelerations(particles_params, particles_[i], particle_j);
         }
       }
     }

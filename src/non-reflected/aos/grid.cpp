@@ -14,9 +14,9 @@ namespace sim {
    */
   Grid::Grid(int np, double ppm, std::vector<Particle> & particles)
     : num_particles(np), particles_param_(ppm),
-      grid_size_({std::floor((TOP_LIMIT.x - BOTTOM_LIMIT.x) / particles_param_.smoothing),
-                  std::floor((TOP_LIMIT.y - BOTTOM_LIMIT.y) / particles_param_.smoothing),
-                  std::floor((TOP_LIMIT.z - BOTTOM_LIMIT.z) / particles_param_.smoothing)}),
+      grid_size_({static_cast<unsigned long>(std::floor((TOP_LIMIT.x - BOTTOM_LIMIT.x) / particles_param_.smoothing)),
+                  static_cast<unsigned long>(std::floor((TOP_LIMIT.y - BOTTOM_LIMIT.y) / particles_param_.smoothing)),
+                  static_cast<unsigned long>(std::floor((TOP_LIMIT.z - BOTTOM_LIMIT.z) / particles_param_.smoothing))}),
       block_size_({
         (TOP_LIMIT.x - BOTTOM_LIMIT.x) / static_cast<double>(grid_size_.x),
         (TOP_LIMIT.y - BOTTOM_LIMIT.y) / static_cast<double>(grid_size_.y),
@@ -108,7 +108,7 @@ namespace sim {
    * @param particle_pos posición de la partícula en coordenadas x,y,z
    * @return índice del bloque al que pertenece la partícula en la cuadrícula.
    */
-  size_t Grid::GetBlockIndex(vec3d & particle_pos) const {
+  size_t Grid::GetBlockIndex(math::vec3 & particle_pos) const {
     // i,j,k posicion del bloque en la malla --> pasarlo al indice del bloque
     double pos_i = std::floor((particle_pos.x - BOTTOM_LIMIT.x) / block_size_.x);
     double pos_j = std::floor((particle_pos.y - BOTTOM_LIMIT.y) / block_size_.y);
@@ -153,8 +153,10 @@ namespace sim {
    * @param index: indice del bloque
    */
   void Grid::CalculateAdjacentAndLimitBlocks(size_t index) {
-    vec3<int> const block_pos = {index % grid_size_.x, (index / grid_size_.x) % grid_size_.y,
-                                 index / (grid_size_.x * grid_size_.y)};
+    math::Vec3<int> const block_pos = {
+      static_cast<int>(index % grid_size_.x), static_cast<int>(index / grid_size_.x % grid_size_.y),
+                                 static_cast<int>(index / (grid_size_.x * grid_size_.y))
+    };
 
     for (int i = -1; i <= 1; ++i) {
       for (int j = -1; j <= 1; ++j) {
@@ -162,7 +164,7 @@ namespace sim {
           if (i == 0 && j == 0 && k == 0) {
             continue;
           }
-          vec3<int> const neighbor_pos = {block_pos.x + i, block_pos.y + j, block_pos.z + k};
+          math::Vec3<int> const neighbor_pos = {block_pos.x + i, block_pos.y + j, block_pos.z + k};
 
           if (BlockInBounds(neighbor_pos)) {
             size_t const neighbor_index = neighbor_pos.x + neighbor_pos.y * grid_size_.x
@@ -185,13 +187,13 @@ namespace sim {
    * @param block_pos
    * @return
    */
-  bool Grid::BlockInBounds(const vec3<int>& block_pos) const {
+  bool Grid::BlockInBounds(const math::Vec3<int>& block_pos) const {
     return block_pos.x >= 0 && static_cast<size_t>(block_pos.x) < grid_size_.x
            && block_pos.y >= 0 && static_cast<size_t>(block_pos.y) < grid_size_.y &&
            block_pos.z >= 0 && static_cast<size_t>(block_pos.z) < grid_size_.z;
   }
 
- void Grid::AddBlockToLimits(size_t index, const vec3<int> & neighbor_pos) {
+ void Grid::AddBlockToLimits(size_t index, const math::Vec3<int> & neighbor_pos) {
    if(neighbor_pos.x < 0 ) {
      grid_limits_[index].insert(CX0);
    } else if (static_cast<size_t>(neighbor_pos.x) >= grid_size_.x) {

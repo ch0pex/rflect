@@ -91,9 +91,9 @@ namespace sim {
   std::vector<Particle> ifld::ReadParticles() {
     std::vector<Particle> particles;
     std::vector<float> tmp((length_ - SIZE_HEADER) / sizeof(float));
-    vec3d position;
-    vec3d vec_hv;
-    vec3d velocity;
+    math::vec3 position;
+    math::vec3 vec_hv;
+    math::vec3 velocity;
 
     particles.reserve((length_ - SIZE_HEADER) / PARTICLE_COMPONENTS);  // numero de componentes de una particula
     input_file_.seekg(SIZE_HEADER, std::ifstream::beg);

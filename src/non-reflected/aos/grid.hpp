@@ -36,19 +36,19 @@ namespace sim {
     private:
       void InitMessage() const;
 
-      size_t GetBlockIndex(vec3d & particle_pos) const;
+      size_t GetBlockIndex(math::vec3 & particle_pos) const;
 
       void CalculateAdjacentAndLimitBlocks(size_t index);
 
-      [[nodiscard]] bool BlockInBounds(const vec3<int>& block_pos) const;
+      [[nodiscard]] bool BlockInBounds(const math::Vec3<int>& block_pos) const;
 
-      void AddBlockToLimits(size_t index, const vec3<int>& neighbor_pos);
+      void AddBlockToLimits(size_t index, const math::Vec3<int>& neighbor_pos);
 
       int num_particles;
       ParticlesData particles_param_;
 
-      vec3<size_t> grid_size_;  // n_x, n_y, n_z
-      vec3d block_size_;        // s_x, s_y, s_z
+      math::Vec3<size_t> grid_size_;  // n_x, n_y, n_z
+      math::vec3 block_size_;        // s_x, s_y, s_z
       size_t num_blocks_;
 
       std::vector<Block> blocks_;

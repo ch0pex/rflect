@@ -1,5 +1,6 @@
 #include "block.hpp"
 
+#include "math/math.hpp"
 
 namespace sim {
 

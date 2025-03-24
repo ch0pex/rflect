@@ -21,11 +21,11 @@ namespace sim {
   constexpr double MIN_COLLISION_DIFF =  0.0000000001; //10^-10
 
   // Aceleracion externa
-  constexpr vec3d GRAVITY = {0.0, -9.8, 0.0};
+  constexpr math::vec3 GRAVITY = {0.0, -9.8, 0.0};
   // Límite superior del recinto
-  constexpr vec3d BOTTOM_LIMIT = {-0.065, -0.08, -0.065};
+  constexpr math::vec3 BOTTOM_LIMIT = {-0.065, -0.08, -0.065};
   // Límite inferior del recinto
-  constexpr vec3d TOP_LIMIT = {0.065, 0.1, 0.065};
+  constexpr math::vec3 TOP_LIMIT = {0.065, 0.1, 0.065};
 
   enum Limits {
     CX0,

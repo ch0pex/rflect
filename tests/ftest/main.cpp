@@ -87,5 +87,4 @@ TEST_CASE("Large file") {
 TEST_CASE("Small file") {
   for (sim::i8 i = 1; i <= 5; ++i)
     test_simulation("small", i);
-
 }

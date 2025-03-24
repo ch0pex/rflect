@@ -2,9 +2,6 @@
 
 #include <cmath>
 
-#include "utils/constants.hpp"
-#include "math/math.hpp"
-
 namespace sim {
   /**
    * Constructor de ParticlesData a partir de ppm se calcula la masa de la particula el
@@ -29,7 +26,7 @@ namespace sim {
    * La acelearcion y la densidad se inicializan a 0
    * @param other
    */
-  Particle::Particle(size_t _id, vec3d& _position, vec3d& _hv, vec3d& _velocity)
+  Particle::Particle(size_t _id, math::vec3& _position, math::vec3& _hv, math::vec3& _velocity)
     : id(_id),
       position(_position),
       hv(_hv),
@@ -62,10 +59,10 @@ namespace sim {
    * @param particle_j Segunda partícula.
    */
   void Particle::IncrementDensities(const ParticlesData& particles_params, Particle& particle_i, Particle& particle_j) {
-    const double squared_distance = vec3d::SquaredDistance(particle_i.position, particle_j.position);
+    const double squared_distance = squaredDistance(particle_i.position, particle_j.position);
     if (squared_distance < particles_params.smoothing_pow_2){
       // Incremento de densidades basado en la distancia
-      const double density_increment = math::DensityIncrement(particles_params, squared_distance);
+      const double density_increment = densityIncrement(particles_params, squared_distance);
       particle_i.density += density_increment;
       particle_j.density += density_increment;
     }
@@ -79,9 +76,9 @@ namespace sim {
    * @param particle_j Segunda partícula.
    */
   void Particle::IncrementAccelerations(const ParticlesData & particles_params, Particle & particle_i, Particle & particle_j) {
-    const double squared_distance = vec3d::SquaredDistance(particle_i.position, particle_j.position);
+    const double squared_distance = squaredDistance(particle_i.position, particle_j.position);
     if (squared_distance < particles_params.smoothing_pow_2){
-      const vec3d accleration_increment = math::AccelerationIncrement(particles_params, particle_i, particle_j, squared_distance);
+      const math::vec3 accleration_increment = accelerationIncrement(particles_params, particle_i, particle_j, squared_distance);
       particle_i.acceleration += accleration_increment;
       particle_j.acceleration -= accleration_increment;
     }

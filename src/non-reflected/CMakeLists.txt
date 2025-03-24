@@ -9,8 +9,6 @@ function(add_sim_lib name)
             ../common/args/proargs.cpp
             ../common/file/fld.cpp
             ../simulator.cpp
-            ../common/math/vector.cpp
-            ../common/math/math.cpp
     )
 
     target_sources(non-reflected-${name}-lib
@@ -22,12 +20,12 @@ function(add_sim_lib name)
             aos/block.hpp
             aos/particle.hpp
             ../simulator.hpp
-#            ../common/math/concepts.hpp
-#            ../common/math/functions.hpp
+            ../common/math/concepts.hpp
+            ../common/math/functions.hpp
             ../common/math/math.hpp
-#            ../common/math/matrix.hpp
-#            ../common/math/operators.hpp
-#            ../common/math/scalar.hpp
+            ../common/math/matrix.hpp
+            ../common/math/operators.hpp
+            ../common/math/scalar.hpp
             ../common/math/utils.hpp
             ../common/math/vector.hpp
             ../common/utils/constants.hpp

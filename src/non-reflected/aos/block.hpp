@@ -1,3 +1,5 @@
+#pragma once
+
 #include "particle.hpp"
 #include "utils/constants.hpp"
 

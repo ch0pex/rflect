@@ -1,5 +1,4 @@
-#ifndef ARQUICOMP_P1_GRID_HPP
-#define ARQUICOMP_P1_GRID_HPP
+#pragma once
 
 #include "block.hpp"
 #include "particle.hpp"
@@ -57,4 +56,3 @@ namespace sim {
   };
 }  // namespace sim
 
-#endif  // ARQUICOMP_P1_GRID_HPP

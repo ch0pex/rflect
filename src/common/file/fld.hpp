@@ -1,5 +1,4 @@
-#ifndef FLUID_FLD_HPP
-#define FLUID_FLD_HPP
+#pragma once
 
 #include "particle.hpp"
 #include "utils/error.hpp"
@@ -56,4 +55,3 @@ namespace sim {
   };
 }  // namespace sim
 
-#endif  // FLUID_FLD_HPP

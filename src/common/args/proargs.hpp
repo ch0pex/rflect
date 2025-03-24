@@ -1,5 +1,4 @@
-#ifndef ARQUICOMP_P1_PROARGS_HPP
-#define ARQUICOMP_P1_PROARGS_HPP
+#pragma once
 
 #include "file/fld.hpp"
 #include "utils/error.hpp"
@@ -26,5 +25,3 @@ namespace sim {
       std::vector<char const *> args_;
   };
 }  // namespace sim
-
-#endif  // ARQUICOMP_P1_PROARGS_HPP

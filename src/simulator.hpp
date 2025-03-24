@@ -1,5 +1,5 @@
-#ifndef FLUID_SIMULATOR_HPP
-#define FLUID_SIMULATOR_HPP
+#pragma once
+
 
 #include "args/proargs.hpp"
 #include "grid.hpp"
@@ -33,4 +33,3 @@ namespace sim {
       int nts_;
   };
 }  // namespace sim
-#endif  // FLUID_SIMULATOR_HPP

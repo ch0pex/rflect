@@ -72,7 +72,7 @@ void test_simulation(std::string_view file_name, sim::i8 iterations) {
   std::string const it            = std::to_string(iterations);
 
   std::array args {"binary_name", it.c_str(), input_file.c_str(), out_file.c_str()};
-  DOCTEST_CHECK(run_sim(args) == sim::error_code::SUCCESS);
+  DOCTEST_CHECK(run_sim(args) == sim::error_code::success);
   DOCTEST_CHECK(compare_files(out_file, expected_file));
   REQUIRE(std::filesystem::remove_all(tmp_dir));
 }

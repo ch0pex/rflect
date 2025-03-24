@@ -1,16 +1,14 @@
-#ifndef FLUID_ERROR_HPP
-#define FLUID_ERROR_HPP
+#pragma once
 
 namespace sim {
   /// Enum que contiene los distintos errores que puede arrojar el simulador
   enum error_code {
-    PARTICLE_NUM_ERR = -5,
-    FINAL_FILE_ERR   = -4,
-    INIT_FILE_ERR,
-    TIME_STEP_ERR,
-    ARGS_ERR,
-    SUCCESS
+    wrong_particle_number = -5,
+    output_error   = -4,
+    init_file_error,
+    wrong_time_step,
+    wrong_args,
+    success
   };
 }  // namespace sim
 
-#endif  // FLUID_ERROR_HPP

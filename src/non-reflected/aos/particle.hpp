@@ -62,11 +62,11 @@ namespace sim {
  * @return Un vector 3D que representa el incremento de aceleración entre las partículas.
    */
   inline math::vec3 accelerationIncrement(ParticlesData const & params, Particle const & particle_i, Particle const & particle_j, double squared_distance) {
-    double const distance = sqrt(std::max(squared_distance, MINIMUN_DISTANCE));
+    double const distance = sqrt(std::max(squared_distance, min_distance));
     math::vec3 const left = (particle_i.position - particle_j.position) *
                        params.mass_pressure_05 *
                        (std::pow(params.smoothing - distance, 2) / distance) *
-                       (particle_i.density + particle_j.density - 2 * DENSITY);
+                       (particle_i.density + particle_j.density - 2 * density);
 
     math::vec3 const right = (particle_j.velocity - particle_i.velocity) * params.mass_goo;
     double const denominator = particle_i.density * particle_j.density;

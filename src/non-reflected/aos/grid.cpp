@@ -14,13 +14,13 @@ namespace sim {
    */
   Grid::Grid(int np, double ppm, std::vector<Particle> & particles)
     : num_particles(np), particles_param_(ppm),
-      grid_size_({static_cast<unsigned long>(std::floor((TOP_LIMIT.x - BOTTOM_LIMIT.x) / particles_param_.smoothing)),
-                  static_cast<unsigned long>(std::floor((TOP_LIMIT.y - BOTTOM_LIMIT.y) / particles_param_.smoothing)),
-                  static_cast<unsigned long>(std::floor((TOP_LIMIT.z - BOTTOM_LIMIT.z) / particles_param_.smoothing))}),
+      grid_size_({static_cast<unsigned long>(std::floor((top_limit.x - bottom_limit.x) / particles_param_.smoothing)),
+                  static_cast<unsigned long>(std::floor((top_limit.y - bottom_limit.y) / particles_param_.smoothing)),
+                  static_cast<unsigned long>(std::floor((top_limit.z - bottom_limit.z) / particles_param_.smoothing))}),
       block_size_({
-        (TOP_LIMIT.x - BOTTOM_LIMIT.x) / static_cast<double>(grid_size_.x),
-        (TOP_LIMIT.y - BOTTOM_LIMIT.y) / static_cast<double>(grid_size_.y),
-        (TOP_LIMIT.z - BOTTOM_LIMIT.z) / static_cast<double>(grid_size_.z),
+        (top_limit.x - bottom_limit.x) / static_cast<double>(grid_size_.x),
+        (top_limit.y - bottom_limit.y) / static_cast<double>(grid_size_.y),
+        (top_limit.z - bottom_limit.z) / static_cast<double>(grid_size_.z),
       }),
       num_blocks_(grid_size_.x * grid_size_.y * grid_size_.z), blocks_(num_blocks_),
       adjacent_blocks_(num_blocks_) {
@@ -110,9 +110,9 @@ namespace sim {
    */
   size_t Grid::GetBlockIndex(math::vec3 & particle_pos) const {
     // i,j,k posicion del bloque en la malla --> pasarlo al indice del bloque
-    double pos_i = std::floor((particle_pos.x - BOTTOM_LIMIT.x) / block_size_.x);
-    double pos_j = std::floor((particle_pos.y - BOTTOM_LIMIT.y) / block_size_.y);
-    double pos_k = std::floor((particle_pos.z - BOTTOM_LIMIT.z) / block_size_.z);
+    double pos_i = std::floor((particle_pos.x - bottom_limit.x) / block_size_.x);
+    double pos_j = std::floor((particle_pos.y - bottom_limit.y) / block_size_.y);
+    double pos_k = std::floor((particle_pos.z - bottom_limit.z) / block_size_.z);
 
     // Asegura que las coordenadas estén dentro de los límites de la cuadrícula
     if (pos_i < 0) {
@@ -195,21 +195,21 @@ namespace sim {
 
  void Grid::AddBlockToLimits(size_t index, const math::Vec3<int> & neighbor_pos) {
    if(neighbor_pos.x < 0 ) {
-     grid_limits_[index].insert(CX0);
+     grid_limits_[index].insert(cx0);
    } else if (static_cast<size_t>(neighbor_pos.x) >= grid_size_.x) {
-     grid_limits_[index].insert(CXN);
+     grid_limits_[index].insert(cxn);
    }
 
    if(neighbor_pos.y < 0 ) {
-     grid_limits_[index].insert(CY0);
+     grid_limits_[index].insert(cy0);
    } else if (static_cast<size_t>(neighbor_pos.y) >= grid_size_.y) {
-     grid_limits_[index].insert(CYN);
+     grid_limits_[index].insert(cyn);
    }
 
    if(neighbor_pos.z < 0 ) {
-     grid_limits_[index].insert(CZ0);
+     grid_limits_[index].insert(cz0);
    } else if (static_cast<size_t>(neighbor_pos.z) >= grid_size_.z) {
-     grid_limits_[index].insert(CZN);
+     grid_limits_[index].insert(czn);
    }
  }
 

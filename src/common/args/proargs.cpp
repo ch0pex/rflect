@@ -20,9 +20,9 @@ namespace sim {
   sim::error_code Proargs::CheckCount() const {
     if (args_.size() != 4) {
       std::cout << "Error: Invalid number of arguments: " << args_.size() << "\n";
-      return (ARGS_ERR);
+      return (wrong_args);
     }
-    return (SUCCESS);
+    return (success);
   }
 
   /**
@@ -38,14 +38,14 @@ namespace sim {
 
     if (*endPtr != '\0') {
       std::cout << "Error: time step must be numeric\n";
-      return (ARGS_ERR);
+      return (wrong_args);
     }
     if (nts_long <= 0) {
       std::cout << "Error: Invalid number of time steps\n";
-      return (TIME_STEP_ERR);
+      return (wrong_time_step);
     }
     nts = static_cast<int>(nts_long);
-    return (SUCCESS);
+    return (success);
   }
 
   /**
@@ -59,16 +59,16 @@ namespace sim {
     init_file.Open(GetInitPath());
     if (!init_file) {
       std::cout << "Error: Cannot open " << args_.at(2) << " for reading\n";
-      return (INIT_FILE_ERR);
+      return (init_file_error);
     }
 
     final_file.Open(GetFinalPath());
     if (!final_file) {
       std::cout << "Error: Cannot open " << args_.at(3) << " for writing\n";
-      return (FINAL_FILE_ERR);
+      return (output_error);
     }
     // Quiza cerrar final file, no dejarlo abierto toda la ejecucion del programa
-    return (SUCCESS);
+    return (success);
   }
 
 }  // namespace sim

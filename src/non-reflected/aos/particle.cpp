@@ -10,14 +10,14 @@ namespace sim {
    * @param ppm
    */
   ParticlesData::ParticlesData(const double ppm)
-      : particles_per_meter(ppm), smoothing(MUL_RAD / ppm),
+      : particles_per_meter(ppm), smoothing(mul_rad / ppm),
         smoothing_pow_2(pow(smoothing, 2)),
         smoothing_pow_6(pow(smoothing_pow_2, 3)),
         smoothing_pow_9(pow(smoothing, 9)),
-        mass(DENSITY / pow(ppm, 3)),
-        f45_pi_smooth_6(45 / (PI * smoothing_pow_6)),
-        mass_pressure_05(mass * PRESSURE * 0.5),
-        mass_goo(GOO * mass)
+        mass(density / pow(ppm, 3)),
+        f45_pi_smooth_6(45 / (std::numbers::pi * smoothing_pow_6)),
+        mass_pressure_05(mass * pressure * 0.5),
+        mass_goo(goo * mass)
 
   { }
 
@@ -31,7 +31,7 @@ namespace sim {
       position(_position),
       hv(_hv),
       velocity(_velocity),
-      acceleration(GRAVITY),
+      acceleration(gravity),
       density(0) { }
   /**
    * Constructor copia de particle, cuando una particula se copia la aceleracion y la gravedad se pone a 0
@@ -42,13 +42,13 @@ namespace sim {
       position(other.position),
       hv(other.hv),
       velocity(other.velocity),
-      acceleration(GRAVITY),
+      acceleration(gravity),
       density(0) { }
 
 
   void Particle::TransformDenisty(const ParticlesData& particles_params) {
     density = (density + particles_params.smoothing_pow_6) *
-              (315.0 /(64.0 * PI * particles_params.smoothing_pow_9)) * particles_params.mass;
+              (315.0 /(64.0 * std::numbers::pi * particles_params.smoothing_pow_9)) * particles_params.mass;
   }
 
   /**

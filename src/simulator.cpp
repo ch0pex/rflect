@@ -17,10 +17,10 @@ namespace sim {
    * error correspondiente
    */
   sim::error_code Simulator::ParseArgs() {
-    error_code err = SUCCESS;
+    error_code err = success;
 
     err = args_parser_.CheckCount();
-    if (err != SUCCESS) {  //[[likely]] o [[unlikely]]?
+    if (err != success) {  //[[likely]] o [[unlikely]]?
       return (err);
     }
 
@@ -28,7 +28,7 @@ namespace sim {
     if (err != 0) { return (err); }
 
     err = args_parser_.CheckOpenFiles(init_file_, final_file_);
-    if (err != SUCCESS) { return (err); }
+    if (err != success) { return (err); }
     return (err);
   }
 
@@ -38,13 +38,13 @@ namespace sim {
    * @return
    */
   sim::error_code Simulator::InitSim() {
-    sim::error_code err = SUCCESS;
+    sim::error_code err = success;
     std::vector<Particle> particles;
     int num_particles = 0;
     double ppm        = 0.0;
 
     err = init_file_.ReadHeader(ppm, num_particles);
-    if (err != SUCCESS) { return (err); }
+    if (err != success) { return (err); }
 
     particles = init_file_.ReadParticles();
     grid_.emplace(num_particles, ppm, particles);
@@ -66,7 +66,7 @@ namespace sim {
       grid_->MoveParticles();
       grid_->ProcessLimits();
     }
-    return (SUCCESS);
+    return (success);
   }
 
   /**
@@ -85,7 +85,7 @@ namespace sim {
     }
 
     final_file_.WriteParticles(results);
-    return (SUCCESS);
+    return (success);
   }
 
 }  // namespace sim

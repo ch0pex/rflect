@@ -69,18 +69,18 @@ namespace sim {
     input_file_.read(reinterpret_cast<char *>(&np), sizeof(float));
     if (np <= 0) {
       std::cout << "Invalid number of particles\n";
-      return (PARTICLE_NUM_ERR);
+      return (wrong_particle_number);
     }
     // En cada partícula tenemos 9 números (3 vectores con 3 datos)
     // si np es distinto del número de floats partido de 9, el número de partículas del header no
     // coincide con las del archivo
     if (static_cast<size_t>(np) !=
-        ((length_ - SIZE_HEADER) / sizeof(float)) / PARTICLE_COMPONENTS) {
+        ((length_ - header_size) / sizeof(float)) / particle_components) {
       std::cout << "Number of particles mismatch. Header: " << np
-                << " Found: " << ((length_ - SIZE_HEADER) / 4) / PARTICLE_COMPONENTS << "\n";
-      return (PARTICLE_NUM_ERR);
+                << " Found: " << ((length_ - header_size) / 4) / particle_components << "\n";
+      return (wrong_particle_number);
     }
-    return (SUCCESS);
+    return (success);
   }
 
   /**
@@ -90,21 +90,21 @@ namespace sim {
    */
   std::vector<Particle> ifld::ReadParticles() {
     std::vector<Particle> particles;
-    std::vector<float> tmp((length_ - SIZE_HEADER) / sizeof(float));
+    std::vector<float> tmp((length_ - header_size) / sizeof(float));
     math::vec3 position;
     math::vec3 vec_hv;
     math::vec3 velocity;
 
-    particles.reserve((length_ - SIZE_HEADER) / PARTICLE_COMPONENTS);  // numero de componentes de una particula
-    input_file_.seekg(SIZE_HEADER, std::ifstream::beg);
+    particles.reserve((length_ - header_size) / particle_components);  // numero de componentes de una particula
+    input_file_.seekg(header_size, std::ifstream::beg);
     // el siguiente comentario está justificado para esta parte de la práctica por el profesorado
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    input_file_.read(reinterpret_cast<char *>(tmp.data()), length_ - SIZE_HEADER);
-    for (size_t i = 0; i < tmp.size(); i += PARTICLE_COMPONENTS) {
+    input_file_.read(reinterpret_cast<char *>(tmp.data()), length_ - header_size);
+    for (size_t i = 0; i < tmp.size(); i += particle_components) {
       position = {tmp[i], tmp[i + 1], tmp[i + 2]};
       vec_hv   = {tmp[i + 3], tmp[i + 4], tmp[i + 5]};
       velocity = {tmp[i + 6], tmp[i + 7], tmp[i + 8]};
-      particles.emplace_back(i / PARTICLE_COMPONENTS, position, vec_hv, velocity);
+      particles.emplace_back(i / particle_components, position, vec_hv, velocity);
     }
 
     return (particles);  // NO se si tiene coste creo que no
@@ -170,7 +170,7 @@ namespace sim {
     // el siguiente comentario está justificado para esta parte de la práctica por el profesorado
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     output_file_.write(reinterpret_cast<char *>(&np), sizeof(int));
-    return (SUCCESS);
+    return (success);
   }
 
   /**
@@ -179,7 +179,7 @@ namespace sim {
    */
   sim::error_code ofld::WriteParticles(std::vector<Particle *> & particles) {
     // Inicializa un array temporal para almacenar los datos de cada partícula.
-    std::array<float, PARTICLE_COMPONENTS> tmp_values{};
+    std::array<float, particle_components> tmp_values{};
     for (auto & particle : particles) {
       // Copia los componentes de la partícula en el array temporal y luego escribe los datos en el archivo de salida.
       tmp_values[0] = static_cast<float>(particle->position.x);
@@ -194,9 +194,9 @@ namespace sim {
       // el siguiente comentario está justificado para esta parte de la práctica por el profesorado
       // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
       output_file_.write(reinterpret_cast<char *>(tmp_values.data()),
-                         sizeof(float) * PARTICLE_COMPONENTS);
+                         sizeof(float) * particle_components);
     }
-    return (SUCCESS);
+    return (success);
   }
 
   /**

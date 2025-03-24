@@ -59,22 +59,33 @@ bool compare_files(std::string const& file1, std::string const& file2) {
     return false;
   }
 
-  DOCTEST_MESSAGE(std::format("Comparing files: {} - {}", file1, file2));
+  DOCTEST_INFO(std::format("Comparing files: {} - {}", file1, file2));
   return std::equal(std::istreambuf_iterator(f1), std::istreambuf_iterator<char>(), std::istreambuf_iterator(f2));
+}
+
+void test_simulation(std::string_view file_name, sim::i8 iterations) {
+  std::filesystem::path tmp_dir = "/tmp/testing_sim";
+  create_directory(tmp_dir);
+  std::string const expected_file = current_path / std::format("expected/{}-{}.fld", file_name, iterations);
+  std::string const input_file    = current_path / std::format("input/{}.fld", file_name);
+  std::string const out_file      = tmp_dir / std::format("{}-{}.fld", file_name, iterations);
+  std::string const it            = std::to_string(iterations);
+
+  std::array args {"binary_name", it.c_str(), input_file.c_str(), out_file.c_str()};
+  DOCTEST_CHECK(run_sim(args) == sim::error_code::success);
+  DOCTEST_CHECK(compare_files(out_file, expected_file));
+  REQUIRE(std::filesystem::remove_all(tmp_dir));
 }
 
 } // namespace
 
 TEST_CASE("Large file") {
-  std::filesystem::path tmp_dir = "/tmp/testing_sim";
-  create_directory(tmp_dir);
-  std::string const input_file = current_path / std::format("input/large.fld", 100);
-  std::string const out_file   = tmp_dir / std::format("large-{}.fld", 100);
-  std::string const iterations = std::format("{}", 100);
-  std::array args {"binary_name", iterations.c_str(), input_file.c_str(), out_file.c_str()};
-  DOCTEST_CHECK(run_sim(args) == sim::error_code::success);
-  DOCTEST_CHECK(compare_files(input_file, out_file));
-  REQUIRE(std::filesystem::remove_all(tmp_dir));
+  for (sim::i8 i = 1; i <= 5; ++i)
+    test_simulation("large", i);
 }
 
-TEST_CASE("Small file") { }
+TEST_CASE("Small file") {
+  for (sim::i8 i = 1; i <= 5; ++i)
+    test_simulation("small", i);
+
+}

@@ -75,10 +75,12 @@ namespace sim {
     int const num_particles = grid_->numParticles();
     std::vector<Particle const*> results(num_particles);
 
-    final_file_.writeHeader(num_particles, grid_->particlesPerMeter());
+    if (final_file_.writeHeader(num_particles, grid_->particlesPerMeter()) != success) {
+      return final_file_err;
+    };
 
-    for (auto & block : grid_->getBlocks()) {
-      for (auto & particle : block.particles) { results[particle.id] = &particle; }
+    for (auto const& block : grid_->getBlocks()) {
+      for (auto const& particle : block.particles) { results[particle.id] = &particle; }
     }
 
     final_file_.writeParticles(results);

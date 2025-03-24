@@ -7,6 +7,7 @@ function(add_sim_lib name)
             aos/block.cpp
             ../common/args/proargs.cpp
             ../common/file/fld.cpp
+            ../simulator.cpp
     )
 
     target_sources(non-reflected-${name}-lib

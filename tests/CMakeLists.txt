@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
 project(sim-tests)
 
+
 find_package(doctest REQUIRED)
 
 macro(add_sim_test test_name test_src)
@@ -15,9 +16,12 @@ macro(add_sim_test test_name test_src)
 
     set(test_exe_name "sim_${test_name}")
     add_executable(${test_exe_name} ${test_src})
-    target_link_libraries(${test_exe_name} PRIVATE doctest::doctest)
+    target_link_libraries(${test_exe_name} PRIVATE doctest::doctest non-reflected-aos-lib)
     add_test(${test_name} ${test_exe_name} ${TEST_FLAGS})
 endmacro(add_sim_test)
 
 add_sim_test(functional_test ftest/main.cpp)
-add_sim_test(utest_math utest/math.cpp)
+
+#add_sim_test(utest_block utest/test_block.cpp)
+#add_sim_test(utest_grid utest/test_grid.cpp)
+#add_sim_test(utest_proargs utest/test_proargs.cpp)

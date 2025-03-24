@@ -17,7 +17,7 @@ namespace sim {
    * @return Si el numero de argumentos es el adecuado se devuelve SUCCESS (0) en caso contrario
    * ARGS_ERR (-1)
    */
-  sim::error_code Proargs::CheckCount() const {
+  error_code Proargs::CheckCount() const {
     if (args_.size() != 4) {
       std::cout << "Error: Invalid number of arguments: " << args_.size() << "\n";
       return (args_err);
@@ -31,7 +31,7 @@ namespace sim {
    * @return Se devuelve ARGS_ERR (-1) si el time step indicado no es numerico, TIME_STEP_ERR (-2)
    * si es menor o igual a 0 y SUCCESS(0) en caso de exito
    */
-  sim::error_code Proargs::CheckNts(int & nts) {
+  error_code Proargs::CheckNts(int & nts) {
     char * endPtr = nullptr;
     long const nts_long =
         std::strtol(args_.at(1), &endPtr, 10);

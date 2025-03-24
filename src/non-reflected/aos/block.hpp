@@ -11,7 +11,7 @@ namespace sim {
 struct Block {
   Block() = default;
 
-  void addParticle(Particle const& particle) { particles.push_back(particle); }
+  void addParticle(Particle const& particle) { particles.emplace_back(particle); }
 
   void calcDensities(ParticlesData const& particles_params, std::vector<size_t>& adjacent, std::vector<Block>& blocks);
 

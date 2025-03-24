@@ -237,14 +237,15 @@ void Block::calcDensities(
 void Block::calcAccelerations(
     ParticlesData const& particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks
 ) {
-  for (size_t i = 0; i < particles.size(); ++i) {
-    for (size_t j = i + 1; j < particles.size();
-         ++j) { // Evitamos repetir calculos entre particulas inicializando j=i+1
-      incrementAccelerations(particles_params, particles[i], particles[j]);
+  // We avoid repeating operations between particles initializing j = i + 1
+  i32 const size = particles.size();
+  for (i32 i = 0; i < size; ++i) {
+    for (i32 j = i + 1; j < size; ++j) {
+      incrementAccelerations(particles_params, particles.at(i), particles.at(i));
     }
     for (auto const adjacent_index: adjacents) {
       for (auto& particle_j: blocks[adjacent_index].particles) {
-        incrementAccelerations(particles_params, particles[i], particle_j);
+        incrementAccelerations(particles_params, particles.at(i), particle_j);
       }
     }
   }
@@ -290,8 +291,6 @@ void Block::processLimits(std::set<Limits>& limits) {
     limits_z(particle, limits);
   }
 }
-
-
 
 
 } // namespace sim

@@ -33,6 +33,11 @@ struct Particle {
   Particle(u64 const id, math::vec3 const pos, math::vec3 const hv, math::vec3 const vel) :
     position(pos), hv(hv), velocity(vel), acceleration(gravity), id(id) { }
 
+  // For some reason I can't understand this copy constructors is very important
+  Particle(Particle const& other) :
+    position(other.position), hv(other.hv), velocity(other.velocity), acceleration(gravity), id(other.id) {
+  }
+
   void transformDensity(ParticlesData const& particles_params) {
     density = (density + particles_params.smoothing_pow_6) * particles_params.transform_density_constant;
   }

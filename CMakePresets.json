@@ -14,7 +14,7 @@
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "/home/chope/reflection/install/bin/clang++",
         "CMAKE_CXX_STANDARD": "26",
-        "CMAKE_CXX_FLAGS": "-nostdinc++ -freflection-latest -fexpansion-statements -fno-access-contexts -Wall -Wextra -Wnrvo",
+        "CMAKE_CXX_FLAGS": "-nostdinc++ -freflection-latest -fexpansion-statements -fno-access-contexts -Wall -Wextra ",
         "CMAKE_EXE_LINKER_FLAGS": "-L/usr/lib/llvm-18/lib",
         "CMAKE_CXX_STANDARD_LIBRARIES": "-lc++ -lc++abi",
         "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "./conan_provider.cmake",

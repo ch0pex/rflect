@@ -9,5 +9,4 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(src)
-
 add_subdirectory(tests)

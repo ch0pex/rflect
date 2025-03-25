@@ -28,7 +28,7 @@
       "inherits": "common",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS_DEBUG": "-g -O2 -fno-omit-frame-pointer"
+        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -fno-omit-frame-pointer"
       }
     },
     {

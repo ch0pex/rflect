@@ -22,7 +22,9 @@
 #include <utils/primitive_types.hpp>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <args/proargs.hpp>
 #include <doctest/doctest.h>
+#include <file/fld.hpp>
 
 inline std::filesystem::path const current_path =
     std::filesystem::path(std::source_location::current().file_name()).parent_path();
@@ -33,22 +35,20 @@ namespace {
 sim::error_code run_sim(std::span<char const*> const args) {
   auto const init = std::chrono::high_resolution_clock::now();
 
-  sim::Simulator fluid_sim {args};
-  sim::error_code err = fluid_sim.ParseArgs();
+  sim::parse_arguments(args)
+      .and_then(sim::run_simulation)
+      .and_then(sim::write_output)
+      .or_else([](std::runtime_error const& error) -> sim::err::expected<sim::Simulation> {
+        std::println("Error: {}", error.what());
+        return sim::err::unexpected(std::format("Simulation Failed", error.what()));
+      });
 
-  if (err == 0) {
-    err = fluid_sim.InitSim();
-    if (err == 0) {
-      fluid_sim.ProcessSim();
-      fluid_sim.StoreResults();
-    }
-  }
-  auto const end                            = std::chrono::high_resolution_clock::now();
+  auto const end                                       = std::chrono::high_resolution_clock::now();
   std::chrono::duration<sim::math::scalar> const total = end - init;
   std::cout << "Execution time: " << total << "\n";
   std::cout << "---------------------------------------\n";
 
-  return err;
+  return sim::success;
 }
 
 bool compare_files(std::string const& file1, std::string const& file2) {

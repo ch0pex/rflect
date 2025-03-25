@@ -2,19 +2,18 @@
 
 #include "utils/constants.hpp"
 
-
 #include "math/math.hpp"
 
 #include "utils/primitive_types.hpp"
 
 namespace sim {
 
-struct ParticlesData {
-  explicit ParticlesData(math::scalar const ppm) :
-    particles_per_meter(ppm), smoothing(mul_rad / ppm), smoothing_pow_2(pow(smoothing, 2)),
-    smoothing_pow_6(pow(smoothing_pow_2, 3)), smoothing_pow_9(pow(smoothing, 9)), mass(density / pow(ppm, 3)),
-    f45_pi_smooth_6(45 / (std::numbers::pi * smoothing_pow_6)), mass_pressure_05(mass * pressure * 0.5),
-    mass_goo(goo * mass), transform_density_constant((315.0 / (pi_times_64 * smoothing_pow_9)) * mass) { }
+struct FluidProperties {
+  // explicit FluidProperties(math::scalar const ppm) :
+  //   particles_per_meter(ppm), smoothing(mul_rad / ppm), smoothing_pow_2(pow(smoothing, 2)),
+  //   smoothing_pow_6(pow(smoothing_pow_2, 3)), smoothing_pow_9(pow(smoothing, 9)), mass(density / pow(ppm, 3)),
+  //   f45_pi_smooth_6(45 / (std::numbers::pi * smoothing_pow_6)), mass_pressure_05(mass * pressure * 0.5),
+  //   mass_goo(goo * mass), transform_density_constant((315.0 / (pi_times_64 * smoothing_pow_9)) * mass) { }
 
   math::scalar particles_per_meter;
   math::scalar smoothing;
@@ -28,28 +27,43 @@ struct ParticlesData {
   math::scalar transform_density_constant;
 };
 
+constexpr FluidProperties fluid_properties(math::scalar const ppm) {
+  auto const smoothing = mul_rad / ppm;
+  auto const mass      = density / pow(ppm, 3);
+
+  FluidProperties fluid_properties {
+    .particles_per_meter = ppm,
+    .smoothing           = smoothing,
+    .smoothing_pow_2     = std::pow(smoothing, 2),
+    .smoothing_pow_6     = std::pow(smoothing, 6),
+    .smoothing_pow_9     = std::pow(smoothing, 9),
+    .mass                = mass,
+    .f45_pi_smooth_6     = {},
+    .mass_pressure_05    = mass * pressure * 0.5,
+    .mass_goo            = mass * goo,
+    .transform_density_constant = {}
+  };
+
+  fluid_properties.f45_pi_smooth_6            = 45 / (std::numbers::pi * fluid_properties.smoothing_pow_6);
+  fluid_properties.transform_density_constant = (315.0 / (pi_times_64 * fluid_properties.smoothing_pow_9)) * mass;
+
+  return fluid_properties;
+}
+
 struct Particle {
-  Particle(u64 const id, math::vec3 const pos, math::vec3 const hv, math::vec3 const vel) :
-    position(pos), hv(hv), velocity(vel), acceleration(gravity), id(id) { }
-
-  // For some reason I can't understand, this copy constructors is very important for performance
-  Particle(Particle const& other) :
-    position(other.position), hv(other.hv), velocity(other.velocity), acceleration(gravity), id(other.id) {
-  }
-
-  void transformDensity(ParticlesData const& particles_params) {
+  void transformDensity(FluidProperties const& particles_params) {
     density = (density + particles_params.smoothing_pow_6) * particles_params.transform_density_constant;
   }
 
+  u64 id;
   math::vec3 position;
   math::vec3 hv;
   math::vec3 velocity;
   math::vec3 acceleration {gravity};
   math::scalar density {0};
-  u64 id;
 };
 
-inline math::scalar densityIncrement(ParticlesData const& particles_params, math::scalar const squared_distance) {
+inline math::scalar densityIncrement(FluidProperties const& particles_params, math::scalar const squared_distance) {
   return std::pow(particles_params.smoothing_pow_2 - squared_distance, 3);
 }
 
@@ -65,7 +79,7 @@ inline math::scalar densityIncrement(ParticlesData const& particles_params, math
  * @return Un vector 3D que representa el incremento de aceleración entre las partículas.
  */
 inline auto accelerationIncrement(
-    ParticlesData const& params, Particle const& particle_i, Particle const& particle_j,
+    FluidProperties const& params, Particle const& particle_i, Particle const& particle_j,
     math::scalar const squared_distance
 ) {
 
@@ -86,7 +100,7 @@ inline auto accelerationIncrement(
  * @param particle_i Primera partícula.
  * @param particle_j Segunda partícula.
  */
-inline void incrementDensities(ParticlesData const& particles_params, Particle& particle_i, Particle& particle_j) {
+inline void incrementDensities(FluidProperties const& particles_params, Particle& particle_i, Particle& particle_j) {
   if (math::scalar const squared_distance = squaredDistance(particle_i.position, particle_j.position);
       squared_distance < particles_params.smoothing_pow_2) {
     // Incremento de densidades basado en la distancia
@@ -103,7 +117,8 @@ inline void incrementDensities(ParticlesData const& particles_params, Particle& 
  * @param particle_i Primera partícula.
  * @param particle_j Segunda partícula.
  */
-inline void incrementAccelerations(ParticlesData const& particles_params, Particle& particle_i, Particle& particle_j) {
+inline void
+incrementAccelerations(FluidProperties const& particles_params, Particle& particle_i, Particle& particle_j) {
   if (math::scalar const squared_distance = squaredDistance(particle_i.position, particle_j.position);
       squared_distance < particles_params.smoothing_pow_2) {
     math::vec3 const incr = accelerationIncrement(particles_params, particle_i, particle_j, squared_distance);

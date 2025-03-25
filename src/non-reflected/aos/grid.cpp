@@ -4,44 +4,13 @@
 #include <iostream>
 
 namespace sim {
-  /**
-   * Constructor de Grid, a partir de los parametros se inicializa el grid colocando todas las particulas en los
-   * respectivos bloques asi como tambien se calculan los bloques adjacentes y los bloques limites. Por ultimo se emite
-   * un mensaje con los parametros resultantes de la inicializacion de la simulacion
-   * @param np: numero de partiuclas
-   * @param ppm: partiuclas por metro
-   * @param particles: vector de particulas que contiene el grid
-   */
-  Grid::Grid(int np, math::scalar ppm, std::vector<Particle> & particles)
-    : num_particles(np), particles_param_(ppm),
-      grid_size_({static_cast<unsigned long>(std::floor((top_limit.x - bottom_limit.x) / particles_param_.smoothing)),
-                  static_cast<unsigned long>(std::floor((top_limit.y - bottom_limit.y) / particles_param_.smoothing)),
-                  static_cast<unsigned long>(std::floor((top_limit.z - bottom_limit.z) / particles_param_.smoothing))}),
-      block_size_({
-        (top_limit.x - bottom_limit.x) / static_cast<math::scalar>(grid_size_.x),
-        (top_limit.y - bottom_limit.y) / static_cast<math::scalar>(grid_size_.y),
-        (top_limit.z - bottom_limit.z) / static_cast<math::scalar>(grid_size_.z),
-      }),
-      num_blocks_(grid_size_.x * grid_size_.y * grid_size_.z), blocks_(num_blocks_),
-      adjacent_blocks_(num_blocks_) {
-    for (auto& particle : particles) {
-      size_t const block_index = GetBlockIndex(particle.position);  // Coger la posicion de la particula comprobar en que bloque le toca
-      blocks_[block_index].AddParticle(particle);  // Anadir la particula a dicho bloque
-    }
-
-    for (size_t i = 0; i < num_blocks_; ++i) {
-      // Se calculan los bloques adjacentes para cada bloque y tambien determina que bloques son limites Cx, Cy, Cz
-      CalculateAdjacentAndLimitBlocks(i);
-    }
-    InitMessage(); 
-  }
 
   /**
    * Funcion de reposicionamiento de las particulas, crea un vector de bloques nuevo donde se recolocaran las particulas
    * en funcion de sus nuevas posiciones, de esta forma evitamos reposicionar particulas varias veces.
    * Una vez colocadas todas las particulas se intercambia el vector de bloques antiguo por el nuevo.
    */
-  void Grid::Repositioning() {
+  void Grid::repositioning() {
     std::vector<Block> aux(num_blocks_);
 
     for (auto & block : blocks_) {
@@ -56,19 +25,19 @@ namespace sim {
    * Funcion de calculo de aceleraciones, primero se calculan todas las densidades y posteriormente todas las
    * aceleraciones
    */
-  void Grid::CalculateAccelerations() {
+  void Grid::calculateAccelerations(FluidProperties const& fluid_properties) {
     // Las densisdes y aceleraciones no son copiadas en el grid auxiliar por lo que ya son 0
     // a = 0
     // d = 0
 
     for (size_t block_index = 0; block_index < num_blocks_; ++block_index) {
       // Se calculan la densidad y aceleracion entre las particulas de un mismo bloque y bloques adjacentes
-      blocks_[block_index].CalcDensities(particles_param_, adjacent_blocks_[block_index], blocks_);
+      blocks_[block_index].CalcDensities(fluid_properties, adjacent_blocks_[block_index], blocks_);
     }
 
     for (size_t block_index = 0; block_index < num_blocks_; ++block_index) {
       // Se calcula la aceleracion entre las particulas de un mismo bloque y bloques adjacentes
-      blocks_[block_index].CalcAccelerations(particles_param_, adjacent_blocks_[block_index], blocks_);
+      blocks_[block_index].CalcAccelerations(fluid_properties, adjacent_blocks_[block_index], blocks_);
     }
   }
 
@@ -76,7 +45,7 @@ namespace sim {
    * Funcion para procesar las colisiones, recorre todos los bloques que son limites del grid y procesa las colisiones
    * con los limites modificando las aceleraciondes de las particulas
    */
-  void Grid::ProcessCollisions() {
+  void Grid::processCollisions() {
     for(auto& [index, limits] : grid_limits_){
       blocks_[index].ProcessCollisions(limits);
     }
@@ -86,7 +55,7 @@ namespace sim {
    * Funcion para mover las particulas, por cada una de las particulas se actualiza su posicion, hv y velocidad en
    * funcion de la aceleracion y densidad calculada en los pasos anteriores
    */
-  void Grid::MoveParticles() {
+  void Grid::moveParticles() {
     for(auto& block : blocks_) {
       block.MoveParticles();
     }
@@ -96,7 +65,7 @@ namespace sim {
    * Funcion para procesar los limites, recorre todos los bloques que son limites del grid y procesa dichos limites
    * modificando la velocidad, hv y velocidad de las particulas
    */
-  void Grid::ProcessLimits() {
+  void Grid::processLimits() {
     for(auto& [index, limits] : grid_limits_){
       blocks_[index].ProcessLimits(limits);
     }
@@ -134,26 +103,26 @@ namespace sim {
             static_cast<size_t>(pos_k) * grid_size_.x * grid_size_.y);
   }
 
-  /**
-   * Mensaje de inicializacion de la simulacion
-   */
-  void Grid::InitMessage() const {
-    std::cout << "Number of particles: " << num_particles << "\n";
-    std::cout << "Particles per meter: " << particles_param_.particles_per_meter << "\n";
-    std::cout << "Smoothing length: " <<  particles_param_.smoothing << "\n";
-    std::cout << "Particles Mass: " << particles_param_.mass << "\n";
-    std::cout << "Grid size: " << grid_size_ << "\n";
-    std::cout << "Number of blocks: " << num_blocks_ << "\n";
-    std::cout << "Block size: " << block_size_ << "\n";
-  }
+  // /**
+  //  * Mensaje de inicializacion de la simulacion
+  //  */
+  // void Grid::InitMessage() const {
+  //   std::cout << "Number of particles: " << num_particles << "\n";
+  //   std::cout << "Particles per meter: " << particles_param_.particles_per_meter << "\n";
+  //   std::cout << "Smoothing length: " <<  particles_param_.smoothing << "\n";
+  //   std::cout << "Particles Mass: " << particles_param_.mass << "\n";
+  //   std::cout << "Grid size: " << grid_size_ << "\n";
+  //   std::cout << "Number of blocks: " << num_blocks_ << "\n";
+  //   std::cout << "Block size: " << block_size_ << "\n";
+  // }
 
   /**
    * Calcula los bloques adjacentes para cada bloque pasado por parametro, a su vez determina si dicho bloque pertenece
    * a una de las caras del grid, y lo almacena en dicho caso en grid_limits
    * @param index: indice del bloque
    */
-  void Grid::CalculateAdjacentAndLimitBlocks(size_t index) {
-    math::Vec3<int> const block_pos = {
+  void Grid::CalculateAdjacentAndLimitBlocks(u64 const index) {
+    math::Vec3 const block_pos = {
       static_cast<int>(index % grid_size_.x), static_cast<int>(index / grid_size_.x % grid_size_.y),
                                  static_cast<int>(index / (grid_size_.x * grid_size_.y))
     };
@@ -164,9 +133,9 @@ namespace sim {
           if (i == 0 && j == 0 && k == 0) {
             continue;
           }
-          math::Vec3<int> const neighbor_pos = {block_pos.x + i, block_pos.y + j, block_pos.z + k};
 
-          if (BlockInBounds(neighbor_pos)) {
+          if (math::Vec3 const neighbor_pos = {block_pos.x + i, block_pos.y + j, block_pos.z + k};
+              BlockInBounds(neighbor_pos)) {
             size_t const neighbor_index = neighbor_pos.x + neighbor_pos.y * grid_size_.x
                                           + neighbor_pos.z * grid_size_.x * grid_size_.y;
             if (neighbor_index > index) {
@@ -193,7 +162,7 @@ namespace sim {
            block_pos.z >= 0 && static_cast<size_t>(block_pos.z) < grid_size_.z;
   }
 
- void Grid::AddBlockToLimits(size_t index, const math::Vec3<int> & neighbor_pos) {
+ void Grid::AddBlockToLimits(size_t const index, const math::Vec3<i32> & neighbor_pos) {
    if(neighbor_pos.x < 0 ) {
      grid_limits_[index].insert(cx0);
    } else if (static_cast<size_t>(neighbor_pos.x) >= grid_size_.x) {
@@ -213,19 +182,8 @@ namespace sim {
    }
  }
 
-  int Grid::GetNumParticles() const {
-    return num_particles;
-  }
-
-  math::scalar Grid::GetParticlesPerMeter() const {
-    return particles_param_.particles_per_meter;
-  }
-
   std::vector<Block> & Grid::GetBlocks() {
     return blocks_;
   }
 
-  const ParticlesData& Grid::GetParameters() {
-    return particles_param_;
-  }
 }  // namespace sim

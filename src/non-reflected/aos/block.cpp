@@ -13,6 +13,8 @@ namespace sim {
    * @param velocity Vector de velocidad de la partícula.
    */
   void Block::AddParticle(Particle & particle) {
+    particle.acceleration = gravity;
+    particle.density = 0;
     particles_.push_back(particle);
   }
 
@@ -30,7 +32,7 @@ namespace sim {
   * @param blocks Un vector de bloques conteniendo partículas.
   * @param block_index El índice del bloque actual en el vector de bloques.
   */
-  void Block::CalcDensities(ParticlesData const & particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks) {
+  void Block::CalcDensities(FluidProperties const & particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks) {
     for (size_t i = 0; i < particles_.size(); ++i) {
       for (size_t j = i + 1; j < particles_.size(); ++j) { // Evitamos repetir calculos entre particulas inicializando j=i+1
         incrementDensities(particles_params, particles_[i], particles_[j]);
@@ -56,7 +58,7 @@ namespace sim {
    * @param adjacents Un vector que almacena los índices de bloques adyacentes.
    * @param blocks Un vector de bloques conteniendo partículas.
    */
-  void Block::CalcAccelerations(const ParticlesData& particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks) {
+  void Block::CalcAccelerations(const FluidProperties& particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks) {
     for (size_t i = 0; i < particles_.size(); ++i) {
       for (size_t j = i + 1; j < particles_.size(); ++j) {  // Evitamos repetir calculos entre particulas inicializando j=i+1
         incrementAccelerations(particles_params, particles_[i], particles_[j]);

@@ -1,27 +1,29 @@
 #pragma once
 
-#include "file/fld.hpp"
 #include "utils/error.hpp"
+#include "file/fld.hpp"
 
+#include <charconv>
 #include <span>
 
 namespace sim {
-  /// Clase encargada de comprobar los argumentos pasados por el usuario para ejecucion del programa
-  class Proargs {
-    public:
-      explicit Proargs(std::span<char const *> args);
 
-      [[nodiscard]] sim::error_code CheckCount() const;
+inline std::optional<i32> parse_int(std::string_view const str) {
+  int value;
+  auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
+  return (ec == std::errc()) ? std::optional {value} : std::nullopt;
+}
 
-      sim::error_code CheckNts(int & nts);
+inline err::expected<Simulation> parse_arguments(std::span<char const*> const args) {
+  if (args.size() != 4) {
+    return err::unexpected("Invalid number of arguments");
+  }
 
-      sim::error_code CheckOpenFiles(sim::ifld & init_file, sim::ofld & final_file);
+  if (auto const value = parse_int(args.at(1))) {
+    return read_input_file(Arguments {.iterations = *value, .input_file = args.at(2), .output_file = args.at(3)});
+  }
 
-      std::string GetInitPath() { return args_.at(2); };
+  return err::unexpected("Could not parse arguments");
+}
 
-      std::string GetFinalPath() { return args_.at(3); };
-
-    private:
-      std::vector<char const *> args_;
-  };
-}  // namespace sim
+} // namespace sim

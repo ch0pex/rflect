@@ -1,58 +1,78 @@
 #pragma once
 
 #include "block.hpp"
-#include "particle.hpp"
 #include "math/vector.hpp"
+#include "particle.hpp"
 
-#include <vector>
-#include "utils/constants.hpp"
 #include <map>
 #include <set>
+#include <vector>
+#include "utils/constants.hpp"
 
 namespace sim {
-  class Grid {
-    public:
-      Grid(int np, math::scalar ppm, std::vector<Particle> & particles);
 
-      void Repositioning();
-      // Calcula las aceleraciones de las partículas.
-      void CalculateAccelerations();
-      // Procesa colisiones entre partículas.
-      void ProcessCollisions();
+class Grid {
+public:
+  explicit Grid(std::ranges::range auto&& particles, math::scalar const smoothing) :
+    grid_size_({
+      static_cast<u32>(std::floor((top_limit.x - bottom_limit.x) / smoothing)), //
+      static_cast<u32>(std::floor((top_limit.y - bottom_limit.y) / smoothing)), //
+      static_cast<u32>(std::floor((top_limit.z - bottom_limit.z) / smoothing)), //
+    }),
+    block_size_({
+      (top_limit.x - bottom_limit.x) / static_cast<math::scalar>(grid_size_.x),
+      (top_limit.y - bottom_limit.y) / static_cast<math::scalar>(grid_size_.y),
+      (top_limit.z - bottom_limit.z) / static_cast<math::scalar>(grid_size_.z),
+    }),
+    num_blocks_(grid_size_.x * grid_size_.y * grid_size_.z), blocks_(num_blocks_), adjacent_blocks_(num_blocks_) {
+    for (auto& particle: particles) {
+      size_t const block_index =
+          GetBlockIndex(particle.position); // Coger la posicion de la particula comprobar en que bloque le toca
+      blocks_[block_index].AddParticle(particle); // Anadir la particula a dicho bloque
+    }
 
-      void MoveParticles();
+    for (size_t i = 0; i < num_blocks_; ++i) {
+      // Se calculan los bloques adjacentes para cada bloque y tambien determina que bloques son limites Cx, Cy, Cz
+      CalculateAdjacentAndLimitBlocks(i);
+    }
 
-      void ProcessLimits();
+    std::cout << "Grid size: " << grid_size_ << "\n";
+    std::cout << "Number of blocks: " << num_blocks_ << "\n";
+    std::cout << "Block size: " << block_size_ << "\n";
+  }
 
-      [[nodiscard]] int GetNumParticles() const;
+  void repositioning();
 
-      [[nodiscard]] math::scalar GetParticlesPerMeter() const;
+  void calculateAccelerations(FluidProperties const& fluid_properties);
 
-      [[nodiscard]] std::vector<Block> & GetBlocks();
+  void processCollisions();
 
-      const ParticlesData& GetParameters();
+  void moveParticles();
 
-    private:
-      void InitMessage() const;
+  void processLimits();
 
-      size_t GetBlockIndex(math::vec3 & particle_pos) const;
+  [[nodiscard]] math::scalar GetParticlesPerMeter() const;
 
-      void CalculateAdjacentAndLimitBlocks(size_t index);
+  [[nodiscard]] std::vector<Block>& GetBlocks();
 
-      [[nodiscard]] bool BlockInBounds(const math::Vec3<int>& block_pos) const;
+  FluidProperties const& GetParameters();
 
-      void AddBlockToLimits(size_t index, const math::Vec3<int>& neighbor_pos);
+private:
+  size_t GetBlockIndex(math::vec3& particle_pos) const;
 
-      int num_particles;
-      ParticlesData particles_param_;
+  void CalculateAdjacentAndLimitBlocks(size_t index);
 
-      math::Vec3<size_t> grid_size_;  // n_x, n_y, n_z
-      math::vec3 block_size_;        // s_x, s_y, s_z
-      size_t num_blocks_;
+  [[nodiscard]] bool BlockInBounds(math::Vec3<int> const& block_pos) const;
 
-      std::vector<Block> blocks_;
-      std::vector<std::vector<size_t>> adjacent_blocks_;
-      std::map<size_t, std::set<Limits>> grid_limits_;
-  };
-}  // namespace sim
+  void AddBlockToLimits(size_t index, math::Vec3<int> const& neighbor_pos);
 
+  math::Vec3<size_t> grid_size_; // n_x, n_y, n_z
+  math::vec3 block_size_; // s_x, s_y, s_z
+  size_t num_blocks_;
+
+  std::vector<Block> blocks_;
+  std::vector<std::vector<size_t>> adjacent_blocks_;
+  std::map<size_t, std::set<Limits>> grid_limits_;
+};
+
+} // namespace sim

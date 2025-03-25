@@ -182,7 +182,7 @@ constexpr auto vec_to_degrees(Vec4<T> vec4) -> Vec4<T> {
 }
 
 template<is_scalar T>
-Mat4x4<T> affine_transformation(Vec3<T> const position, Vec3<T> const scale, Vec3<T> const rotation) {
+Mat4x4<T> affine_transformation(Vec3<T> const position, Vec3<T> const scale, [[maybe_unused]] Vec3<T> const rotation) {
     // Matriz de escala
     Mat4x4<T> scaleMat{
         {scale.x, 0, 0, 0},

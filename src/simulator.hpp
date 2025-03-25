@@ -1,35 +1,33 @@
 #pragma once
 
-
-#include "args/proargs.hpp"
 #include "grid.hpp"
 #include "utils/error.hpp"
 
-#include <optional>
-#include <span>
-
 namespace sim {
-  /**
-   * Clase que representa al simulador de fluidos, contiene todos los metodos para ejecutar las
-   * distintas fases de la simulaicon asi como el grid, los ficheros y el numero de iteraciones
-   */
-  class Simulator {
-    public:
-      explicit Simulator(std::span<char const *> args_view);
 
-      error_code ParseArgs();
+struct Arguments {
+  i32 iterations;
+  std::string input_file;
+  std::string output_file;
+};
 
-      error_code InitSim();
+struct Simulation {
+  Arguments arguments;
+  FluidProperties fluid_properties;
+  Grid grid;
+};
 
-      error_code ProcessSim();
+inline const auto run_simulation = [](Simulation&& sim) -> err::expected<Simulation> {
+    for (int i = 0; i < sim.arguments.iterations; i++) {
+      if (i > 0) {
+        sim.grid.repositioning();
+      }
+      sim.grid.calculateAccelerations(sim.fluid_properties);
+      sim.grid.processCollisions();
+      sim.grid.moveParticles();
+      sim.grid.processLimits();
+    }
+  return std::move(sim);
+};
 
-      error_code StoreResults();
-
-    private:
-      Proargs args_parser_;
-      ifld init_file_;
-      ofld final_file_;
-      std::optional<Grid> grid_;
-      int nts_;
-  };
 }  // namespace sim

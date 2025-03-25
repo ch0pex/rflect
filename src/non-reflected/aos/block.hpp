@@ -15,9 +15,9 @@ namespace sim {
 
       [[nodiscard]] std::vector<Particle> & GetParticles();
 
-      void CalcDensities(ParticlesData const & particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks);
+      void CalcDensities(FluidProperties const & particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks);
 
-      void CalcAccelerations(ParticlesData const & particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks);
+      void CalcAccelerations(FluidProperties const & particles_params, std::vector<size_t>& adjacents, std::vector<Block>& blocks);
 
       void ProcessCollisions(std::set<Limits>& limits);
 

@@ -1,30 +1,31 @@
 
+#include "common/args/proargs.hpp"
+#include "common/file/fld.hpp"
 #include "simulator.hpp"
-#include "common/utils/error.hpp"
 
 #include <chrono>
 #include <iostream>
 #include <span>
 
 
-
 int main(int const argc, char const* argv[]) {
   std::span const args_view {argv, static_cast<size_t>(argc)};
-  auto const init          = std::chrono::high_resolution_clock::now();
+  auto const init = std::chrono::high_resolution_clock::now();
 
-  sim::Simulator fluid_sim {args_view};
-  sim::error_code err      = fluid_sim.ParseArgs();
-
-  if (err == 0) {
-    err = fluid_sim.InitSim();
-    if (err == 0) {
-      fluid_sim.ProcessSim();
-      fluid_sim.StoreResults();
-    }
+  auto result = //
+      sim::parse_arguments(args_view)
+          .and_then(sim::run_simulation)
+          .and_then(sim::write_output)
+          .transform_error([](std::runtime_error const& error) -> std::string {
+            return std::format("Simulation Failed!\n Error: {}", error.what());
+          });
+  if (not result) {
+    std::println("{}", result.error());
+    return -1;
   }
-  auto const end                            = std::chrono::high_resolution_clock::now();
-  std::chrono::duration<sim::math::scalar> const total = end - init;
-  std::cout << "Execution time: " << total << "\n";
 
-  return err;
+  std::chrono::duration<sim::math::scalar> const total = std::chrono::high_resolution_clock::now() - init;
+  std::println("Simulation Succeed!");
+  std::println("Execution time: {}", total);
+  return 0;
 }

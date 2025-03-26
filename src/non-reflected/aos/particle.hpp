@@ -9,12 +9,6 @@
 namespace sim {
 
 struct FluidProperties {
-  // explicit FluidProperties(math::scalar const ppm) :
-  //   particles_per_meter(ppm), smoothing(mul_rad / ppm), smoothing_pow_2(pow(smoothing, 2)),
-  //   smoothing_pow_6(pow(smoothing_pow_2, 3)), smoothing_pow_9(pow(smoothing, 9)), mass(density / pow(ppm, 3)),
-  //   f45_pi_smooth_6(45 / (std::numbers::pi * smoothing_pow_6)), mass_pressure_05(mass * pressure * 0.5),
-  //   mass_goo(goo * mass), transform_density_constant((315.0 / (pi_times_64 * smoothing_pow_9)) * mass) { }
-
   math::scalar particles_per_meter;
   math::scalar smoothing;
   math::scalar smoothing_pow_2;

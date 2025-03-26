@@ -78,22 +78,22 @@ inline void write_header(std::ofstream& file, int np, math::scalar const ppm) {
 inline void write_particles(std::ofstream& file, std::span<Particle const* const> const particles) {
   std::array<f32, particle_components> tmp_values {};
   for (auto const& particle: particles) {
-    tmp_values[0] = particle->position.x;
-    tmp_values[1] = particle->position.y;
-    tmp_values[2] = particle->position.z;
-    tmp_values[3] = particle->hv.x;
-    tmp_values[4] = particle->hv.y;
-    tmp_values[5] = particle->hv.z;
-    tmp_values[6] = particle->velocity.x;
-    tmp_values[7] = particle->velocity.y;
-    tmp_values[8] = particle->velocity.z;
+    tmp_values[0] = static_cast<f32>(particle->position.x);
+    tmp_values[1] = static_cast<f32>(particle->position.y);
+    tmp_values[2] = static_cast<f32>(particle->position.z);
+    tmp_values[3] = static_cast<f32>(particle->hv.x);
+    tmp_values[4] = static_cast<f32>(particle->hv.y);
+    tmp_values[5] = static_cast<f32>(particle->hv.z);
+    tmp_values[6] = static_cast<f32>(particle->velocity.x);
+    tmp_values[7] = static_cast<f32>(particle->velocity.y);
+    tmp_values[8] = static_cast<f32>(particle->velocity.z);
     file.write(reinterpret_cast<char*>(tmp_values.data()), sizeof(float) * particle_components); // NOLINT
   }
 }
 } // namespace detail
 
 
-inline auto read_input_file = [](Arguments const& arguments) -> err::expected<Simulation> {
+inline auto read_input_file(Arguments const& arguments) -> err::expected<Simulation> {
   std::ifstream file {arguments.input_file, std::ios::binary};
   auto const particles_per_meter = detail::read_header(file);
 
@@ -102,11 +102,10 @@ inline auto read_input_file = [](Arguments const& arguments) -> err::expected<Si
   }
 
   auto particles = detail::read_particles(file);
-  if (particles.size() == 0) {
+  if (particles.empty()) {
     return err::unexpected(particles_per_meter.error().what());
   }
 
-  // std::cout << "Number of particles: " << num_particles << "\n";
   // std::cout << "Particles per meter: " << particles_per_meter.value() << "\n";
   // std::cout << "Smoothing length: " << particles_param_.smoothing << "\n";
   // std::cout << "Particles Mass: " << particles_param_.mass << "\n";

@@ -1,9 +1,7 @@
 #pragma once
 
-#include "utils/constants.hpp"
-
 #include "math/math.hpp"
-
+#include "utils/constants.hpp"
 #include "utils/primitive_types.hpp"
 
 namespace sim {
@@ -19,6 +17,19 @@ struct FluidProperties {
   math::scalar mass_pressure_05;
   math::scalar mass_goo;
   math::scalar transform_density_constant;
+};
+
+struct Particle {
+  void transformDensity(FluidProperties const& particles_params) {
+    density = (density + particles_params.smoothing_pow_6) * particles_params.transform_density_constant;
+  }
+
+  u32 id {};
+  math::vec3 position;
+  math::vec3 hv;
+  math::vec3 velocity;
+  math::vec3 acceleration {gravity};
+  math::scalar density {};
 };
 
 constexpr FluidProperties fluid_properties(math::scalar const ppm) {
@@ -47,19 +58,6 @@ constexpr FluidProperties fluid_properties(math::scalar const ppm) {
 
   return fluid_properties;
 }
-
-struct Particle {
-  void transformDensity(FluidProperties const& particles_params) {
-    density = (density + particles_params.smoothing_pow_6) * particles_params.transform_density_constant;
-  }
-
-  u32 id {};
-  math::vec3 position;
-  math::vec3 hv;
-  math::vec3 velocity;
-  math::vec3 acceleration {gravity};
-  math::scalar density {};
-};
 
 inline math::scalar densityIncrement(FluidProperties const& particles_params, math::scalar const squared_distance) {
   return std::pow(particles_params.smoothing_pow_2 - squared_distance, 3);
@@ -111,15 +109,14 @@ inline void incrementDensities(FluidProperties const& particles_params, Particle
 /**
  * Esta función calcula un incremento en las aceleraciones de dos partículas si su distancia
  * al cuadrado es menor que el suavizado al cuadrado proporcionado en los parámetros de partículas.
- * @param particles_params Parámetros de partículas que incluyen información sobre el suavizado.
+ * @param properties Parámetros de partículas que incluyen información sobre el suavizado.
  * @param particle_i Primera partícula.
  * @param particle_j Segunda partícula.
  */
-inline void
-incrementAccelerations(FluidProperties const& particles_params, Particle& particle_i, Particle& particle_j) {
-  if (math::scalar const squared_distance = squaredDistance(particle_i.position, particle_j.position);
-      squared_distance < particles_params.smoothing_pow_2) {
-    math::vec3 const incr = accelerationIncrement(particles_params, particle_i, particle_j, squared_distance);
+inline void incrementAccelerations(FluidProperties const& properties, Particle& particle_i, Particle& particle_j) {
+  if (auto const squared_distance = squaredDistance(particle_i.position, particle_j.position);
+      squared_distance < properties.smoothing_pow_2) {
+    math::vec3 const incr = accelerationIncrement(properties, particle_i, particle_j, squared_distance);
     particle_i.acceleration += incr;
     particle_j.acceleration -= incr;
   }

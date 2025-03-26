@@ -126,7 +126,7 @@ void Grid::calculateAdjacentAndLimitBlocks(u32 const index) {
 
         if (math::Vec3 const neighbor_pos = {block_pos.x + i, block_pos.y + j, block_pos.z + k};
             blockInBounds(neighbor_pos)) {
-          u64 const neighbor_index =
+          u32 const neighbor_index =
               neighbor_pos.x + (neighbor_pos.y * grid_size_.x) + (neighbor_pos.z * grid_size_.x * grid_size_.y);
           if (neighbor_index > index) {
             adjacent_blocks_[index].push_back(neighbor_index);

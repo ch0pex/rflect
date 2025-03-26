@@ -142,4 +142,4 @@ static_assert(vector<vec2>);
 static_assert(vector<vec3>);
 static_assert(vector<vec4>);
 
-} // namespace reveal3d::math
+} // namespace sim::math

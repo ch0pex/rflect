@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "utils/primitive_types.hpp"
 #include <concepts>
+#include "utils/primitive_types.hpp"
 
 namespace sim::math {
 
@@ -23,29 +23,29 @@ concept is_scalar = std::integral<T> or std::floating_point<T>;
 struct ScalarOperators {
   template<typename Self>
   constexpr Self operator+=(this Self& self, is_scalar auto scalar) {
-    self += Self{scalar};
+    self += Self {scalar};
     return self;
   }
 
   template<typename Self>
   constexpr Self operator-=(this Self& self, is_scalar auto scalar) {
-    self -= Self{scalar};
+    self -= Self {scalar};
     return self;
   }
 
   template<typename Self>
   constexpr Self operator*=(this Self& self, is_scalar auto scalar) {
-    self *= Self{scalar};
+    self *= Self {scalar};
     return self;
   }
 
   template<typename Self>
   constexpr Self operator/=(this Self& self, is_scalar auto scalar) {
-    self /= Self{scalar};
+    self /= Self {scalar};
     return self;
   }
 };
 
 using scalar = f64;
 
-} // namespace reveal3d::math
+} // namespace sim::math

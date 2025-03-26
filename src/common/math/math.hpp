@@ -13,6 +13,6 @@
 
 #pragma once
 
-#include "operators.hpp"
 #include "matrix.hpp"
+#include "operators.hpp"
 #include "vector.hpp"

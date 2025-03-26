@@ -1,6 +1,6 @@
 /************************************************************************
  * Copyright (c) 2025 Alvaro Cabrera Barrio
- * This code is licensed under MIT license (see LICENSE.txt for details) 
+ * This code is licensed under MIT license (see LICENSE.txt for details)
  ************************************************************************/
 /**
  * @file primitive_types.hpp
@@ -28,4 +28,4 @@ using i64 = std::int64_t;
 using f32 = float;
 using f64 = double;
 
-}
+} // namespace sim

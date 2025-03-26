@@ -209,9 +209,7 @@ void LimitsZ(Particle& particle, std::set<Limits> const& limits) {
  * @param blocks Un vector de bloques conteniendo partículas.
  * @param block_index El índice del bloque actual en el vector de bloques.
  */
-void Block::calcDensities(
-    FluidProperties const& properties, std::span<u32> adjacents, std::vector<Block>& blocks
-) {
+void Block::calcDensities(FluidProperties const& properties, std::span<u32> adjacents, std::vector<Block>& blocks) {
   for (size_t i = 0; i < particles.size(); ++i) {
     for (size_t j = i + 1; j < particles.size();
          ++j) { // Evitamos repetir calculos entre particulas inicializando j=i+1
@@ -238,9 +236,7 @@ void Block::calcDensities(
  * @param adjacents Un vector que almacena los índices de bloques adyacentes.
  * @param blocks Un vector de bloques conteniendo partículas.
  */
-void Block::calcAccelerations(
-    FluidProperties const& properties, std::span<u32> adjacents, std::vector<Block>& blocks
-) {
+void Block::calcAccelerations(FluidProperties const& properties, std::span<u32> adjacents, std::vector<Block>& blocks) {
   for (size_t i = 0; i < particles.size(); ++i) {
     for (size_t j = i + 1; j < particles.size();
          ++j) { // Evitamos repetir calculos entre particulas inicializando j=i+1

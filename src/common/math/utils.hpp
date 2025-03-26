@@ -20,12 +20,18 @@
 namespace sim::math::utils {
 
 template<typename T>
-auto to_array(Vec2<T> v) { return std::array {v.x, v.y}; }
+auto to_array(Vec2<T> v) {
+  return std::array {v.x, v.y};
+}
 
 template<typename T>
-auto to_array(Vec3<T> v) { return std::array {v.x, v.y, v.z}; }
+auto to_array(Vec3<T> v) {
+  return std::array {v.x, v.y, v.z};
+}
 
 template<typename T>
-auto to_array(Vec4<T> v) { return std::array {v.x, v.y, v.z, v.w}; }
+auto to_array(Vec4<T> v) {
+  return std::array {v.x, v.y, v.z, v.w};
+}
 
-} // namespace reveal3d::math::utl
+} // namespace sim::math::utils

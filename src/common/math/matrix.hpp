@@ -116,4 +116,4 @@ using mat4 = Mat4x4<scalar>;
 static_assert(matrix<mat3>);
 static_assert(matrix<mat4>);
 
-} // namespace reveal3d::math
+} // namespace sim::math

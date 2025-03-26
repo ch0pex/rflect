@@ -19,15 +19,20 @@
 
 namespace sim::math {
 
-template<is_scalar T> struct Vec2;
+template<is_scalar T>
+struct Vec2;
 
-template<is_scalar T> struct Vec3;
+template<is_scalar T>
+struct Vec3;
 
-template<is_scalar T> struct Vec4;
+template<is_scalar T>
+struct Vec4;
 
-template<is_scalar T> struct Mat3x3;
+template<is_scalar T>
+struct Mat3x3;
 
-template<is_scalar T> struct Mat4x4;
+template<is_scalar T>
+struct Mat4x4;
 
 namespace detail {
 
@@ -62,4 +67,4 @@ concept matrix = detail::is_matrix<T>::value;
 template<typename T>
 concept algebra_type = detail::is_vector<T>::value or detail::is_matrix<T>::value or is_scalar<T>;
 
-} // namespace reveal3d::math
+} // namespace sim::math

@@ -18,16 +18,16 @@ struct Simulation {
 };
 
 constexpr auto run_simulation = [](Simulation&& sim) -> err::expected<Simulation> {
-    for (int i = 0; i < sim.arguments.iterations; i++) {
-      if (i > 0) {
-        sim.grid.repositioning();
-      }
-      sim.grid.calculateAccelerations(sim.fluid_properties);
-      sim.grid.processCollisions();
-      sim.grid.moveParticles();
-      sim.grid.processLimits();
+  for (int i = 0; i < sim.arguments.iterations; i++) {
+    if (i > 0) {
+      sim.grid.repositioning();
     }
+    sim.grid.calculateAccelerations(sim.fluid_properties);
+    sim.grid.processCollisions();
+    sim.grid.moveParticles();
+    sim.grid.processLimits();
+  }
   return std::move(sim);
 };
 
-}  // namespace sim
+} // namespace sim

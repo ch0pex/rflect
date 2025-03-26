@@ -12,8 +12,8 @@
  */
 #pragma once
 
-#include "utils/primitive_types.hpp"
 #include "concepts.hpp"
+#include "utils/primitive_types.hpp"
 
 #include <cmath>
 #include <numbers>
@@ -276,10 +276,6 @@ scalar squaredDistance(vector auto const v_i, vector auto const v_j){
 }
 
 
-
-
-
-
 // clang-format on
 
-} // namespace reveal3d::math
+} // namespace sim::math

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdexcept>
 #include <expected>
+#include <stdexcept>
 #include <string>
 
 namespace sim {

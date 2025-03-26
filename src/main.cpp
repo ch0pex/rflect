@@ -19,6 +19,7 @@ int main(int const argc, char const* argv[]) {
           .transform_error([](std::runtime_error const& error) -> std::string {
             return std::format("Simulation Failed!\n Error: {}", error.what());
           });
+
   if (not result) {
     std::println("{}", result.error());
     return -1;

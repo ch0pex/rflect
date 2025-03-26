@@ -17,7 +17,7 @@ struct Simulation {
   Grid grid;
 };
 
-inline const auto run_simulation = [](Simulation&& sim) -> err::expected<Simulation> {
+constexpr auto run_simulation = [](Simulation&& sim) -> err::expected<Simulation> {
     for (int i = 0; i < sim.arguments.iterations; i++) {
       if (i > 0) {
         sim.grid.repositioning();

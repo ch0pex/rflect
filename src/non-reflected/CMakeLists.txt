@@ -34,4 +34,4 @@ function(add_sim_lib name)
 endfunction()
 
 add_sim_lib(aos)
-#add_sim_lib(soa)
+add_sim_lib(soa)

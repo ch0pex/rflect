@@ -7,3 +7,4 @@ function(add_sim_executable name)
 endfunction()
 
 add_sim_executable(non-reflected-aos)
+add_sim_executable(non-reflected-soa)

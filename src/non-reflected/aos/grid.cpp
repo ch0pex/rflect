@@ -14,8 +14,8 @@ namespace sim {
     std::vector<Block> aux(num_blocks_);
 
     for (auto & block : blocks_) {
-      for (auto & particle : block.GetParticles()) {
-        aux[GetBlockIndex(particle.position)].AddParticle(particle);
+      for (auto & particle : block.particles) {
+        aux[getBlockIndex(particle.position)].addParticle(particle);
       }
     }
     blocks_ = std::move(aux);
@@ -30,14 +30,14 @@ namespace sim {
     // a = 0
     // d = 0
 
-    for (size_t block_index = 0; block_index < num_blocks_; ++block_index) {
+    for (u64 block_index = 0; block_index < num_blocks_; ++block_index) {
       // Se calculan la densidad y aceleracion entre las particulas de un mismo bloque y bloques adjacentes
-      blocks_[block_index].CalcDensities(fluid_properties, adjacent_blocks_[block_index], blocks_);
+      blocks_[block_index].calcDensities(fluid_properties, adjacent_blocks_[block_index], blocks_);
     }
 
-    for (size_t block_index = 0; block_index < num_blocks_; ++block_index) {
+    for (u64 block_index = 0; block_index < num_blocks_; ++block_index) {
       // Se calcula la aceleracion entre las particulas de un mismo bloque y bloques adjacentes
-      blocks_[block_index].CalcAccelerations(fluid_properties, adjacent_blocks_[block_index], blocks_);
+      blocks_[block_index].calcAccelerations(fluid_properties, adjacent_blocks_[block_index], blocks_);
     }
   }
 
@@ -47,7 +47,7 @@ namespace sim {
    */
   void Grid::processCollisions() {
     for(auto& [index, limits] : grid_limits_){
-      blocks_[index].ProcessCollisions(limits);
+      blocks_[index].processCollisions(limits);
     }
   }
 
@@ -57,7 +57,7 @@ namespace sim {
    */
   void Grid::moveParticles() {
     for(auto& block : blocks_) {
-      block.MoveParticles();
+      block.moveParticles();
     }
   }
 
@@ -67,7 +67,7 @@ namespace sim {
    */
   void Grid::processLimits() {
     for(auto& [index, limits] : grid_limits_){
-      blocks_[index].ProcessLimits(limits);
+      blocks_[index].processLimits(limits);
     }
   }
 
@@ -77,13 +77,11 @@ namespace sim {
    * @param particle_pos posición de la partícula en coordenadas x,y,z
    * @return índice del bloque al que pertenece la partícula en la cuadrícula.
    */
-  size_t Grid::GetBlockIndex(math::vec3 & particle_pos) const {
-    // i,j,k posicion del bloque en la malla --> pasarlo al indice del bloque
+  u32 Grid::getBlockIndex(math::vec3 const& particle_pos) const {
     math::scalar pos_i = std::floor((particle_pos.x - bottom_limit.x) / block_size_.x);
     math::scalar pos_j = std::floor((particle_pos.y - bottom_limit.y) / block_size_.y);
     math::scalar pos_k = std::floor((particle_pos.z - bottom_limit.z) / block_size_.z);
 
-    // Asegura que las coordenadas estén dentro de los límites de la cuadrícula
     if (pos_i < 0) {
       pos_i = 0;
     } else if (pos_i >= static_cast<math::scalar>(grid_size_.x)) {
@@ -99,29 +97,16 @@ namespace sim {
     } else if (pos_k >= static_cast<math::scalar>(grid_size_.z)) {
       pos_k = static_cast<math::scalar>(grid_size_.z) - 1;
     }
-    return (static_cast<size_t>(pos_i) + static_cast<size_t>(pos_j) * grid_size_.x +
-            static_cast<size_t>(pos_k) * grid_size_.x * grid_size_.y);
+    return (static_cast<u32>(pos_i) + (static_cast<u32>(pos_j) * grid_size_.x) +
+            (static_cast<u32>(pos_k) * grid_size_.x * grid_size_.y));
   }
-
-  // /**
-  //  * Mensaje de inicializacion de la simulacion
-  //  */
-  // void Grid::InitMessage() const {
-  //   std::cout << "Number of particles: " << num_particles << "\n";
-  //   std::cout << "Particles per meter: " << particles_param_.particles_per_meter << "\n";
-  //   std::cout << "Smoothing length: " <<  particles_param_.smoothing << "\n";
-  //   std::cout << "Particles Mass: " << particles_param_.mass << "\n";
-  //   std::cout << "Grid size: " << grid_size_ << "\n";
-  //   std::cout << "Number of blocks: " << num_blocks_ << "\n";
-  //   std::cout << "Block size: " << block_size_ << "\n";
-  // }
 
   /**
    * Calcula los bloques adjacentes para cada bloque pasado por parametro, a su vez determina si dicho bloque pertenece
    * a una de las caras del grid, y lo almacena en dicho caso en grid_limits
    * @param index: indice del bloque
    */
-  void Grid::CalculateAdjacentAndLimitBlocks(u64 const index) {
+  void Grid::calculateAdjacentAndLimitBlocks(u32 const index) {
     math::Vec3 const block_pos = {
       static_cast<int>(index % grid_size_.x), static_cast<int>(index / grid_size_.x % grid_size_.y),
                                  static_cast<int>(index / (grid_size_.x * grid_size_.y))
@@ -135,15 +120,14 @@ namespace sim {
           }
 
           if (math::Vec3 const neighbor_pos = {block_pos.x + i, block_pos.y + j, block_pos.z + k};
-              BlockInBounds(neighbor_pos)) {
-            size_t const neighbor_index = neighbor_pos.x + neighbor_pos.y * grid_size_.x
-                                          + neighbor_pos.z * grid_size_.x * grid_size_.y;
+              blockInBounds(neighbor_pos)) {
+            u64 const neighbor_index = neighbor_pos.x + (neighbor_pos.y * grid_size_.x)
+                                          + (neighbor_pos.z * grid_size_.x * grid_size_.y);
             if (neighbor_index > index) {
-              // Solo se anaden a la lista de vecinos los bloques con mas indice para asi no repetir calculos
               adjacent_blocks_[index].push_back(neighbor_index);
             }
           } else {
-            AddBlockToLimits(index, neighbor_pos);
+            addBlockToLimits(index, neighbor_pos);
           }
         }
       }
@@ -156,33 +140,33 @@ namespace sim {
    * @param block_pos
    * @return
    */
-  bool Grid::BlockInBounds(const math::Vec3<int>& block_pos) const {
-    return block_pos.x >= 0 && static_cast<size_t>(block_pos.x) < grid_size_.x
-           && block_pos.y >= 0 && static_cast<size_t>(block_pos.y) < grid_size_.y &&
-           block_pos.z >= 0 && static_cast<size_t>(block_pos.z) < grid_size_.z;
+  bool Grid::blockInBounds(const math::Vec3<int>& block_pos) const {
+    return block_pos.x >= 0 && static_cast<u64>(block_pos.x) < grid_size_.x
+           && block_pos.y >= 0 && static_cast<u64>(block_pos.y) < grid_size_.y &&
+           block_pos.z >= 0 && static_cast<u64>(block_pos.z) < grid_size_.z;
   }
 
- void Grid::AddBlockToLimits(size_t const index, const math::Vec3<i32> & neighbor_pos) {
+ void Grid::addBlockToLimits(u32 const index, const math::Vec3<i32> & neighbor_pos) {
    if(neighbor_pos.x < 0 ) {
      grid_limits_[index].insert(cx0);
-   } else if (static_cast<size_t>(neighbor_pos.x) >= grid_size_.x) {
+   } else if (static_cast<u64>(neighbor_pos.x) >= grid_size_.x) {
      grid_limits_[index].insert(cxn);
    }
 
    if(neighbor_pos.y < 0 ) {
      grid_limits_[index].insert(cy0);
-   } else if (static_cast<size_t>(neighbor_pos.y) >= grid_size_.y) {
+   } else if (static_cast<u64>(neighbor_pos.y) >= grid_size_.y) {
      grid_limits_[index].insert(cyn);
    }
 
    if(neighbor_pos.z < 0 ) {
      grid_limits_[index].insert(cz0);
-   } else if (static_cast<size_t>(neighbor_pos.z) >= grid_size_.z) {
+   } else if (static_cast<u64>(neighbor_pos.z) >= grid_size_.z) {
      grid_limits_[index].insert(czn);
    }
  }
 
-  std::vector<Block> & Grid::GetBlocks() {
+  std::vector<Block> & Grid::getBlocks() {
     return blocks_;
   }
 

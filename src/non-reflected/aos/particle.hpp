@@ -26,15 +26,15 @@ constexpr FluidProperties fluid_properties(math::scalar const ppm) {
   auto const mass      = density / pow(ppm, 3);
 
   FluidProperties fluid_properties {
-    .particles_per_meter = ppm,
-    .smoothing           = smoothing,
-    .smoothing_pow_2     = std::pow(smoothing, 2),
-    .smoothing_pow_6     = std::pow(smoothing, 6),
-    .smoothing_pow_9     = std::pow(smoothing, 9),
-    .mass                = mass,
-    .f45_pi_smooth_6     = {},
-    .mass_pressure_05    = mass * pressure * 0.5,
-    .mass_goo            = mass * goo,
+    .particles_per_meter        = ppm,
+    .smoothing                  = smoothing,
+    .smoothing_pow_2            = std::pow(smoothing, 2),
+    .smoothing_pow_6            = std::pow(smoothing, 6),
+    .smoothing_pow_9            = std::pow(smoothing, 9),
+    .mass                       = mass,
+    .f45_pi_smooth_6            = {},
+    .mass_pressure_05           = mass * pressure * 0.5,
+    .mass_goo                   = mass * goo,
     .transform_density_constant = {}
   };
 
@@ -49,12 +49,12 @@ struct Particle {
     density = (density + particles_params.smoothing_pow_6) * particles_params.transform_density_constant;
   }
 
-  u64 id;
+  u32 id {};
   math::vec3 position;
   math::vec3 hv;
   math::vec3 velocity;
   math::vec3 acceleration {gravity};
-  math::scalar density {0};
+  math::scalar density {};
 };
 
 inline math::scalar densityIncrement(FluidProperties const& particles_params, math::scalar const squared_distance) {

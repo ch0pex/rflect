@@ -29,7 +29,7 @@ constexpr math::scalar def_position = 100.0;
     // Se añade la partícula al bloque y se procesan las colisiones
     block.AddParticle(particle);
     block.ProcessCollisions(limits);
-    const math::scalar new_acceleration = block.GetParticles()[0].acceleration.z;
+    const math::scalar new_acceleration = block.particles[0].acceleration.z;
     ASSERT_EQ(new_acceleration, expected_acceleration);
   }
 
@@ -51,7 +51,7 @@ constexpr math::scalar def_position = 100.0;
     // Se añade la partícula al bloque y se procesan las colisiones
     block.AddParticle(particle);
     block.ProcessCollisions(limits);
-    const math::scalar new_acceleration = block.GetParticles()[0].acceleration.x;
+    const math::scalar new_acceleration = block.particles[0].acceleration.x;
     ASSERT_EQ(new_acceleration, expected_acceleration);
   }
 
@@ -73,7 +73,7 @@ constexpr math::scalar def_position = 100.0;
     // Se añade la partícula al bloque y se procesan las colisiones
     block.AddParticle(particle);
     block.ProcessCollisions(limits);
-    const math::scalar new_acceleration = block.GetParticles()[0].acceleration.y;
+    const math::scalar new_acceleration = block.particles[0].acceleration.y;
     ASSERT_EQ(new_acceleration, expected_acceleration);
   }
 
@@ -97,7 +97,7 @@ constexpr math::scalar def_position = 100.0;
     // Se añade la partícula al bloque y se procesan las colisiones
     block.AddParticle(particle);
     block.ProcessLimits(limits);
-    const math::scalar new_position = block.GetParticles()[0].position.z;
+    const math::scalar new_position = block.particles[0].position.z;
     ASSERT_EQ(new_position, position_expected);
   }
 
@@ -119,7 +119,7 @@ constexpr math::scalar def_position = 100.0;
     // Se añade la partícula al bloque y se procesan las colisiones
     block.addParticle(particle);
     block.processLimits(limits);
-    const math::scalar new_position = block.getParticles()[0].position.x;
+    const math::scalar new_position = block.particles[0].position.x;
     ASSERT_EQ(new_position, position_expected);
   }
 
@@ -141,7 +141,7 @@ constexpr math::scalar def_position = 100.0;
     // Se añade la partícula al bloque y se procesan las colisiones
     block.AddParticle(particle);
     block.ProcessLimits(limits);
-    const math::scalar new_position = block.GetParticles()[0].position.y;
+    const math::scalar new_position = block.particles[0].position.y;
     ASSERT_EQ(new_position, position_expected);
   }
 } // namespace sim

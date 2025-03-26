@@ -4,9 +4,11 @@
 #include "math/vector.hpp"
 #include "particle.hpp"
 
+#include <__flat_map/flat_map.h>
 #include <map>
 #include <set>
 #include <vector>
+
 #include "utils/constants.hpp"
 
 namespace sim {
@@ -26,14 +28,12 @@ public:
     }),
     num_blocks_(grid_size_.x * grid_size_.y * grid_size_.z), blocks_(num_blocks_), adjacent_blocks_(num_blocks_) {
     for (auto& particle: particles) {
-      size_t const block_index =
-          GetBlockIndex(particle.position); // Coger la posicion de la particula comprobar en que bloque le toca
-      blocks_[block_index].AddParticle(particle); // Anadir la particula a dicho bloque
+      u64 const block_index = getBlockIndex(particle.position);
+      blocks_[block_index].addParticle(particle); //
     }
 
-    for (size_t i = 0; i < num_blocks_; ++i) {
-      // Se calculan los bloques adjacentes para cada bloque y tambien determina que bloques son limites Cx, Cy, Cz
-      CalculateAdjacentAndLimitBlocks(i);
+    for (u64 i = 0; i < num_blocks_; ++i) {
+      calculateAdjacentAndLimitBlocks(i);
     }
 
     std::cout << "Grid size: " << grid_size_ << "\n";
@@ -51,28 +51,24 @@ public:
 
   void processLimits();
 
-  [[nodiscard]] math::scalar GetParticlesPerMeter() const;
-
-  [[nodiscard]] std::vector<Block>& GetBlocks();
-
-  FluidProperties const& GetParameters();
+  [[nodiscard]] std::vector<Block>& getBlocks();
 
 private:
-  size_t GetBlockIndex(math::vec3& particle_pos) const;
+  [[nodiscard]] u32 getBlockIndex(math::vec3 const& particle_pos) const;
 
-  void CalculateAdjacentAndLimitBlocks(size_t index);
+  void calculateAdjacentAndLimitBlocks(u32 index);
 
-  [[nodiscard]] bool BlockInBounds(math::Vec3<int> const& block_pos) const;
+  [[nodiscard]] bool blockInBounds(math::Vec3<int> const& block_pos) const;
 
-  void AddBlockToLimits(size_t index, math::Vec3<int> const& neighbor_pos);
+  void addBlockToLimits(u32 index, math::Vec3<int> const& neighbor_pos);
 
-  math::Vec3<size_t> grid_size_; // n_x, n_y, n_z
+  math::Vec3<u32> grid_size_; // n_x, n_y, n_z
   math::vec3 block_size_; // s_x, s_y, s_z
-  size_t num_blocks_;
+  u32 num_blocks_;
 
   std::vector<Block> blocks_;
-  std::vector<std::vector<size_t>> adjacent_blocks_;
-  std::map<size_t, std::set<Limits>> grid_limits_;
+  std::vector<std::vector<u32>> adjacent_blocks_;
+  std::map<u32, std::set<Limits>> grid_limits_;
 };
 
 } // namespace sim

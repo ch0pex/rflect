@@ -33,7 +33,7 @@ constexpr math::scalar asserted_mass = 0.00099700599001497931;
 
     grid->CalculateAccelerations();
 
-    const math::scalar density = grid->GetBlocks().at(0).GetParticles().at(0).density;
+    const math::scalar density = grid->GetBlocks().at(0).particles.at(0).density;
 
     EXPECT_EQ(321.71521414997841, density);
   }
@@ -56,7 +56,7 @@ constexpr math::scalar asserted_mass = 0.00099700599001497931;
 
     grid->ProcessCollisions();
 
-    const math::scalar acceleration_x = grid->GetBlocks()[0].GetParticles()[0].acceleration.x;
+    const math::scalar acceleration_x = grid->GetBlocks()[0].particles[0].acceleration.x;
 
     EXPECT_EQ(25516.988455789433, acceleration_x);
   }
@@ -79,7 +79,7 @@ constexpr math::scalar asserted_mass = 0.00099700599001497931;
 
     grid->MoveParticles();
 
-    const math::scalar position_x = grid->GetBlocks()[0].GetParticles()[0].position.x;
+    const math::scalar position_x = grid->GetBlocks()[0].particles[0].position.x;
 
     EXPECT_EQ(-0.91963294852631439, position_x);
   }
@@ -102,7 +102,7 @@ constexpr math::scalar asserted_mass = 0.00099700599001497931;
 
     grid->ProcessLimits();
 
-    const vec3d new_position = grid->GetBlocks()[0].GetParticles()[0].position;
+    const vec3d new_position = grid->GetBlocks()[0].particles[0].position;
 
     EXPECT_EQ(0.7936329485263145, new_position.x);
   }

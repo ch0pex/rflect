@@ -51,16 +51,16 @@ public:
 
   void processLimits();
 
-  [[nodiscard]] std::vector<Block>& getBlocks();
+  [[nodiscard]] std::span<Block const> getBlocks() const { return blocks_; }
 
 private:
   [[nodiscard]] u32 getBlockIndex(math::vec3 const& particle_pos) const;
 
   void calculateAdjacentAndLimitBlocks(u32 index);
 
-  [[nodiscard]] bool blockInBounds(math::Vec3<int> const& block_pos) const;
+  [[nodiscard]] bool blockInBounds(math::Vec3<i32> const& block_pos) const;
 
-  void addBlockToLimits(u32 index, math::Vec3<int> const& neighbor_pos);
+  void addBlockToLimits(u32 index, math::Vec3<i32> const& neighbor_pos);
 
   math::Vec3<u32> grid_size_; // n_x, n_y, n_z
   math::vec3 block_size_; // s_x, s_y, s_z

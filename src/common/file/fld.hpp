@@ -106,10 +106,6 @@ inline auto read_input_file(Arguments const& arguments) -> err::expected<Simulat
     return err::unexpected(particles_per_meter.error().what());
   }
 
-  // std::cout << "Particles per meter: " << particles_per_meter.value() << "\n";
-  // std::cout << "Smoothing length: " << particles_param_.smoothing << "\n";
-  // std::cout << "Particles Mass: " << particles_param_.mass << "\n";
-
   return Simulation {
     .arguments        = arguments,
     .fluid_properties = fluid_properties(*particles_per_meter),
@@ -121,15 +117,14 @@ constexpr auto write_output = [](Simulation&& sim) -> err::expected<Simulation> 
   std::flat_map<u64, Particle const*> results;
   std::ofstream file {sim.arguments.output_file, std::ios::binary};
 
-
-  for (auto& block: sim.grid.getBlocks()) {
-    for (auto& particle: block.particles) {
+  for (auto const& block: sim.grid.getBlocks()) {
+    for (auto const& particle: block.particles) {
       results[particle.id] = &particle;
     }
   }
 
   try {
-    detail::write_header(file, results.size(), sim.fluid_properties.particles_per_meter);
+    detail::write_header(file, static_cast<i32>(results.size()), sim.fluid_properties.particles_per_meter);
     detail::write_particles(file, results.values());
   }
   catch (std::ifstream::failure const& e) {

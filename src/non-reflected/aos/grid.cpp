@@ -175,6 +175,5 @@ void Grid::addBlockToLimits(u32 const index, math::Vec3<i32> const& neighbor_pos
   }
 }
 
-std::vector<Block>& Grid::getBlocks() { return blocks_; }
 
 } // namespace sim

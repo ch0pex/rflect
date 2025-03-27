@@ -4,7 +4,7 @@
 #include "math/vector.hpp"
 #include "particle.hpp"
 
-#include <flat_map>
+#include <__flat_map/flat_map.h>
 #include <map>
 #include <set>
 #include <vector>
@@ -27,9 +27,9 @@ public:
       (top_limit.z - bottom_limit.z) / static_cast<math::scalar>(grid_size_.z),
     }),
     num_blocks_(grid_size_.x * grid_size_.y * grid_size_.z), blocks_(num_blocks_), adjacent_blocks_(num_blocks_) {
-    for (auto& particle: particles) {
-      u64 const block_index = getBlockIndex(particle.position);
-      blocks_[block_index].addParticle(particle); //
+    for (auto const& [id, position, hv, velocity, acceleration, density]: particles) {
+      u64 const block_index = getBlockIndex(position);
+      blocks_[block_index].addParticle(id, position, hv, velocity); //
     }
 
     for (u64 i = 0; i < num_blocks_; ++i) {

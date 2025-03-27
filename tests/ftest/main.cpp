@@ -24,7 +24,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <args/proargs.hpp>
 #include <doctest/doctest.h>
-#include <file/fld.hpp>
+#include <fld.hpp>
 
 inline std::filesystem::path const current_path =
     std::filesystem::path(std::source_location::current().file_name()).parent_path();

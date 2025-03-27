@@ -3,8 +3,8 @@ function(add_sim_lib name)
 
     target_sources(non-reflected-${name}-lib
             PRIVATE
-            aos/grid.cpp
-            aos/block.cpp
+            ${name}/grid.cpp
+            ${name}/block.cpp
     )
 
     target_sources(non-reflected-${name}-lib
@@ -12,9 +12,9 @@ function(add_sim_lib name)
             FILE_SET HEADERS
             BASE_DIRS ..
             FILES
-            aos/grid.hpp
-            aos/block.hpp
-            aos/particle.hpp
+            ${name}/grid.hpp
+            ${name}/block.hpp
+            ${name}/particle.hpp
             ../simulator.hpp
             ../common/math/concepts.hpp
             ../common/math/functions.hpp
@@ -29,7 +29,7 @@ function(add_sim_lib name)
             ../common/utils/primitive_types.hpp
     )
 
-    target_include_directories(non-reflected-${name}-lib PUBLIC aos ../common)
+    target_include_directories(non-reflected-${name}-lib PUBLIC ${name} ../common)
     add_library(sim::non-reflected-${name}-lib ALIAS non-reflected-${name}-lib)
 endfunction()
 

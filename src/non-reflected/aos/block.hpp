@@ -17,9 +17,9 @@ struct Block {
     particles.push_back(particle);
   }
 
-  void calcDensities(FluidProperties const& properties, std::span<u32> adjacents, std::vector<Block>& blocks);
+  void calcDensities(FluidProperties const& properties, std::span<u32> adjacent, std::vector<Block>& blocks);
 
-  void calcAccelerations(FluidProperties const& properties, std::span<u32> adjacents, std::vector<Block>& blocks);
+  void calcAccelerations(FluidProperties const& properties, std::span<u32> adjacent, std::vector<Block>& blocks);
 
   void processCollisions(std::set<Limits>& limits);
 

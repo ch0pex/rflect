@@ -28,7 +28,7 @@ public:
     }),
     num_blocks_(grid_size_.x * grid_size_.y * grid_size_.z), blocks_(num_blocks_), adjacent_blocks_(num_blocks_) {
     for (auto& particle: particles) {
-      u64 const block_index = getBlockIndex(particle.position());
+      u64 const block_index = getBlockIndex(particle.position);
       blocks_[block_index].addParticle(particle); //
     }
 

@@ -20,6 +20,12 @@ struct Block {
     particles.push_back(particle);
   }
 
+  void addParticle(Particle& particle) {
+    particle.acceleration = gravity;
+    particle.density      = 0;
+    particles.push_back(particle);
+  }
+
   void calcDensities(FluidProperties const& properties, std::span<u32> adjacent, std::vector<Block>& blocks);
 
   void calcAccelerations(FluidProperties const& properties, std::span<u32> adjacent, std::vector<Block>& blocks);

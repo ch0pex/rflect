@@ -75,7 +75,7 @@ TEST_CASE_TEMPLATE("at", T, layout::aos, layout::soa) {
 
   auto mock = mock_vector.at(0);
 
-  // CHECK(mock == mock_0);
+  CHECK(mock == mock_0);
 }
 
 TEST_CASE_TEMPLATE("operator[]", T, layout::aos, layout::soa) {

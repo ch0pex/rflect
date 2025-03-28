@@ -8,3 +8,5 @@ endfunction()
 
 add_sim_executable(non-reflected-aos)
 add_sim_executable(non-reflected-soa)
+add_sim_executable(reflected-aos-soa)
+#add_sim_executable(reflected-mixed)

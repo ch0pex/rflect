@@ -22,8 +22,9 @@
 #include <utils/primitive_types.hpp>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <args/proargs.hpp>
 #include <doctest/doctest.h>
+
+#include <args/proargs.hpp>
 #include <fld.hpp>
 
 inline std::filesystem::path const current_path =

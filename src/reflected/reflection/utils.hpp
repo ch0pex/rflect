@@ -13,14 +13,12 @@
 
 #pragma once
 
-#include "utils/primitive_types.hpp"
-
 #include <experimental/meta>
 
-namespace sim {
+namespace acb {
 
 template<typename T>
-consteval auto member_number(u64 number) {
+consteval auto member_number(std::size_t const number) {
   return std::meta::nonstatic_data_members_of(^^T)[number];
 }
 
@@ -33,8 +31,13 @@ consteval auto member_named(std::string_view name) {
   return std::meta::info(); // This may return something but don't know
 }
 
-consteval auto operator""_ss(const char* str, size_t len) -> const char *  {
+consteval auto operator""_ss(const char* str, [[maybe_unused]] size_t length) -> const char *  {
     return std::meta::define_static_string(str);
 }
+
+consteval auto data_member_array(std::meta::info info) {
+  return define_static_array(nonstatic_data_members_of(info));
+}
+
 
 }

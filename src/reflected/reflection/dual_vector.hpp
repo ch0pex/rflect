@@ -1,6 +1,6 @@
 /************************************************************************
  * Copyright (c) 2025 Alvaro Cabrera Barrio
- * This code is licensed under MIT license (see LICENSE.txt for details) 
+ * This code is licensed under MIT license (see LICENSE.txt for details)
  ************************************************************************/
 /**
  * @file dual_vector.hpp
@@ -13,232 +13,161 @@
 
 #pragma once
 
+#include <cassert>
+
+
+#include "concepts.hpp"
 #include "utils.hpp"
 
-#include <experimental/meta>
-#include <array>
-#include <vector>
-#include <algorithm>
-#include <ranges>
-#include <print>
-#include <functional>
-#include <cassert>
-#include <iostream>
+namespace acb {
 
+// template<has_proxy T>
+// class Iterator {
+// public:
+//   using value_type        = T;
+//   using iterator_category = std::forward_iterator_tag;
+//   using difference_type   = std::size_t;
+//   using reference         = T&;
+//   using pointer           = T*;
+//
+//   constexpr Iterator operator++() { return ++value_; }
+//
+//   constexpr Iterator operator++(int) {
+//     Iterator old = *this;
+//     operator++();
+//     return old;
+//   }
+//
+//   constexpr reference operator*() { return value_; }
+//
+//   constexpr reference operator->() { return &value_; }
+//
+//   friend constexpr bool operator==(Iterator const& proxy1, Iterator const& proxy2) {
+//     return proxy1.value_ == proxy2.value_;
+//   }
+//
+//   friend constexpr bool operator!=(Iterator const& proxy1, Iterator const& proxy2) { return not(proxy1 == proxy2); }
+//
+// private:
+//   value_type value_;
+// };
+//
 
-/// *** Implementation structures ***
-
-template <typename T, size_t N>
-struct struct_of_arrays_impl {
-  struct impl;
-
-  consteval {
-    std::vector<std::meta::info> old_members = nonstatic_data_members_of(^^T);
-    std::vector<std::meta::info> new_members = {};
-    for (std::meta::info member : old_members) {
-        auto array_type = substitute(^^std::array, { type_of(member), std::meta::reflect_value(N)});
-        auto mem_descr = data_member_spec(array_type, {.name = identifier_of(member)});
-        new_members.push_back(mem_descr);
-    }
-
-    define_aggregate(^^impl, new_members);
-  }
+template<has_proxy T, std::size_t N, memory_layout Layout = layout::aos>
+class dual_array {
+  // TODO
 };
 
-template <class T, template<class> class _Alloc>
-struct struct_of_vectors_impl {
-  struct impl;
-
-  consteval {
-    std::vector<std::meta::info> old_members = nonstatic_data_members_of(^^T);
-    std::vector<std::meta::info> new_members = {};
-
-    for (std::meta::info member : old_members) {
-        auto allocator = substitute(^^_Alloc, {type_of(member)});
-        auto array_type = substitute(^^std::vector, { type_of(member), allocator });
-        auto mem_descr = data_member_spec(array_type, {.name = identifier_of(member)});
-        new_members.push_back(mem_descr);
-    }
-
-    define_aggregate(^^impl, new_members);
-  }
-};
-
-struct view_impl;
-
-/// *** Memory layouts (AOS, SOA) ***
-
-namespace layout  {
-    struct aos {
-        template<typename T, std::size_t N>
-        using array = std::array<T, N>;
-
-        template<typename T, template<class> class _Alloc>
-        using vector = std::vector<T, _Alloc<T>>;
-    };
-
-    struct soa {
-        template<class T, std::size_t N>
-        using array = typename struct_of_arrays_impl<T, N>::impl;
-
-        template<class T, template<class> class _Alloc>
-        using vector = struct_of_vectors_impl<T, _Alloc>::impl;
-    };
-}
-
-
-/// *** Containers wiht aos/soa layouts
-template <class T, size_t N, class _Layout = layout::aos>
-using dual_array = _Layout::template array<T,N>;
-
-template <class T, class _Layout = layout::aos, template<typename> class _Alloc = std::allocator>
-using dual_vector = _Layout::template vector<T, _Alloc>;
-
-//////////////////////////////////////////////////////////////////////////
-/// *** Wrapper that offers the same public interface for soa/aos
-//////////////////////////////////////////////////////////////////////////
-template<typename T, typename _Layout = layout::aos, template<typename> class _Alloc = std::allocator> /// TODO requires T::View
-class DualVector {
+template<has_proxy T, memory_layout Layout = layout::aos, template<typename> class Alloc = std::allocator>
+class dual_vector {
 public:
-    using value_type = T;
-    using underlaying_container = dual_vector<T, _Layout, _Alloc>;
-    using view = typename T::template proxy_type<DualVector>;
-    using memory_layout = _Layout;
+  // *** Type traits ***
+  using value_type           = T;
+  using underlying_container = typename Layout::template vector<T, Alloc>;
+  using view_type            = typename T::template proxy_type<dual_vector>;
+  using memory_layout        = Layout;
+  using iterator             = view_type;
 
-    constexpr view at(std::size_t index) {
-        return {data_, index};
-    }
+  // *** Constructors ***
+  constexpr dual_vector() = default;
 
-    constexpr void push_back(value_type const& item) {
-        if constexpr (std::same_as<_Layout, layout::soa>) {
-            template for(constexpr auto member:  define_static_array(nonstatic_data_members_of(^^underlaying_container))) {
-                data_.[:member:].push_back(item.[:member_named<T>(identifier_of(member)):]);
-            };
-        } else {
-           data_.push_back(item);
-        }
+  constexpr dual_vector(std::initializer_list<value_type> init)
+    requires(soa_layout<memory_layout>)
+  {
+    for (auto const& item: init) {
+      push_back(item);
     }
+  }
+
+  constexpr dual_vector(std::initializer_list<value_type> init)
+    requires(aos_layout<memory_layout>)
+    : data_(init) { }
+
+
+  // *** SOA member functions ***
+  constexpr void push_back(value_type const& item)
+    requires(soa_layout<memory_layout>)
+  {
+    template for (constexpr auto member: data_member_array(^^underlying_container)) {
+      data_.[:member:].push_back(item.[:member_named<value_type>(identifier_of(member)):]);
+    };
+  }
+
+  constexpr void push_back(view_type value)
+    requires(soa_layout<memory_layout>)
+  { }
+
+  constexpr std::size_t size()
+    requires(soa_layout<memory_layout>)
+  {
+    return data_.[:member_number<underlying_container>(0):].size();
+  }
+
+  friend constexpr bool operator==(dual_vector const& vec1, dual_vector const& vec2)
+    requires(soa_layout<memory_layout>)
+  {
+    bool equal = true;
+    template for (constexpr auto member: data_member_array(^^underlying_container)) {
+      equal &= (vec1.[:member:] == vec2.[:member_named<value_type>(identifier_of(member)):]);
+    };
+    return equal;
+  }
+
+  // *** AOS member functions ***
+  constexpr std::size_t size()
+    requires(aos_layout<memory_layout>)
+  {
+    return data_.size();
+  }
+
+  constexpr void push_back(value_type const& item)
+    requires(aos_layout<memory_layout>)
+  {
+    data_.push_back(item);
+  }
+
+  constexpr void push_back(view_type value)
+    requires(aos_layout<memory_layout>)
+  {
+    // data_.push_back(value);
+  }
+
+  constexpr auto begin()
+    requires(aos_layout<memory_layout>)
+  {
+    return view_type {data_, 0}; // TODO
+  }
+
+  constexpr auto end()
+    requires(aos_layout<memory_layout>)
+  {
+    return view_type {data_, data_.size()}; // TODO
+  }
+
+  // *** Member functions ***
+  constexpr view_type at(std::size_t index) {
+    assert(index < size());
+    return {data_, index};
+  }
+
+  constexpr view_type operator[](std::size_t index) {
+    assert(index < size());
+    return {data_, index};
+  }
+
+  friend constexpr bool operator==(dual_vector const& vec1, dual_vector const& vec2)
+    requires(aos_layout<memory_layout>)
+  {
+    return vec1.data_ == vec2.data_;
+  }
 
 private:
-    underlaying_container data_;
+  underlying_container data_;
 };
 
-template<class Container>
-class ProxyBase {
 
-    using value_type = typename Container::value_type;
-    using container = typename Container::underlaying_container;
+template<has_proxy T>
+dual_vector(std::initializer_list<T> init) -> dual_vector<T>;
 
-public:
-    ProxyBase(typename Container::underlaying_container& cont, std::size_t index) : index_(index), container_(&cont) { }
 
-    constexpr void operator=(value_type const& value) {
-
-        if constexpr(std::same_as<typename Container::memory_layout, layout::aos>) {
-            container_->at(index_) = value;
-        } else {
-            template for(constexpr auto member : define_static_array(nonstatic_data_members_of(^^typename Container::underlaying_container))) {
-                container_->[:member:].at(index_) = value.[:member_named<value_type>(identifier_of(member)):];
-            };
-        }
-    }
-
-protected:
-    template<const char * name>
-    constexpr auto member() -> decltype(auto) {
-        if constexpr(std::same_as<typename Container::memory_layout, layout::aos>) {
-            assert(index_ < container_->size());
-            return (container_->at(index_).[:member_named<value_type>(name):]);
-        } else {
-            constexpr auto member_name = member_named<container>(name);
-
-            assert(index_ < container_->[:member_name:].size());
-            return (container_->[:member_name:].at(index_));
-        }
-    }
-
-private:
-    std::size_t index_;
-    container* container_;
-};
-//////////////////////////////////////////////////////////////////////////
-
-//
-//
-///// *** Actual program not part of the library, user defined ***
-//namespace math {
-//template<typename T>
-//struct vec3 {
-//  T x, y;
-//};
-//} // namespace math
-//
-//template<class Container>
-//struct ParticleProxy : ProxyBase<Container> {
-//
-//  // *** Type Traits ***
-//  using ProxyBase<Container>::operator=;
-//
-//
-//  // *** Constructors ***
-//  ParticleProxy(typename Container::underlaying_container& cont, std::size_t index) :
-//    ProxyBase<Container>(cont, index) { }
-//
-//  /* *** Proxy Methods ***
-//   * Define aggregate only supports data_members for now.
-//   * It's on the road plan to expand this functionality in a future.
-//   * So this proxy methods could be autogenerated in a future.
-//   */
-//  auto& position() { return this->template member<"position"_ss>(); }
-//
-//  auto& velocity() { return this->template member<"velocity"_ss>(); }
-//
-//  auto& acceleration() { return this->template member<"acceleration"_ss>(); }
-//
-//  auto& hv() { return this->template member<"hv"_ss>(); }
-//
-//  auto& density() { return this->template member<"density"_ss>(); }
-//
-//  // *** Actually user defined methods ***
-//  void calculateSomeStuff() { position() += velocity() * (1.F / 60.F); }
-//};
-//
-//
-//struct Particle {
-//
-//  template<typename T>
-//  using proxy_type = ParticleProxy<T>;
-//
-//  math::scalar position;
-//  math::scalar velocity;
-//  math::scalar acceleration;
-//  math::scalar hv;
-//  math::scalar density;
-//};
-//
-//int main(int argc, char* argv[]) {
-//  Particle my_particle {};
-//  {
-//    DualVector<Particle, layout::soa> soa;
-//    DualVector<Particle> aos;
-//
-//    soa.push_back(my_particle);
-//    aos.push_back(my_particle);
-//
-//    // soa.at(0).position() = {1.0f, 1.0f};
-//    // soa.at(0).velocity() = {1.0f, 1.0f};
-//    // soa.at(0).acceleration() = {1.0f, 1.0f};
-//    // soa.at(0).hv() = {1.0f, 1.0f};
-//    soa.at(0).density() = 5.0f;
-//    soa.at(0)           = my_particle;
-//
-//    /// Soa interface
-//    // aos.at(0).position() = {1.0f, 1.0f};
-//    // aos.at(0).velocity() = {1.0f, 1.0f};
-//    // aos.at(0).acceleration() = {1.0f, 1.0f};
-//    // aos.at(0).hv() = {1.0f, 1.0f};
-//    aos.at(0).density() = 5.0f;
-//    aos.at(0)           = my_particle;
-//  }
-//  std::cout << "Hello world\n";
-//}
+} // namespace acb

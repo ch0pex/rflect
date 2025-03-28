@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
-project(sim-tests)
+project(sim-tests CXX)
 
 
 find_package(doctest REQUIRED)
@@ -22,7 +22,9 @@ endmacro(add_sim_test)
 
 add_sim_test(functional_test ftest/main.cpp non-reflected-aos)
 add_sim_test(functional_test ftest/main.cpp non-reflected-soa)
+add_sim_test(dual_vector_test utest/runtime/test_dual_vector.cpp reflected-aos-soa)
 
-#add_sim_test(utest_block utest/test_block.cpp)
-#add_sim_test(utest_grid utest/test_grid.cpp)
-#add_sim_test(utest_proargs utest/test_proargs.cpp)
+add_library(unit_test_static STATIC
+        utest/static/reflection_utilities.cpp
+)
+

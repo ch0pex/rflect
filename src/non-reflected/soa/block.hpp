@@ -34,9 +34,9 @@ public:
 
   auto particles() { return std::views::zip(ids, positions, hvs, velocities, accelerations, densities); }
 
-  auto particles() const { return std::views::zip(ids, positions, hvs, velocities, accelerations, densities); }
+  [[nodiscard]] auto particles() const { return std::views::zip(ids, positions, hvs, velocities, accelerations, densities); }
 
-  u32 particleCount() const { return ids.size(); }
+  [[nodiscard]] u32 particleCount() const { return ids.size(); }
 
 private:
   std::vector<u32> ids;

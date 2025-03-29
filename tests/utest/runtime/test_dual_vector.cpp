@@ -32,7 +32,7 @@ constexpr bool operator==(Mock const& a, Mock const& b) {
 }
 
 template<typename C>
-constexpr bool operator==(Mock::proxy_type<C> a, Mock const& b) {
+constexpr bool operator==(Mock::proxy_type<C> const& a, Mock const& b) {
   return a.id() == b.id and a.density() == b.density and a.velocity() == b.velocity;
 }
 

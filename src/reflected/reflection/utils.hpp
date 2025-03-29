@@ -22,22 +22,21 @@ consteval auto member_number(std::size_t const number) {
   return std::meta::nonstatic_data_members_of(^^T)[number];
 }
 
+consteval auto data_member_array(std::meta::info info) {
+  return define_static_array(nonstatic_data_members_of(info));
+}
+
 template<typename T>
-consteval auto member_named(std::string_view name) {
-  for (std::meta::info field : nonstatic_data_members_of(^^T)) {
+consteval auto member_named(std::string_view const name) {
+  template for (constexpr auto field : data_member_array(^^T)) {
     if (has_identifier(field) && identifier_of(field) == name)
       return field;
   }
-  return std::meta::info(); // This may return something but don't know
+  throw std::invalid_argument("No such member");
 }
 
 consteval auto operator""_ss(const char* str, [[maybe_unused]] size_t length) -> const char *  {
     return std::meta::define_static_string(str);
 }
-
-consteval auto data_member_array(std::meta::info info) {
-  return define_static_array(nonstatic_data_members_of(info));
-}
-
 
 }

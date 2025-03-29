@@ -28,9 +28,13 @@
 #define FOR_EACH_AGAIN() FOR_EACH_HELPER
 
 #define EXPAND_PROXY_METHOD(name, ...)                                                                                 \
-  auto& name() {                                                                                                       \
+  auto name() -> decltype(auto) {                                                                                      \
     using namespace acb;                                                                                               \
-    return this->template member<#name##_ss>();                                                                        \
+    return (this->template member<#name##_ss>());                                                                      \
+  }                                                                                                                    \
+  auto name() const -> decltype(auto) {                                                                                \
+    using namespace acb;                                                                                               \
+    return (this->template member<#name##_ss>());                                                                      \
   }
 
 #define DEFINE_PROXY_METHODS(name, ...)                                                                                \
@@ -54,19 +58,15 @@ public:
   using proxy_type           = Proxy<container>;
   using value_type           = typename Container::value_type;
   using underlying_container = typename Container::underlying_container;
-  using reference            = proxy_type&;
-  using pointer              = proxy_type*;
-  using const_reference      = proxy_type const&;
-  using const_pointer        = proxy_type const*;
 
   // *** Constructors ***
-  ProxyBase(underlying_container& cont, std::size_t const index) : index_(index), container_(&cont) { }
+  ProxyBase(underlying_container& cont, std::size_t const index) : index_(index), container_(cont) { }
 
   // *** Operators ***
   constexpr proxy_type& operator=(value_type const& value)
     requires(aos_layout<container>)
   {
-    container_->at(index_) = value;
+    container_.at(index_) = value;
     return *this;
   }
 
@@ -74,51 +74,95 @@ public:
     requires(soa_layout<container>)
   {
     template for (constexpr auto member: data_member_array(^^typename Container::underlying_container)) {
-      container_->[:member:].at(index_) = value.[:member_named<value_type>(identifier_of(member)):];
+      container_.[:member:].at(index_) = value.[:member_named<value_type>(identifier_of(member)):];
     }
     return *this;
   }
 
-  constexpr reference operator*() {
-    auto& self = static_cast<reference>(*this);
-    return self;
+  constexpr value_type& operator*()
+    requires(aos_layout<container>)
+  {
+    return container_.at(index_);
   }
 
-  constexpr pointer operator->() {
-    auto self = static_cast<pointer>(this);
-    return self;
+  constexpr value_type const& operator*() const
+    requires(aos_layout<container>)
+  {
+    return container_.at(index_);
   }
-
-  constexpr proxy_type operator++() { return proxy_type {*container_, ++index_}; }
-
-  constexpr proxy_type operator++(int) {
-    Proxy old = *this;
-    operator++();
-    return old;
-  }
-
-  friend constexpr bool operator==(proxy_type const& proxy1, proxy_type const& proxy2) {
-    return proxy1.index_ == proxy2.index_ and proxy1.container_ == proxy2.container_;
-  }
-
-  friend constexpr bool operator!=(proxy_type const& proxy1, proxy_type const& proxy2) { return not(proxy1 == proxy2); }
 
 protected:
   template<char const* name>
     requires(aos_layout<container>)
   constexpr auto member() -> decltype(auto) {
-    return (container_->at(index_).[:member_named<value_type>(name):]);
+    return (container_.at(index_).[:member_named<value_type>(name):]);
   }
 
   template<char const* name>
     requires(soa_layout<container>)
   constexpr auto member() -> decltype(auto) {
-    return (container_->[:member_named<container>(name):].at(index_));
+    return (container_.[:member_named<underlying_container>(name):].at(index_));
+  }
+
+  template<char const* name>
+    requires(aos_layout<container>)
+  constexpr auto member() const -> decltype(auto) {
+    return (container_.at(index_).[:member_named<value_type>(name):]);
+  }
+
+  template<char const* name>
+    requires(soa_layout<container>)
+  constexpr auto member() const -> decltype(auto) {
+    return (container_.[:member_named<underlying_container>(name):].at(index_));
   }
 
 private:
   std::size_t index_;
-  underlying_container* container_;
+  underlying_container& container_;
+
+  template<typename U>
+  friend class ProxyIterator;
+};
+
+template<typename T>
+class ProxyIterator {
+public:
+  using iterator_category = std::forward_iterator_tag;
+  using difference_type   = std::size_t;
+  using value_type        = T;
+  using reference         = T&;
+  using pointer           = T*;
+
+  ProxyIterator(typename T::underlying_container& cont, std::size_t const index) : value_(cont, index) { }
+
+  explicit ProxyIterator(value_type const& value) : value_(value) { }
+
+  constexpr ProxyIterator operator++() {
+    ++value_.index_;
+    return ProxyIterator {value_};
+  }
+
+  constexpr ProxyIterator operator++(int) {
+    ProxyIterator old = *this;
+    operator++();
+    return old;
+  }
+
+  constexpr reference operator*() { return value_; }
+
+  constexpr reference operator->() { return &value_; }
+
+  friend constexpr bool operator==(ProxyIterator const& proxy1, ProxyIterator const& proxy2) {
+    return proxy1.value_.index_ == proxy2.value_.index_ and
+           std::addressof(proxy1.value_.container_) == std::addressof(proxy2.value_.container_);
+  }
+
+  friend constexpr bool operator!=(ProxyIterator const& proxy1, ProxyIterator const& proxy2) {
+    return not(proxy1 == proxy2);
+  }
+
+private:
+  value_type value_;
 };
 
 } // namespace acb

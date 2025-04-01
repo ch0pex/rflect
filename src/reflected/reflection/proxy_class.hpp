@@ -50,6 +50,39 @@
 
 namespace acb {
 
+namespace detail {
+
+consteval auto type_zipped_view(std::meta::info type) {
+  return substitute(
+      ^^std::tuple, nonstatic_data_members_of(type) | std::views::transform(std::meta::type_of) |
+                        std::views::transform(std::meta::add_lvalue_reference) | std::ranges::to<std::vector>()
+  );
+}
+
+template<typename From, std::meta::info... members>
+constexpr auto struct_to_zip_helper(From const& from, std::size_t const index) {
+  return std::views::zip(from.[:members:]...)[index];
+}
+
+template<typename From>
+consteval auto get_struct_to_zip_helper() {
+  using To = [:type_zipped_view(^^From):];
+
+  std::vector args = {^^From};
+  for (auto mem: nonstatic_data_members_of(^^From)) {
+    args.push_back(reflect_value(mem));
+  }
+
+  return extract<To (*)(From const&, std::size_t)>(substitute(^^struct_to_zip_helper, args));
+}
+
+template<typename From>
+constexpr auto soa_to_zip(From const& from, std::size_t const index) {
+  return get_struct_to_zip_helper<From>()(from, index);
+}
+
+} // namespace detail
+
 template<template<typename> class Proxy, class Container>
 class ProxyBase {
 public:
@@ -58,6 +91,7 @@ public:
   using proxy_type           = Proxy<container>;
   using value_type           = typename Container::value_type;
   using underlying_container = typename Container::underlying_container;
+
 
   // *** Constructors ***
   ProxyBase(underlying_container& cont, std::size_t const index) : index_(index), container_(cont) { }
@@ -73,96 +107,43 @@ public:
   constexpr proxy_type& operator=(value_type const& value)
     requires(soa_layout<container>)
   {
-    template for (constexpr auto member: data_member_array(^^typename Container::underlying_container)) {
-      container_.[:member:].at(index_) = value.[:member_named<value_type>(identifier_of(member)):];
+    template for (constexpr auto member: data_member_array(^^underlying_container)) {
+      container_.[:member:].at(index_) = value.[:nonstatic_data_member<value_type>(identifier_of(member)):];
     }
     return *this;
   }
 
-  constexpr value_type& operator*()
+  template<typename Self>
+  constexpr value_type& operator*(this Self&& self)
     requires(aos_layout<container>)
   {
-    return container_.at(index_);
+    return self.container_.at(self.index_);
   }
 
-  constexpr value_type const& operator*() const
-    requires(aos_layout<container>)
+  template<typename Self>
+  constexpr auto operator*(this Self&& self)
+    requires(soa_layout<container>)
   {
-    return container_.at(index_);
+    return soa_to_zip(self.container_, self.index_);
   }
 
 protected:
-  template<char const* name>
+  template<char const* name, typename Self>
     requires(aos_layout<container>)
-  constexpr auto member() -> decltype(auto) {
-    return (container_.at(index_).[:member_named<value_type>(name):]);
+  constexpr auto member(this Self&& self) -> decltype(auto) {
+    return (self.container_.at(self.index_).[:nonstatic_data_member<value_type>(name):]);
   }
 
-  template<char const* name>
+  template<char const* name, typename Self>
     requires(soa_layout<container>)
-  constexpr auto member() -> decltype(auto) {
-    return (container_.[:member_named<underlying_container>(name):].at(index_));
-  }
-
-  template<char const* name>
-    requires(aos_layout<container>)
-  constexpr auto member() const -> decltype(auto) {
-    return (container_.at(index_).[:member_named<value_type>(name):]);
-  }
-
-  template<char const* name>
-    requires(soa_layout<container>)
-  constexpr auto member() const -> decltype(auto) {
-    return (container_.[:member_named<underlying_container>(name):].at(index_));
+  constexpr auto member(this Self&& self) -> decltype(auto) {
+    return (self.container_.[:nonstatic_data_member<underlying_container>(name):].at(self.index_));
   }
 
 private:
   std::size_t index_;
   underlying_container& container_;
-
-  template<typename U>
-  friend class ProxyIterator;
 };
 
-template<typename T>
-class ProxyIterator {
-public:
-  using iterator_category = std::forward_iterator_tag;
-  using difference_type   = std::size_t;
-  using value_type        = T;
-  using reference         = T&;
-  using pointer           = T*;
-
-  ProxyIterator(typename T::underlying_container& cont, std::size_t const index) : value_(cont, index) { }
-
-  explicit ProxyIterator(value_type const& value) : value_(value) { }
-
-  constexpr ProxyIterator operator++() {
-    ++value_.index_;
-    return ProxyIterator {value_};
-  }
-
-  constexpr ProxyIterator operator++(int) {
-    ProxyIterator old = *this;
-    operator++();
-    return old;
-  }
-
-  constexpr reference operator*() { return value_; }
-
-  constexpr reference operator->() { return &value_; }
-
-  friend constexpr bool operator==(ProxyIterator const& proxy1, ProxyIterator const& proxy2) {
-    return proxy1.value_.index_ == proxy2.value_.index_ and
-           std::addressof(proxy1.value_.container_) == std::addressof(proxy2.value_.container_);
-  }
-
-  friend constexpr bool operator!=(ProxyIterator const& proxy1, ProxyIterator const& proxy2) {
-    return not(proxy1 == proxy2);
-  }
-
-private:
-  value_type value_;
-};
 
 } // namespace acb

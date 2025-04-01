@@ -13,20 +13,14 @@
 
 #pragma once
 
-#include <cassert>
-
+#include <iostream>
+#include <ranges>
 
 #include "concepts.hpp"
-#include "proxy_class.hpp"
+#include "iterator.hpp"
 #include "utils.hpp"
 
 namespace acb {
-
-
-template<has_proxy T, std::size_t N, memory_layout Layout = layout::aos>
-class dual_array {
-  // TODO
-};
 
 template<has_proxy T, memory_layout Layout = layout::aos, template<typename> class Alloc = std::allocator>
 class dual_vector {
@@ -63,13 +57,16 @@ public:
 
   constexpr view_type back() { return {data_, size() - 1}; }
 
-  constexpr auto begin() { return iterator {front()}; }
+  template<typename Self>
+  constexpr auto begin(this Self&& self) {
+    return iterator {std::forward<Self>(self).data_, 0};
+  }
 
-  constexpr auto end() { return iterator {back()}; }
+  template<typename Self>
+  constexpr auto end(this Self&& self) {
+    return iterator {std::forward<Self>(self).data_, std::forward<Self>(self).size() - 1};
+  }
 
-  constexpr auto begin() const { return iterator {front()}; }
-
-  constexpr auto end() const { return iterator {back()}; }
 
   // ********** SOA member functions **********
 
@@ -77,22 +74,27 @@ public:
     requires(soa_layout<memory_layout>)
   {
     template for (constexpr auto member: data_member_array(^^underlying_container)) {
-      data_.[:member:].push_back(item.[:member_named<value_type>(identifier_of(member)):]);
+      data_.[:member:].push_back(item.[:nonstatic_data_member<value_type>(identifier_of(member)):]);
     }
   }
 
   constexpr void push_back(view_type const value)
     requires(soa_layout<memory_layout>)
   {
-    template for (constexpr auto member: data_member_array(^^underlying_container)) {
-      data_.[:member:].push_back(value.[:member_named<value_type>(identifier_of(member)):]());
-    }
+    // auto underlying_value = *value;
+    // constexpr auto zip = static_zip(
+        // nonstatic_data_members_of(^^underlying_container), nonstatic_data_members_of(type_of(^^underlying_value))
+    // );
+
+    // template for (constexpr auto member: zip) {
+      // data_.[:std::get<0>(member):].push_back(underlying_value.[:std::get<1>(member):]);
+    // }
   }
 
   constexpr std::size_t size() const
     requires(soa_layout<memory_layout>)
   {
-    return data_.[:member_number<underlying_container>(0):].size();
+    return data_.[:nonstatic_data_member<underlying_container>(0):].size();
   }
 
   // ********** AOS member functions **********
@@ -109,7 +111,7 @@ public:
     data_.push_back(*view);
   }
 
-  constexpr std::size_t size()
+  constexpr std::size_t size() const
     requires(aos_layout<memory_layout>)
   {
     return data_.size();
@@ -138,6 +140,7 @@ private:
 };
 
 
+// --- Deducing guidelines  ---
 template<has_proxy T>
 dual_vector(std::initializer_list<T> init) -> dual_vector<T>;
 

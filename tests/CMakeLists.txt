@@ -28,3 +28,5 @@ add_library(unit_test_static STATIC
         utest/static/reflection_utilities.cpp
 )
 
+target_include_directories(unit_test_static PUBLIC ../src/reflected/reflection)
+

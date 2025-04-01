@@ -47,13 +47,19 @@ constexpr Mock mock_0 {.id = 0, .density = 12.15, .velocity = {1.0, 2.0, 3.0}};
 
 constexpr Mock mock_1 {.id = 1, .density = 13.15, .velocity = {0.0}};
 
-constexpr Mock mock_2 {.id = 2, .density = -132.0, .velocity = {1.0, 2.0, 3.0}};
+constexpr Mock mock_2 {.id = 2, .density = 14.15, .velocity = {1.0, 2.0, 3.0}};
 
-constexpr Mock mock_3 {.id = 3, .density = -132.0, .velocity = {1.0, 2.0, 3.0}};
+constexpr Mock mock_3 {.id = 3, .density = 15.15, .velocity = {1.0, 2.0, 3.0}};
 
 TEST_SUITE_BEGIN("Dual Vector");
 
 TEST_CASE_TEMPLATE("Constructor with initializer list", T, layout::aos, layout::soa) {
+  dual_vector<Mock, T> mock_vector {mock_0, mock_1, mock_2};
+
+  CHECK(mock_vector.size() == 3U);
+}
+
+TEST_CASE_TEMPLATE("push_back", T, layout::aos, layout::soa) {
   dual_vector<Mock, T> mock_vector {mock_0, mock_1, mock_2};
   dual_vector<Mock, T> mock_vector_2;
   mock_vector_2.push_back(mock_0);
@@ -61,9 +67,13 @@ TEST_CASE_TEMPLATE("Constructor with initializer list", T, layout::aos, layout::
   mock_vector_2.push_back(mock_2);
 
   CHECK(mock_vector == mock_vector_2);
-}
+  mock_vector_2.push_back(mock_2);
+  CHECK(mock_vector != mock_vector_2);
 
-TEST_CASE_TEMPLATE("push_back", T, layout::aos, layout::soa) { dual_vector<Mock, T> mock; }
+  auto mock_view = mock_vector_2.back();
+  mock_vector.push_back(mock_view);
+  CHECK(mock_vector == mock_vector_2);
+}
 
 TEST_CASE_TEMPLATE("at", T, layout::aos, layout::soa) {
   dual_vector<Mock, T> mock {mock_0, mock_1, mock_2};
@@ -71,6 +81,13 @@ TEST_CASE_TEMPLATE("at", T, layout::aos, layout::soa) {
   CHECK(mock.at(0) == mock_0);
   CHECK(mock.at(1) == mock_1);
   CHECK(mock.at(2) == mock_2);
+
+  auto mock_view = mock.at(0);
+  mock_view.id() = 1;
+
+  CHECK(mock_view.id() == mock_1.id);
+
+
 }
 
 TEST_CASE_TEMPLATE("operator[]", T, layout::aos, layout::soa) {
@@ -91,8 +108,18 @@ TEST_CASE_TEMPLATE("size", T, layout::aos, layout::soa) {
   CHECK(vec_2.size() == 3U);
 }
 
-TEST_CASE_TEMPLATE("emplace_back", T, layout::aos, layout::soa) { CHECK(false); }
+TEST_CASE_TEMPLATE("range iteration", T, layout::aos, layout::soa) {
+  dual_vector<Mock, T> vec {mock_0, mock_1, mock_2, mock_3};
 
-TEST_CASE_TEMPLATE("range iteration", T, layout::aos, layout::soa) { CHECK(false); }
+  std::int32_t i = 0;
+  std::double_t j = 12.15;
+
+  for (auto elem : vec) {
+    CHECK(elem.id() == i++);
+    CHECK(elem.density() == j++);
+  }
+
+}
+
 
 TEST_SUITE_END();

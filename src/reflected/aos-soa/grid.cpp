@@ -14,7 +14,7 @@ void Grid::repositioning() {
   std::vector<Block> aux(num_blocks_);
 
   for (auto& block: blocks_) {
-    for (auto& particle: block.particles) {
+    for (auto particle: block.particles) {
       aux[getBlockIndex(particle.position())].addParticle(particle);
     }
   }

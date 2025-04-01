@@ -11,8 +11,14 @@
  * Longer description
  */
 
-namespace {
+#include "iterator.hpp"
 
+#include <concepts>
+
+#include "dual_vector.hpp"
+#include "proxy_class.hpp"
+
+namespace {
 
 
 }

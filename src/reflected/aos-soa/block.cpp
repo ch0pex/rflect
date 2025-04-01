@@ -211,8 +211,7 @@ void LimitsZ(auto particle, std::set<Limits> const& limits) {
  */
 void Block::calcDensities(FluidProperties const& properties, std::span<u32> adjacent, std::vector<Block>& blocks) {
   for (size_t i = 0; i < particles.size(); ++i) {
-    for (size_t j = i + 1; j < particles.size();
-         ++j) { // Evitamos repetir calculos entre particulas inicializando j=i+1
+    for (size_t j = i + 1; j < particles.size(); ++j) {
       incrementDensities(properties, particles[i], particles[j]);
     }
     for (auto const& adjacent_index: adjacent) {
@@ -242,8 +241,8 @@ void Block::calcAccelerations(FluidProperties const& properties, std::span<u32> 
          ++j) { // Evitamos repetir calculos entre particulas inicializando j=i+1
       incrementAccelerations(properties, particles[i], particles[j]);
     }
-    for (auto& adjacent_index: adjacent) {
-      for (auto particle_j: blocks[adjacent_index].particles) {
+    for (auto const& adjacent_index: adjacent) {
+      for (auto const particle_j: blocks[adjacent_index].particles) {
         incrementAccelerations(properties, particles[i], particle_j);
       }
     }
@@ -260,7 +259,7 @@ void Block::calcAccelerations(FluidProperties const& properties, std::span<u32> 
  * para verificar colisiones.
  */
 void Block::processCollisions(std::set<Limits>& limits) {
-  for (auto particle: particles) {
+  for (auto const particle: particles) {
     CollisionsX(particle, limits);
     CollisionsY(particle, limits);
     CollisionsZ(particle, limits);
@@ -268,7 +267,7 @@ void Block::processCollisions(std::set<Limits>& limits) {
 }
 
 void Block::processLimits(std::set<Limits>& limits) {
-  for (auto particle: particles) {
+  for (auto const particle: particles) {
     LimitsX(particle, limits);
     LimitsY(particle, limits);
     LimitsZ(particle, limits);
@@ -283,7 +282,7 @@ void Block::processLimits(std::set<Limits>& limits) {
  * ('TIME_STEP') y el cuadrado del paso de tiempo ('SQUARED_TIME_STEP').
  */
 void Block::moveParticles() {
-  for (auto& particle: particles) {
+  for (auto particle: particles) {
     particle.position() += particle.hv() * time_step + particle.acceleration() * squared_time_step;
     particle.velocity() = particle.hv() + ((particle.acceleration() * time_step) / 2);
     particle.hv() += particle.acceleration() * time_step;

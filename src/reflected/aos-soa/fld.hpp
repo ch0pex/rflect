@@ -118,8 +118,8 @@ constexpr auto write_output = [](Simulation&& sim) -> err::expected<Simulation> 
   std::ofstream file {sim.arguments.output_file, std::ios::binary};
 
   for (auto const& block: sim.grid.getBlocks()) {
-    for (auto const& particle: block.particles) {
-      results[particle.id] = &particle;
+    for (auto const particle : block.particles) {
+//      results[particle.id()] = &particle;
     }
   }
 

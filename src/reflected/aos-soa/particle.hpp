@@ -6,6 +6,8 @@
 #include "reflected/reflection/dual_vector.hpp"
 #include "reflected/reflection/proxy_class.hpp"
 
+#include <print>
+
 namespace sim {
 
 struct FluidProperties {
@@ -54,9 +56,9 @@ constexpr FluidProperties fluid_properties(math::scalar const ppm) {
   fluid_properties.f45_pi_smooth_6            = 45 / (std::numbers::pi * fluid_properties.smoothing_pow_6);
   fluid_properties.transform_density_constant = (315.0 / (pi_times_64 * fluid_properties.smoothing_pow_9)) * mass;
 
-  std::println("Particles per meter: {}", ppm);
-  std::println("Smoothing length: {}", smoothing);
-  std::println("Particles Mass: {}", mass);
+  // std::println("Particles per meter: {}", ppm);
+  // std::println("Smoothing length: {}", smoothing);
+  // std::println("Particles Mass: {}", mass);
 
   return fluid_properties;
 }

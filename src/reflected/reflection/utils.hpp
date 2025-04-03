@@ -90,4 +90,10 @@ constexpr auto static_zip(Args... args) {
   return define_static_array(std::views::zip(args...));
 }
 
+template<std::size_t N>
+consteval auto static_iota() {
+  return define_static_array(template_arguments_of(dealias(^^std::make_index_sequence<N>)) | std::views::drop(1));
+}
+
+
 } // namespace acb

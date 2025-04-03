@@ -22,6 +22,8 @@
 
 namespace acb {
 
+consteval auto is_member_function(std::meta::info info) { return (is_function(info) or is_function_template(info)); };
+
 template<has_proxy T, memory_layout Layout = layout::aos, template<typename> class Alloc = std::allocator>
 class dual_vector {
 public:
@@ -29,8 +31,10 @@ public:
   using value_type           = T;
   using underlying_container = typename Layout::template vector<T, Alloc>;
   using view_type            = typename T::template proxy_type<dual_vector>;
+  using const_view_type      = view_type const;
   using memory_layout        = Layout;
   using iterator             = ProxyIterator<view_type>;
+  using const_iterator       = ProxyIterator<const_view_type>;
 
   // ********** Constructors **********
   constexpr dual_vector() = default;
@@ -49,24 +53,26 @@ public:
 
   // ********** Member functions **********
 
-  constexpr view_type at(std::size_t index) { return {data_, index}; }
+  constexpr view_type at(std::size_t const index) { return {data_, index}; }
 
-  constexpr view_type operator[](std::size_t index) { return {data_, index}; }
+  constexpr const_view_type at(std::size_t const index) const { return const_view_type {data_, index}; }
+
+  constexpr view_type operator[](std::size_t const index) { return {data_, index}; }
+
+  constexpr const_view_type operator[](std::size_t const index) const { return {data_, index}; }
 
   constexpr view_type front() { return {data_, 0}; }
 
   constexpr view_type back() { return {data_, size() - 1}; }
 
-  template<typename Self>
-  constexpr auto begin(this Self&& self) {
-    return iterator {std::forward<Self>(self).data_, 0};
-  }
 
-  template<typename Self>
-  constexpr auto end(this Self&& self) {
-    return iterator {std::forward<Self>(self).data_, std::forward<Self>(self).size() - 1};
-  }
+  constexpr auto begin() { return iterator {data_, 0}; }
 
+  constexpr auto end() { return iterator {data_, size() - 1}; }
+
+  constexpr auto begin() const { return const_iterator {data_, 0}; }
+
+  constexpr auto end() const { return const_iterator {data_, size() - 1}; }
 
   // ********** SOA member functions **********
 
@@ -81,17 +87,15 @@ public:
   constexpr void push_back(view_type const value)
     requires(soa_layout<memory_layout>)
   {
-    // auto underlying_value = *value;
-    // constexpr auto zip = static_zip(
-        // nonstatic_data_members_of(^^underlying_container), nonstatic_data_members_of(type_of(^^underlying_value))
-    // );
 
-    // template for (constexpr auto member: zip) {
-      // data_.[:std::get<0>(member):].push_back(underlying_value.[:std::get<1>(member):]);
-    // }
+    auto tuple          = *value;
+    constexpr auto size = data_member_array(^^underlying_container).size();
+    template for (constexpr auto index: static_iota<size>()) {
+      data_.[:nonstatic_data_member<underlying_container>([:index:]):].push_back(std::get<[:index:]>(tuple));
+    }
   }
 
-  constexpr std::size_t size() const
+  [[nodiscard]] constexpr std::size_t size() const
     requires(soa_layout<memory_layout>)
   {
     return data_.[:nonstatic_data_member<underlying_container>(0):].size();
@@ -111,7 +115,7 @@ public:
     data_.push_back(*view);
   }
 
-  constexpr std::size_t size() const
+  [[nodiscard]] constexpr std::size_t size() const
     requires(aos_layout<memory_layout>)
   {
     return data_.size();

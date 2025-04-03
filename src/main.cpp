@@ -4,8 +4,8 @@
 #include "simulator.hpp"
 
 #include <chrono>
-#include <iostream>
 #include <span>
+#include <print>
 
 
 int main(int const argc, char const* argv[]) {
@@ -21,12 +21,12 @@ int main(int const argc, char const* argv[]) {
           });
 
   if (not result) {
-    std::println("{}", result.error());
+    std::cerr << result.error() << "\n";
     return -1;
   }
 
   std::chrono::duration<sim::math::scalar> const total = std::chrono::high_resolution_clock::now() - init;
-  std::println("Simulation Succeed!");
-  std::println("Execution time: {}", total);
+  std::cout << "Simulation Succeed!\n";
+  std::cout << "Execution time: " << total << "\n";
   return 0;
 }

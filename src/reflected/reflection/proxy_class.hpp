@@ -51,34 +51,48 @@
 namespace acb {
 
 namespace detail {
+template<typename T>
+consteval auto type_soa_zipview() {
 
-consteval auto type_zipped_view(std::meta::info type) {
-  return substitute(
-      ^^std::tuple, nonstatic_data_members_of(type) | std::views::transform(std::meta::type_of) |
-                        std::views::transform(std::meta::add_lvalue_reference) | std::ranges::to<std::vector>()
+  constexpr auto raw_members = define_static_array(
+      nonstatic_data_members_of(^^T) | std::views::transform(std::meta::type_of) |
+      std::views::transform(std::meta::remove_cvref) | std::ranges::to<std::vector>()
   );
+
+
+  std::vector<std::meta::info> value_members;
+
+  template for (constexpr auto member: raw_members) {
+    auto new_member = add_lvalue_reference(^^typename[:member:] ::value_type const);
+    // auto const_member = add_const(new_member);
+    value_members.push_back(new_member);
+  }
+
+  return substitute(^^std::tuple, value_members);
 }
 
-template<typename From, std::meta::info... members>
-constexpr auto struct_to_zip_helper(From const& from, std::size_t const index) {
-  return std::views::zip(from.[:members:]...)[index];
+template<typename To, typename From, std::meta::info... members>
+constexpr auto soa_to_zip_helper(From const& from, std::size_t const index) -> To {
+
+  auto value = std::views::zip(from.[:members:]...);
+  return value[index];
 }
 
 template<typename From>
-consteval auto get_struct_to_zip_helper() {
-  using To = [:type_zipped_view(^^From):];
+consteval auto get_soa_to_zip_helper() {
+  using To = [:type_soa_zipview<From>():];
 
-  std::vector args = {^^From};
+  std::vector args = {^^To, ^^From};
   for (auto mem: nonstatic_data_members_of(^^From)) {
     args.push_back(reflect_value(mem));
   }
 
-  return extract<To (*)(From const&, std::size_t)>(substitute(^^struct_to_zip_helper, args));
+  return extract<To (*)(From const&, std::size_t const index)>(substitute(^^soa_to_zip_helper, args));
 }
 
 template<typename From>
 constexpr auto soa_to_zip(From const& from, std::size_t const index) {
-  return get_struct_to_zip_helper<From>()(from, index);
+  return get_soa_to_zip_helper<From>()(from, index);
 }
 
 } // namespace detail
@@ -90,8 +104,9 @@ public:
   using container            = Container;
   using proxy_type           = Proxy<container>;
   using value_type           = typename Container::value_type;
-  using underlying_container = typename Container::underlying_container;
-
+  using underlying_container = std::conditional_t<
+      std::is_const_v<container>, typename Container::underlying_container const,
+      typename Container::underlying_container>;
 
   // *** Constructors ***
   ProxyBase(underlying_container& cont, std::size_t const index) : index_(index), container_(cont) { }

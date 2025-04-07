@@ -19,3 +19,4 @@ endmacro(add_rflect_test)
 
 
 add_rflect_test(dual_vector_test test_dual_vector.cpp)
+add_rflect_test(proxy test_proxy.cpp)

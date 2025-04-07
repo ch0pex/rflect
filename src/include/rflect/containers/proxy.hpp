@@ -64,12 +64,17 @@ public:
   // *** Constructors ***
   proxy_base(underlying_container& cont, std::size_t const index) : index_(index), container_(cont) { }
 
+  explicit proxy_base(proxy_base const& other) = default;
+
+  explicit proxy_base(proxy_base&& other) : container_(std::move(other.container_)), index_(other.index_) { }
+
+
   // *** Operators ***
   constexpr proxy_type& operator=(value_type const& value)
     requires(aos_layout<container>)
   {
     container_.at(index_) = value;
-    return *this;
+    return static_cast<proxy_type&>(*this);
   }
 
   constexpr proxy_type& operator=(value_type const& value)
@@ -78,7 +83,30 @@ public:
     template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array()) {
       container_.[:member:].at(index_) = value.[:nonstatic_data_member<value_type>(identifier_of(member)):];
     }
-    return *this;
+    return static_cast<proxy_type&>(*this);
+  }
+
+  constexpr proxy_type& operator=(proxy_base const& value)
+    requires(aos_layout<container>)
+  {
+    if (this != &value) {
+      container_.at(index_) = *static_cast<proxy_type const&>(value);
+    }
+    return static_cast<proxy_type&>(*this);
+  }
+
+  constexpr proxy_type& operator=(proxy_base const& value)
+    requires(soa_layout<container>)
+  {
+    if (this == &value)
+      return static_cast<proxy_type&>(*this);
+
+    auto tuple          = *static_cast<proxy_type const&>(value);
+    constexpr auto size = (nonstatic_data_members_of(^^underlying_container) | to_static_array()).size();
+    template for (constexpr auto index: static_iota<size>()) {
+      container_.[:nonstatic_data_member<underlying_container>([:index:]):].at(index_) = std::get<[:index:]>(tuple);
+    }
+    return static_cast<proxy_type&>(*this);
   }
 
   template<typename Self>

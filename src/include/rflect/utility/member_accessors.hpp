@@ -12,6 +12,7 @@
  * members in new ways, utilizing static reflection.
  */
 #pragma once
+#include "static_array.hpp"
 
 namespace rflect {
 template<typename T>
@@ -19,27 +20,19 @@ consteval auto nonstatic_data_member(std::size_t const number) {
   return std::meta::nonstatic_data_members_of(^^T)[number];
 }
 
-consteval auto data_member_array(std::meta::info info) { return define_static_array(nonstatic_data_members_of(info)); }
-
-consteval auto member_array(std::meta::info info) { return define_static_array(members_of(info)); }
-
-consteval auto member_array(std::meta::info info, auto&& filter) {
-  return define_static_array(members_of(info) | std::views::filter(filter));
-}
-
 template<typename T>
 consteval auto function_member(std::size_t n) {
-  constexpr auto member_functions = member_array(^^T, std::meta::is_function);
+  constexpr auto member_functions = members_of(^^T) | std::views::filter(std::meta::is_function) | to_static_array();
   return member_functions[n];
 }
 
 template<typename T>
 consteval auto nonstatic_data_member(std::string_view const name) {
-  template for (constexpr auto field: data_member_array(^^T)) {
+  template for (constexpr auto field: nonstatic_data_members_of(^^T) | to_static_array()) {
     if (has_identifier(field) && identifier_of(field) == name)
       return field;
   }
   throw std::invalid_argument("No such nonstatic data member");
 }
 
-}
+} // namespace rflect

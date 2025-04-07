@@ -75,7 +75,7 @@ public:
   constexpr proxy_type& operator=(value_type const& value)
     requires(soa_layout<container>)
   {
-    template for (constexpr auto member: data_member_array(^^underlying_container)) {
+    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array()) {
       container_.[:member:].at(index_) = value.[:nonstatic_data_member<value_type>(identifier_of(member)):];
     }
     return *this;

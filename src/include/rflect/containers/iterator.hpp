@@ -51,7 +51,8 @@ public:
   }
 
   friend constexpr bool operator==(proxy_iterator const& proxy1, proxy_iterator const& proxy2) {
-    return proxy1.index_ == proxy2.index_ and std::addressof(proxy1.container_) == std::addressof(proxy2.container_);
+    // TODO compare std::addressof(proxy1.container.begin()) == std::addressof(proxy2.container.begin())
+    return proxy1.index_ == proxy2.index_;
   }
 
 private:

@@ -74,18 +74,34 @@ TEST_CASE_TEMPLATE("size", T, layout::aos, layout::soa) {
   CHECK(vec_2.size() == 3U);
 }
 
-TEST_CASE_TEMPLATE("range iteration", T, layout::aos, layout::soa) {
+TEST_CASE_TEMPLATE("Vector proxy iterator", T, layout::aos, layout::soa) {
   dual_vector<Mock, T> vec {mock_0, mock_1, mock_2, mock_3};
+  constexpr auto vec_size = 4;
 
   std::int32_t i = 0;
   std::double_t j = 12.15;
 
-  // for (auto elem : vec) {
-    // CHECK(elem.id() == i++);
-    // CHECK(elem.density() == j++);
-  // }
+  CHECK(vec.size() == vec_size);
 
+  for (auto it = vec.begin(); it != vec.end(); ++it) {
+    CHECK((*it).id() == i++);
+    CHECK((*it).density() == j++);
+  }
 }
 
+TEST_CASE_TEMPLATE("range iteration", T, layout::aos, layout::soa) {
+  dual_vector<Mock, T> vec {mock_0, mock_1, mock_2, mock_3};
+  constexpr auto vec_size = 4;
+
+  std::int32_t i = 0;
+  std::double_t j = 12.15;
+
+  CHECK(vec.size() == vec_size);
+
+  for (auto elem : vec) {
+    CHECK(elem.id() == i++);
+    CHECK(elem.density() == j++);
+  }
+}
 
 TEST_SUITE_END();

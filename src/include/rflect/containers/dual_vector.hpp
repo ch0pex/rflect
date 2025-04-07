@@ -67,11 +67,11 @@ public:
 
   constexpr auto begin() { return iterator {data_, 0}; }
 
-  constexpr auto end() { return iterator {data_, size() - 1}; }
+  constexpr auto end() { return iterator {data_, size()}; }
 
   constexpr auto begin() const { return const_iterator {data_, 0}; }
 
-  constexpr auto end() const { return const_iterator {data_, size() - 1}; }
+  constexpr auto end() const { return const_iterator {data_, size()}; }
 
   // ********** SOA member functions **********
 

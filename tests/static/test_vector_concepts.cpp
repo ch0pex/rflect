@@ -12,23 +12,34 @@
  */
 
 #include <rflect/containers/dual_vector.hpp>
-#include <rflect/containers/proxy.hpp>
+#include "utility.hpp"
 
 #include <concepts>
+#include <string_view>
 
 namespace {
 
-struct Mock {
-  DEFINE_PROXY(id, density, velocity);
+constexpr std::string_view iterator_error =  "Forward iterator concept not satisfied";
+constexpr std::string_view range_error =  "Range_error not satisfied";
 
-  std::int32_t id;
-  std::double_t density;
-  std::array<std::double_t, 3> velocity;
-};
+static_assert(std::forward_iterator<rflect::proxy_iterator<mock_proxy_vec>>, iterator_error);
+static_assert(std::forward_iterator<rflect::proxy_iterator<bigger_mock_proxy_vec>>, iterator_error);
+static_assert(std::ranges::range<rflect::dual_vector<Mock>>, range_error);
+static_assert(std::ranges::range<rflect::dual_vector<BiggerMock>>, range_error);
 
-using proxy_t = Mock::proxy_type<rflect::dual_vector<Mock>>;
+// template<typename t>
+// consteval void check_iterator(auto check) {
+//   static_assert(std::forward_iterator<rflect::proxy_iterator<T>>, "rflect::proxy_iterator<T> must be a forward iterator");
+// }
+//
+// template<typename... T>
+// consteval void test_mock_types() {
+//   (check_iterator<T>(), ...);
+// }
+//
+// consteval {
+//   test_mock_types<mock_proxy_vec, bigger_mock_proxy_vec>();
+// }
 
-static_assert(std::forward_iterator<rflect::proxy_iterator<proxy_t>>, "proxy_iterator doesn't satisfy forward_iterator ");
-static_assert(std::ranges::range<rflect::dual_vector<Mock>>, "ProxyIterator doesn't satisfy forward_iterator ");
 
 }

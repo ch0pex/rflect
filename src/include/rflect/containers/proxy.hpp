@@ -62,14 +62,22 @@ public:
       typename Container::underlying_container>;
 
   // *** Constructors ***
-  proxy_base(underlying_container& cont, std::size_t const index) : index_(index), container_(cont) { }
+  constexpr proxy_base(underlying_container& cont, std::size_t const index) : index_(index), container_(cont) { }
 
-  explicit proxy_base(proxy_base const& other) = default;
+  constexpr explicit proxy_base(proxy_base const& other) = default;
 
-  explicit proxy_base(proxy_base&& other) : container_(std::move(other.container_)), index_(other.index_) { }
+  constexpr explicit proxy_base(proxy_base&& other) noexcept :
+    index_(other.index_), container_(std::move(other.container_)) { }
 
+  constexpr ~proxy_base() = default;
 
   // *** Operators ***
+  constexpr proxy_type& operator=(proxy_base&& other)  noexcept {
+    container_ = std::move(other.container_);
+    index_     = other.index_;
+    return static_cast<proxy_type&>(*this);
+  }
+
   constexpr proxy_type& operator=(value_type const& value)
     requires(aos_layout<container>)
   {
@@ -140,6 +148,5 @@ private:
   std::size_t index_;
   underlying_container& container_;
 };
-
 
 } // namespace rflect

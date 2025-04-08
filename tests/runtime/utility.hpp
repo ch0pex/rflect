@@ -37,10 +37,12 @@ constexpr bool operator==(Mock const& a, Mock::proxy_type<C> const& b) {
   return b == a;
 }
 
+template<typename C>
+constexpr bool operator==(Mock::proxy_type<C> const& a, Mock::proxy_type<C> const& b) {
+  return a.id() == b.id() and a.density() == b.density() and a.velocity() == b.velocity();
+}
+
 constexpr Mock mock_0 {.id = 0, .density = 12.15, .velocity = {1.0, 2.0, 3.0}};
-
 constexpr Mock mock_1 {.id = 1, .density = 13.15, .velocity = {0.0}};
-
 constexpr Mock mock_2 {.id = 2, .density = 14.15, .velocity = {1.0, 2.0, 3.0}};
-
 constexpr Mock mock_3 {.id = 3, .density = 15.15, .velocity = {1.0, 2.0, 3.0}};

@@ -42,17 +42,33 @@ TEST_CASE_TEMPLATE("push_back", T, layout::aos, layout::soa) {
   CHECK(mock_vector == mock_vector_2);
 }
 
-TEST_CASE_TEMPLATE("at", T, layout::aos, layout::soa) {
+TEST_CASE_TEMPLATE("Accessors", T, layout::aos, layout::soa) {
   dual_vector<Mock, T> mock {mock_0, mock_1, mock_2};
 
   CHECK(mock.at(0) == mock_0);
   CHECK(mock.at(1) == mock_1);
   CHECK(mock.at(2) == mock_2);
 
-  auto mock_view = mock.at(0);
-  mock_view.id() = 1;
+  SUBCASE("at") {
+    auto mock_view = mock.at(0);
+    mock_view.id() = 1;
 
-  CHECK(mock_view.id() == mock_1.id);
+    CHECK(mock_view.id() == mock_1.id);
+  }
+
+  SUBCASE("front") {
+    auto mock_view = mock.front();
+    auto mock_view_2 = mock.at(0);
+
+    CHECK(mock_view == mock_view_2);
+  }
+
+  SUBCASE("back") {
+    auto mock_view = mock.back();
+    auto mock_view_2 = mock.at(mock.size() - 1);
+
+    CHECK(mock_view == mock_view_2);
+  }
 
 }
 

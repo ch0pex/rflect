@@ -73,7 +73,7 @@ struct struct_of_vectors {
 
 } // namespace detail
 
-template<typename T, template<class> class Alloc>
+template<typename T, template<class> class Alloc = std::allocator>
 using struct_of_vectors = typename detail::struct_of_vectors<T, Alloc>::impl;
 
 template<typename T, std::size_t N>

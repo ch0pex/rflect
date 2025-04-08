@@ -66,14 +66,13 @@ public:
 
   constexpr explicit proxy_base(proxy_base const& other) = default;
 
-  constexpr explicit proxy_base(proxy_base&& other) noexcept :
-    index_(other.index_), container_(std::move(other.container_)) { }
+  constexpr explicit proxy_base(proxy_base&& other) = default;
 
   constexpr ~proxy_base() = default;
 
   // *** Operators ***
   constexpr proxy_type& operator=(proxy_base&& other)  noexcept {
-    container_ = std::move(other.container_);
+    container_ = other.container_;
     index_     = other.index_;
     return static_cast<proxy_type&>(*this);
   }

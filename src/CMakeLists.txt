@@ -1,12 +1,43 @@
-add_subdirectory(non-reflected)
-add_subdirectory(reflected)
 
-function(add_sim_executable name)
-    add_executable(${name} main.cpp)
-    target_link_libraries(${name} PRIVATE sim::${name}-lib)
-endfunction()
+add_library(rflect INTERFACE)
 
-add_sim_executable(non-reflected-aos)
-add_sim_executable(non-reflected-soa)
-add_sim_executable(reflected-aos-soa)
-#add_sim_executable(reflected-mixed)
+target_sources(rflect
+        PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include
+        FILES
+        # Core
+        include/rflect/rflect.hpp
+        include/rflect/concepts.hpp
+        include/rflect/containers.hpp
+        include/rflect/converters.hpp
+
+        # Concepts
+        include/rflect/concepts/layout_concepts.hpp
+        include/rflect/concepts/proxy_concepts.hpp
+
+        # Containers
+        include/rflect/containers/multi_array.hpp
+        include/rflect/containers/multi_vector.hpp
+        include/rflect/containers/dual_array.hpp
+        include/rflect/containers/dual_vector.hpp
+        include/rflect/containers/proxy.hpp
+        include/rflect/containers/iterator.hpp
+        include/rflect/containers/memory_layout.hpp
+
+        # Converters
+        include/rflect/converters/soa_to_zip.hpp
+        include/rflect/converters/struct_to_soa.hpp
+        include/rflect/converters/struct_to_tuple.hpp
+
+        # Serialization
+        include/rflect/serialization/print_enum.hpp
+        include/rflect/serialization/print_struct.hpp
+
+        # Introspection
+        include/rflect/utility/member_accessors.hpp
+        include/rflect/utility/static_array.hpp
+)
+
+target_include_directories(rflect INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+add_library(rflect::rflect ALIAS rflect)

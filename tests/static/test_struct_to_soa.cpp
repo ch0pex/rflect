@@ -11,17 +11,10 @@
  * Longer description
  */
 
-#include <rflect/converters/struct_to_soa.hpp>
 
 #include "utility.hpp"
 
 namespace {
-
-constexpr rflect::struct_of_arrays<Mock, 50> mock_array {};
-constexpr rflect::struct_of_vectors<Mock> mock_vector {};
-
-constexpr rflect::struct_of_arrays<BiggerMock, 50> big_mock_array {};
-constexpr rflect::struct_of_vectors<BiggerMock> big_mock_vector {};
 
 // Struct of array conversion asserts (Mock)
 static_assert(std::same_as<decltype(mock_array.id), std::array<decltype(Mock{}.id), 50>>);
@@ -33,7 +26,7 @@ static_assert(std::same_as<decltype(mock_vector.id), std::vector<decltype(Mock{}
 static_assert(std::same_as<decltype(mock_vector.density), std::vector<decltype(Mock{}.density)>>);
 static_assert(std::same_as<decltype(mock_vector.velocity), std::vector<decltype(Mock{}.velocity)>>);
 
-// Struct of array conversion asserts (Mock)
+// Struct of array conversion asserts (BiggerMock)
 static_assert(std::same_as<decltype(big_mock_array.id), std::array<decltype(BiggerMock{}.id), 50>>);
 static_assert(std::same_as<decltype(big_mock_array.density), std::array<decltype(BiggerMock{}.density), 50>>);
 static_assert(std::same_as<decltype(big_mock_array.velocity), std::array<decltype(BiggerMock{}.velocity), 50>>);

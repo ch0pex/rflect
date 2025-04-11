@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <rflect/soa_to_zip.hpp>
-#include <rflect/static_array.hpp>
-#include <rflect/struct_to_soa.hpp>
-#include <rflect/struct_to_tuple.hpp>
+#include <rflect/converters/soa_to_zip.hpp>
+#include <rflect/converters/struct_to_soa.hpp>
+#include <rflect/converters/struct_to_tuple.hpp>

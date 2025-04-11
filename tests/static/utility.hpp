@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <rflect/containers.hpp>
+#include <rflect/rflect.hpp>
 
 struct Mock {
   DEFINE_PROXY(id, density, velocity);
@@ -31,10 +31,15 @@ struct BiggerMock {
 
   std::int32_t id;
   std::double_t density;
-  std::vector<std::double_t> velocity;
+  std::array<std::double_t, 3> velocity;
   std::vector<std::double_t> positions;
   std::array<Mock, 1024> friends;
 };
 
 using bigger_mock_proxy_vec = BiggerMock::proxy_type<rflect::dual_vector<BiggerMock>>;
-// using bigger_mock_proxy_array = BiggerMock::proxy_type<rflect::dual_array<Mock>>;
+
+constexpr rflect::struct_of_arrays<Mock, 50> mock_array {};
+constexpr rflect::struct_of_vectors<Mock> mock_vector {};
+
+constexpr rflect::struct_of_arrays<BiggerMock, 50> big_mock_array {};
+constexpr rflect::struct_of_vectors<BiggerMock> big_mock_vector {};

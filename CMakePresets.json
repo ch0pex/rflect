@@ -19,7 +19,7 @@
         "CMAKE_CXX_STANDARD_LIBRARIES": "-lc++ -lc++abi -L$env{HOME}/reflection/install/lib/x86_64-unknown-linux-gnu/libc++.so -L$env{HOME}/reflection/install/lib/x86_64-unknown-linux-gnu/libc++abi.so",
         "CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "./conan_provider.cmake",
         "CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES": "$env{HOME}/reflection/install/include/c++/v1/;$env{HOME}/reflection/install/include/x86_64-unknown-linux-gnu/c++/v1/;/usr/lib/llvm-19/lib/clang/19/include",
-        "CONAN_COMMAND": "${sourceDir}/conan_env/bin/conan"
+        "CONAN_COMMAND": "${sourceDir}/env/bin/conan"
       }
     },
     {

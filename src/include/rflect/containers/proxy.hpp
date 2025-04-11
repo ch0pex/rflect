@@ -87,7 +87,7 @@ public:
   constexpr proxy_type& operator=(value_type const& value)
     requires(soa_layout<container>)
   {
-    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array()) {
+    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
       container_.[:member:].at(index_) = value.[:nonstatic_data_member<value_type>(identifier_of(member)):];
     }
     return static_cast<proxy_type&>(*this);
@@ -109,7 +109,7 @@ public:
       return static_cast<proxy_type&>(*this);
 
     auto tuple          = *static_cast<proxy_type const&>(value);
-    constexpr auto size = (nonstatic_data_members_of(^^underlying_container) | to_static_array()).size();
+    constexpr auto size = (nonstatic_data_members_of(^^underlying_container) | to_static_array).size();
     template for (constexpr auto index: static_iota<size>()) {
       container_.[:nonstatic_data_member<underlying_container>([:index:]):].at(index_) = std::get<[:index:]>(tuple);
     }
@@ -127,7 +127,7 @@ public:
   constexpr auto operator*(this Self&& self)
     requires(soa_layout<container>)
   {
-    return soa_to_zip(self.container_, self.index_);
+    return soa_to_zip(self.container_)[self.index_];
   }
 
 protected:

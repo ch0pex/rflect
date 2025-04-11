@@ -15,3 +15,4 @@
 #include <rflect/converters/soa_to_zip.hpp>
 #include <rflect/converters/struct_to_soa.hpp>
 #include <rflect/converters/struct_to_tuple.hpp>
+#include <rflect/converters/to_static.hpp>

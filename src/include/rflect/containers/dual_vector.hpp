@@ -16,8 +16,8 @@
 #include <rflect/concepts/layout_concepts.hpp>
 #include <rflect/concepts/proxy_concepts.hpp>
 #include <rflect/containers/iterator.hpp>
-#include <rflect/utility/member_accessors.hpp>
-#include <rflect/utility/static_array.hpp>
+#include <rflect/introspection/struct.hpp>
+#include <rflect/converters/to_static.hpp>
 
 #include <iostream>
 #include <ranges>
@@ -78,7 +78,7 @@ public:
   constexpr void push_back(value_type const& item)
     requires(soa_layout<memory_layout>)
   {
-    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array()) {
+    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
       data_.[:member:].push_back(item.[:nonstatic_data_member<value_type>(identifier_of(member)):]);
     }
   }
@@ -88,7 +88,7 @@ public:
   {
 
     auto tuple          = *value;
-    constexpr auto size = (nonstatic_data_members_of(^^underlying_container) | to_static_array()).size();
+    constexpr auto size = (nonstatic_data_members_of(^^underlying_container) | to_static_array).size();
     template for (constexpr auto index: static_iota<size>()) {
       data_.[:nonstatic_data_member<underlying_container>([:index:]):].push_back(std::get<[:index:]>(tuple));
     }
@@ -132,7 +132,7 @@ public:
     requires(soa_layout<memory_layout>)
   {
     bool equal = true;
-    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array()) {
+    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
       equal &= (vec1.data_.[:member:] == vec2.data_.[:member:]);
     };
     return equal;

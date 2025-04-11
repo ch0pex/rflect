@@ -3,7 +3,7 @@
  * This code is licensed under MIT license (see LICENSE.txt for details)
  ************************************************************************/
 /**
- * @file static_array.hpp
+ * @file to_static.hpp
  * @version 1.0
  * @date 4/4/25
  * @brief Static array utilitites
@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <experimental/meta>
+#include <rflect/concepts/converter_closure.hpp>
 
 namespace rflect {
 
@@ -26,19 +26,13 @@ consteval auto operator""_ss(char const* str, [[maybe_unused]] size_t length) ->
   return std::meta::define_static_string(str);
 }
 
-struct to_static_fn {
+struct to_static_fn : converter_closure<to_static_fn>  {
   template <std::ranges::input_range R>
   consteval auto operator()(R&& r) const {
     return define_static_array(r);
   }
-
-  template <std::ranges::input_range R>
-  friend consteval auto operator|(R&& r, const to_static_fn& self) {
-    return self(std::forward<R>(r));
-  }
 };
 
-consteval to_static_fn to_static_array() {
-  return {};
-}
+inline constexpr auto to_static_array = to_static_fn{};
+
 } // namespace rflect

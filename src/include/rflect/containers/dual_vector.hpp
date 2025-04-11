@@ -51,6 +51,19 @@ public:
     requires(aos_layout<memory_layout>)
     : data_(init) { }
 
+  constexpr dual_vector(std::integral auto size)
+    requires(aos_layout<memory_layout>)
+    : data_(size) { }
+
+  constexpr explicit dual_vector(std::integral auto size)
+    requires(soa_layout<memory_layout>)
+  {
+    template for (constexpr auto member : nonstatic_data_members_of(^^underlying_container) | to_static_array) {
+      data_.[:member:] = decltype(data_.[:member:])(size);
+    }
+  }
+
+
   // ********** Member functions **********
 
   constexpr view_type at(std::size_t const index) { return {data_, index}; }

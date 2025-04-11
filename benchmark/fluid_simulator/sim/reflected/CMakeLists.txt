@@ -16,12 +16,6 @@ function(add_reflected_lib name)
             ${name}/block.hpp
             ${name}/particle.hpp
             ../simulator.hpp
-            reflection/concepts.hpp
-            reflection/dual_vector.hpp
-            reflection/proxy_class.hpp
-            reflection/utils.hpp
-            reflection/dual_vector_detail.hpp
-            reflection/memory_layout.hpp
             ../common/math/concepts.hpp
             ../common/math/functions.hpp
             ../common/math/math.hpp
@@ -36,6 +30,7 @@ function(add_reflected_lib name)
     )
 
     target_include_directories(reflected-${name}-lib PUBLIC ${name} ../common)
+    target_link_libraries(reflected-${name}-lib PUBLIC rflect::rflect)
     add_library(sim::reflected-${name}-lib ALIAS reflected-${name}-lib)
 endfunction()
 

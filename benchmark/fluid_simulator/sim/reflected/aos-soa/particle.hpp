@@ -3,10 +3,9 @@
 #include "math/math.hpp"
 #include "utils/constants.hpp"
 #include "utils/primitive_types.hpp"
-#include "reflected/reflection/dual_vector.hpp"
-#include "reflected/reflection/proxy_class.hpp"
 
 #include <print>
+#include <rflect/rflect.hpp>
 
 namespace sim {
 

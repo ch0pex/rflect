@@ -2,7 +2,7 @@
 
 #include "particle.hpp"
 #include "utils/constants.hpp"
-#include "reflected/reflection/dual_vector.hpp"
+#include <rflect/rflect.hpp>
 
 #include <set>
 #include <span>

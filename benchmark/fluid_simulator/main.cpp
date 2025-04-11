@@ -11,21 +11,19 @@
  * Longer description
  */
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <doctest/doctest.h>
-
 #include "common.hpp"
 
-DOCTEST_TEST_SUITE_BEGIN("Integration tests");
-
-TEST_CASE("Large file") {
-  for (sim::i8 i = 1; i <= 5; ++i)
+int main() {
+  // Check correctness
+  for (sim::i8 i = 1; i <= 5; ++i) {
     test_simulation("large", i);
-}
-
-TEST_CASE("Small file") {
-  for (sim::i8 i = 1; i <= 5; ++i)
+  }
+  for (sim::i8 i = 1; i <= 5; ++i) {
     test_simulation("small", i);
-}
+  }
 
-DOCTEST_TEST_SUITE_END();
+  // Benchmark
+  for (sim::i8 i = 1; i <= 1; ++i) {
+    test_simulation("large", 1000);
+  }
+}

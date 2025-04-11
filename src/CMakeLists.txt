@@ -30,13 +30,9 @@ target_sources(rflect
         include/rflect/converters/struct_to_soa.hpp
         include/rflect/converters/struct_to_tuple.hpp
 
-        # Serialization
-        include/rflect/serialization/print_enum.hpp
-        include/rflect/serialization/print_struct.hpp
-
         # Introspection
-        include/rflect/utility/member_accessors.hpp
-        include/rflect/utility/static_array.hpp
+        include/rflect/introspection/enum.hpp
+        include/rflect/introspection/struct.hpp
 )
 
 target_include_directories(rflect INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)

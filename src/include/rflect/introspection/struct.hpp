@@ -3,18 +3,21 @@
  * This code is licensed under MIT license (see LICENSE.txt for details)
  ************************************************************************/
 /**
- * @file member_accessors.hpp
+ * @file struct.hpp
  * @version 1.0
- * @date 4/4/25
- * @brief Accessors utilities
+ * @date 4/11/25
+ * @brief Short description
  *
- * This functions allows the user to access structs/class
- * members in new ways, utilizing static reflection.
+ * Longer description
  */
 #pragma once
-#include "static_array.hpp"
+
+#pragma once
+
+#include <rflect/converters/to_static.hpp>
 
 namespace rflect {
+
 template<typename T>
 consteval auto nonstatic_data_member(std::size_t const number) {
   return std::meta::nonstatic_data_members_of(^^T)[number];
@@ -22,13 +25,13 @@ consteval auto nonstatic_data_member(std::size_t const number) {
 
 template<typename T>
 consteval auto function_member(std::size_t n) {
-  constexpr auto member_functions = members_of(^^T) | std::views::filter(std::meta::is_function) | to_static_array();
+  constexpr auto member_functions = members_of(^^T) | std::views::filter(std::meta::is_function) | to_static_array;
   return member_functions[n];
 }
 
 template<typename T>
 consteval auto nonstatic_data_member(std::string_view const name) {
-  template for (constexpr auto field: nonstatic_data_members_of(^^T) | to_static_array()) {
+  template for (constexpr auto field: nonstatic_data_members_of(^^T) | to_static_array) {
     if (has_identifier(field) && identifier_of(field) == name)
       return field;
   }

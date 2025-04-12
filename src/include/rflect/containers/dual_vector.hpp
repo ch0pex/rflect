@@ -16,8 +16,8 @@
 #include <rflect/concepts/layout_concepts.hpp>
 #include <rflect/concepts/proxy_concepts.hpp>
 #include <rflect/containers/iterator.hpp>
-#include <rflect/introspection/struct.hpp>
 #include <rflect/converters/to_static.hpp>
+#include <rflect/introspection/struct.hpp>
 
 #include <iostream>
 #include <ranges>
@@ -31,7 +31,7 @@ public:
   using value_type           = T;
   using underlying_container = typename Layout::template vector<T, Alloc>;
   using view_type            = typename T::template proxy_type<dual_vector>;
-  using const_view_type      = view_type const;
+  using const_view_type      = typename T::template proxy_type<dual_vector const>;
   using memory_layout        = Layout;
   using iterator             = proxy_iterator<view_type>;
   using const_iterator       = proxy_iterator<const_view_type>;
@@ -58,7 +58,7 @@ public:
   constexpr explicit dual_vector(std::integral auto size)
     requires(soa_layout<memory_layout>)
   {
-    template for (constexpr auto member : nonstatic_data_members_of(^^underlying_container) | to_static_array) {
+    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
       data_.[:member:] = decltype(data_.[:member:])(size);
     }
   }

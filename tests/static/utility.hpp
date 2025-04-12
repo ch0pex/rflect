@@ -23,7 +23,8 @@ struct Mock {
   std::array<std::double_t, 3> velocity;
 };
 
-using mock_proxy_vec = Mock::proxy_type<rflect::dual_vector<Mock>>;
+using mock_proxy_vec       = Mock::proxy_type<rflect::dual_vector<Mock>>;
+using mock_proxy_const_vec = Mock::proxy_type<rflect::dual_vector<Mock> const>;
 // using mock_proxy_array = Mock::proxy_type<rflect::dual_array<Mock>>;
 
 struct BiggerMock {
@@ -36,7 +37,8 @@ struct BiggerMock {
   std::array<Mock, 1024> friends;
 };
 
-using bigger_mock_proxy_vec = BiggerMock::proxy_type<rflect::dual_vector<BiggerMock>>;
+using bigger_mock_proxy_vec       = BiggerMock::proxy_type<rflect::dual_vector<BiggerMock>>;
+using bigger_mock_proxy_const_vec = BiggerMock::proxy_type<rflect::dual_vector<BiggerMock> const>;
 
 constexpr rflect::struct_of_arrays<Mock, 50> mock_array {};
 constexpr rflect::struct_of_vectors<Mock> mock_vector {};

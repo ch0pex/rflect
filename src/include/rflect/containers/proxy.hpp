@@ -116,8 +116,9 @@ public:
     return static_cast<proxy_type&>(*this);
   }
 
+
   template<typename Self>
-  constexpr value_type& operator*(this Self&& self)
+  constexpr auto operator*(this Self&& self)
     requires(aos_layout<container>)
   {
     return self.container_.at(self.index_);

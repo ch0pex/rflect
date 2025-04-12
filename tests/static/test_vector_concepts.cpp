@@ -23,19 +23,10 @@ static_assert(std::forward_iterator<rflect::proxy_iterator<bigger_mock_proxy_vec
 static_assert(std::ranges::range<rflect::dual_vector<Mock>>, range_error);
 static_assert(std::ranges::range<rflect::dual_vector<BiggerMock>>, range_error);
 
-// template<typename t>
-// consteval void check_iterator(auto check) {
-//   static_assert(std::forward_iterator<rflect::proxy_iterator<T>>, "rflect::proxy_iterator<T> must be a forward iterator");
-// }
-//
-// template<typename... T>
-// consteval void test_mock_types() {
-//   (check_iterator<T>(), ...);
-// }
-//
-// consteval {
-//   test_mock_types<mock_proxy_vec, bigger_mock_proxy_vec>();
-// }
+static_assert(not std::is_const_v<rflect::dual_vector<Mock>::view_type::underlying_container>);
+static_assert(std::is_const_v<rflect::dual_vector<Mock>::const_view_type::underlying_container>);
 
+static_assert(not std::is_const_v<rflect::dual_vector<Mock>::iterator::container>);
+static_assert(std::is_const_v<rflect::dual_vector<Mock>::const_iterator::container>);
 
 }

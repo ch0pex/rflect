@@ -29,4 +29,16 @@ static_assert(std::same_as<std::array<std::double_t, 3>&, decltype(std::declval<
 static_assert(std::same_as<std::vector<std::double_t>&, decltype(std::declval<bigger_mock_proxy_vec>().positions())>);
 static_assert(std::same_as<std::array<Mock, 1024>&, decltype(std::declval<bigger_mock_proxy_vec>().friends())>);
 
+static_assert(std::same_as<std::int32_t const&, decltype(std::declval<mock_proxy_const_vec>().id())>);
+static_assert(std::same_as<std::double_t const&, decltype(std::declval<mock_proxy_const_vec>().density())>);
+static_assert(std::same_as<std::array<std::double_t, 3> const&, decltype(std::declval<mock_proxy_const_vec>().velocity())>);
+
+static_assert(std::same_as<std::int32_t const&, decltype(std::declval<bigger_mock_proxy_const_vec>().id())>);
+static_assert(std::same_as<std::double_t const&, decltype(std::declval<bigger_mock_proxy_const_vec>().density())>);
+static_assert(std::same_as<std::array<std::double_t, 3> const&, decltype(std::declval<bigger_mock_proxy_const_vec>().velocity())>);
+static_assert(std::same_as<std::vector<std::double_t> const&, decltype(std::declval<bigger_mock_proxy_const_vec>().positions())>);
+static_assert(std::same_as<std::array<Mock, 1024> const&, decltype(std::declval<bigger_mock_proxy_const_vec>().friends())>);
+
+static_assert(std::is_const_v<mock_proxy_const_vec::underlying_container>);
+static_assert(std::is_const_v<bigger_mock_proxy_const_vec::underlying_container>);
 }

@@ -57,19 +57,18 @@ TEST_CASE_TEMPLATE("Accessors", T, layout::aos, layout::soa) {
   }
 
   SUBCASE("front") {
-    auto mock_view = mock.front();
+    auto mock_view   = mock.front();
     auto mock_view_2 = mock.at(0);
 
     CHECK(mock_view == mock_view_2);
   }
 
   SUBCASE("back") {
-    auto mock_view = mock.back();
+    auto mock_view   = mock.back();
     auto mock_view_2 = mock.at(mock.size() - 1);
 
     CHECK(mock_view == mock_view_2);
   }
-
 }
 
 TEST_CASE_TEMPLATE("operator[]", T, layout::aos, layout::soa) {
@@ -94,7 +93,7 @@ TEST_CASE_TEMPLATE("Vector proxy iterator", T, layout::aos, layout::soa) {
   dual_vector<Mock, T> vec {mock_0, mock_1, mock_2, mock_3};
   constexpr auto vec_size = 4;
 
-  std::int32_t i = 0;
+  std::int32_t i  = 0;
   std::double_t j = 12.15;
 
   CHECK(vec.size() == vec_size);
@@ -109,12 +108,12 @@ TEST_CASE_TEMPLATE("range iteration", T, layout::aos, layout::soa) {
   dual_vector<Mock, T> vec {mock_0, mock_1, mock_2, mock_3};
   constexpr auto vec_size = 4;
 
-  std::int32_t i = 0;
+  std::int32_t i  = 0;
   std::double_t j = 12.15;
 
   CHECK(vec.size() == vec_size);
 
-  for (auto elem : vec) {
+  for (auto elem: vec) {
     CHECK(elem.id() == i++);
     CHECK(elem.density() == j++);
   }

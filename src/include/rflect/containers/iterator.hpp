@@ -56,7 +56,7 @@ public:
   }
 
 private:
-  std::size_t index_;
+  std::size_t index_{};
   container* container_;
 };
 

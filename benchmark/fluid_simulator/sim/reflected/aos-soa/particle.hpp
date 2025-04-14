@@ -125,4 +125,8 @@ inline void incrementAccelerations(FluidProperties const& properties, auto parti
   }
 }
 
+void transformDensity(FluidProperties const& particles_params, auto particle) {
+  particle.density() = (particle.density() + particles_params.smoothing_pow_6) * particles_params.transform_density_constant;
+}
+
 } // namespace sim

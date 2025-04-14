@@ -10,7 +10,11 @@
 
 namespace sim {
 struct Block {
-  using container_type = rflect::dual_vector<Particle>;
+#ifdef RFLECT_SOA
+  using container_type = rflect::dual_vector<Particle, rflect::layout::soa>;
+#else
+  using container_type = rflect::dual_vector<Particle, rflect::layout::aos>;
+#endif
 
   Block() = default;
 

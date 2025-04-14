@@ -3,8 +3,8 @@ function(add_reflected_lib name)
 
     target_sources(reflected-${name}-lib
             PRIVATE
-            ${name}/grid.cpp
-            ${name}/block.cpp
+            aos-soa/grid.cpp
+            aos-soa/block.cpp
     )
 
     target_sources(reflected-${name}-lib
@@ -12,9 +12,10 @@ function(add_reflected_lib name)
             FILE_SET HEADERS
             BASE_DIRS ..
             FILES
-            ${name}/grid.hpp
-            ${name}/block.hpp
-            ${name}/particle.hpp
+            aos-soa/fld.hpp
+            aos-soa/grid.hpp
+            aos-soa/block.hpp
+            aos-soa/particle.hpp
             ../simulator.hpp
             ../common/math/concepts.hpp
             ../common/math/functions.hpp
@@ -29,10 +30,11 @@ function(add_reflected_lib name)
             ../common/utils/primitive_types.hpp
     )
 
-    target_include_directories(reflected-${name}-lib PUBLIC ${name} ../common)
+    target_include_directories(reflected-${name}-lib PUBLIC aos-soa ../common)
     target_link_libraries(reflected-${name}-lib PUBLIC rflect::rflect)
     add_library(sim::reflected-${name}-lib ALIAS reflected-${name}-lib)
 endfunction()
 
-add_reflected_lib(aos-soa)
-#add_reflected_lib(soa)
+add_reflected_lib(aos)
+add_reflected_lib(soa)
+target_compile_definitions(reflected-soa-lib PUBLIC RFLECT_SOA=1)

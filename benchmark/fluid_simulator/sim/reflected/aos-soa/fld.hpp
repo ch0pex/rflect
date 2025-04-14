@@ -75,18 +75,18 @@ inline void write_header(std::ofstream& file, int np, math::scalar const ppm) {
   file.write(reinterpret_cast<char*>(&np), sizeof(i32)); // NOLINT
 }
 
-inline void write_particles(std::ofstream& file, std::span<Particle const* const> const particles) {
+inline void write_particles(std::ofstream& file, std::span<Particle const> const particles) {
   std::array<f32, particle_components> tmp_values {};
   for (auto const& particle: particles) {
-    tmp_values[0] = static_cast<f32>(particle->position.x);
-    tmp_values[1] = static_cast<f32>(particle->position.y);
-    tmp_values[2] = static_cast<f32>(particle->position.z);
-    tmp_values[3] = static_cast<f32>(particle->hv.x);
-    tmp_values[4] = static_cast<f32>(particle->hv.y);
-    tmp_values[5] = static_cast<f32>(particle->hv.z);
-    tmp_values[6] = static_cast<f32>(particle->velocity.x);
-    tmp_values[7] = static_cast<f32>(particle->velocity.y);
-    tmp_values[8] = static_cast<f32>(particle->velocity.z);
+    tmp_values[0] = static_cast<f32>(particle.position.x);
+    tmp_values[1] = static_cast<f32>(particle.position.y);
+    tmp_values[2] = static_cast<f32>(particle.position.z);
+    tmp_values[3] = static_cast<f32>(particle.hv.x);
+    tmp_values[4] = static_cast<f32>(particle.hv.y);
+    tmp_values[5] = static_cast<f32>(particle.hv.z);
+    tmp_values[6] = static_cast<f32>(particle.velocity.x);
+    tmp_values[7] = static_cast<f32>(particle.velocity.y);
+    tmp_values[8] = static_cast<f32>(particle.velocity.z);
     file.write(reinterpret_cast<char*>(tmp_values.data()), sizeof(float) * particle_components); // NOLINT
   }
 }
@@ -114,12 +114,19 @@ inline auto read_input_file(Arguments const& arguments) -> err::expected<Simulat
 };
 
 constexpr auto write_output = [](Simulation&& sim) -> err::expected<Simulation> {
-  std::flat_map<u64, Particle const*> results;
+  std::flat_map<u64, Particle> results;
   std::ofstream file {sim.arguments.output_file, std::ios::binary};
 
   for (auto const& block: sim.grid.getBlocks()) {
     for (auto const particle : block.particles) {
-//      results[particle.id()] = &particle;
+      results[particle.id()] = Particle {
+        .id = particle.id(),
+        .position = particle.position(),
+        .hv = particle.hv(),
+        .velocity = particle.velocity(),
+        .acceleration = particle.acceleration(),
+        .density = particle.density(),
+      };
     }
   }
 

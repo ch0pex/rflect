@@ -219,7 +219,7 @@ void Block::calcDensities(FluidProperties const& properties, std::span<u32> adja
         incrementDensities(properties, particles[i], particle_j);
       }
     }
-    // TODO particles[i].transformDensity(properties);
+    transformDensity(properties, particles[i]);
   }
 }
 

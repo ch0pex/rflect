@@ -31,7 +31,7 @@ struct ComplexSoA {
 };
 
 constexpr size_t N     = 1'000'000'000;
-constexpr int NUM_RUNS = 10;
+constexpr int NUM_RUNS = 2;
 
 template<rflect::memory_layout layout>
 double run_benchmark_rflect() {

@@ -14,9 +14,11 @@
 #pragma once
 
 #include <rflect/converters/struct_to_soa.hpp>
+#include <rflect/containers/multi_vector.hpp>
 
 #include <array>
 #include <vector>
+
 
 namespace rflect::layout {
 
@@ -33,7 +35,7 @@ struct soa {
   using array = struct_of_arrays<T, N>;
 
   template<class T, template<class> class Alloc>
-  using vector = struct_of_vectors<T, Alloc>;
+  using vector = multi_vector<T, Alloc>;
 };
 
 } // namespace layout

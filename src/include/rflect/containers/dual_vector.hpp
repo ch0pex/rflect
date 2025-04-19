@@ -6,9 +6,12 @@
  * @file dual_vector.hpp
  * @version 1.0
  * @date 14/03/2025
- * @brief Short description
+ * @brief dual_vector class definition
  *
- * Longer description
+ * DualVector offers the user soa and aos data
+ * layout under the same interface with zero overhead
+ * thanks to the new C++26 feature, static reflection.
+ *
  */
 
 #pragma once
@@ -47,22 +50,9 @@ public:
     }
   }
 
-  constexpr dual_vector(std::initializer_list<value_type> init)
-    requires(aos_layout<memory_layout>)
-    : data_(init) { }
+  constexpr dual_vector(std::initializer_list<value_type> init) : data_(init) { }
 
-  constexpr dual_vector(std::integral auto size)
-    requires(aos_layout<memory_layout>)
-    : data_(size) { }
-
-  constexpr explicit dual_vector(std::integral auto size)
-    requires(soa_layout<memory_layout>)
-  {
-    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
-      data_.[:member:] = decltype(data_.[:member:])(size);
-    }
-  }
-
+  constexpr dual_vector(std::integral auto size) : data_(size) { }
 
   // ********** Member functions **********
 
@@ -86,69 +76,16 @@ public:
 
   constexpr auto end() const { return const_iterator {data_, size()}; }
 
-  // ********** SOA member functions **********
+  constexpr void push_back(value_type const& item) { data_.push_back(item); }
 
-  constexpr void push_back(value_type const& item)
-    requires(soa_layout<memory_layout>)
-  {
-    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
-      data_.[:member:].push_back(item.[:nonstatic_data_member<value_type>(identifier_of(member)):]);
-    }
-  }
+  constexpr void push_back(view_type const view) { data_.push_back(*view); }
 
-  constexpr void push_back(view_type const value)
-    requires(soa_layout<memory_layout>)
-  {
-
-    auto tuple          = *value;
-    constexpr auto size = (nonstatic_data_members_of(^^underlying_container) | to_static_array).size();
-    template for (constexpr auto index: static_iota<size>()) {
-      data_.[:nonstatic_data_member<underlying_container>([:index:]):].push_back(std::get<[:index:]>(tuple));
-    }
-  }
-
-  [[nodiscard]] constexpr std::size_t size() const
-    requires(soa_layout<memory_layout>)
-  {
-    return data_.[:nonstatic_data_member<underlying_container>(0):].size();
-  }
-
-  // ********** AOS member functions **********
-
-  constexpr void push_back(value_type const& item)
-    requires(aos_layout<memory_layout>)
-  {
-    data_.push_back(item);
-  }
-
-  constexpr void push_back(view_type const view)
-    requires(aos_layout<memory_layout>)
-  {
-    data_.push_back(*view);
-  }
-
-  [[nodiscard]] constexpr std::size_t size() const
-    requires(aos_layout<memory_layout>)
-  {
-    return data_.size();
-  }
+  [[nodiscard]] constexpr std::size_t size() const { return data_.size(); }
 
   // ********** Operators **********
 
-  friend constexpr bool operator==(dual_vector const& vec1, dual_vector const& vec2)
-    requires(aos_layout<memory_layout>)
-  {
+  friend constexpr bool operator==(dual_vector const& vec1, dual_vector const& vec2) {
     return vec1.data_ == vec2.data_;
-  }
-
-  friend constexpr bool operator==(dual_vector const& vec1, dual_vector const& vec2)
-    requires(soa_layout<memory_layout>)
-  {
-    bool equal = true;
-    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
-      equal &= (vec1.data_.[:member:] == vec2.data_.[:member:]);
-    };
-    return equal;
   }
 
 private:

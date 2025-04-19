@@ -87,8 +87,9 @@ public:
   constexpr proxy_type& operator=(value_type const& value)
     requires(soa_layout<container>)
   {
-    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
-      container_.[:member:].at(index_) = value.[:nonstatic_data_member<value_type>(identifier_of(member)):];
+    template for (constexpr auto member: nonstatic_data_members_of(^^value_type) | to_static_array) {
+      constexpr auto identifier = std::meta::define_static_string(identifier_of(member));
+      container_.template items<identifier>().at(index_) = value.[:member:];
     }
     return static_cast<proxy_type&>(*this);
   }
@@ -128,7 +129,7 @@ public:
   constexpr auto operator*(this Self&& self)
     requires(soa_layout<container>)
   {
-    return soa_to_zip(self.container_)[self.index_];
+    return self.container_.as_zip()[self.index_];
   }
 
 protected:
@@ -141,7 +142,7 @@ protected:
   template<char const* name, typename Self>
     requires(soa_layout<container>)
   constexpr auto member(this Self&& self) -> decltype(auto) {
-    return (self.container_.[:nonstatic_data_member<underlying_container>(name):].at(self.index_));
+    return (self.container_.template items<name>().at(self.index_));
   }
 
 private:

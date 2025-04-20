@@ -17,6 +17,8 @@
 #include <array>
 #include <vector>
 
+#include "multi_array.hpp"
+
 
 namespace rflect::layout {
 
@@ -43,7 +45,7 @@ struct aos {
  */
 struct soa {
   template<class T, std::size_t N>
-  using array = struct_of_arrays<T, N>;
+  using array = multi_array<T, N>;
 
   template<class T, template<class> class Alloc>
   using vector = multi_vector<T, Alloc>;

@@ -37,14 +37,6 @@ public:
   // ********** Constructors **********
   constexpr dual_vector() = default;
 
-  constexpr dual_vector(std::initializer_list<value_type> init)
-    requires(soa_layout<memory_layout>)
-  {
-    for (auto const& item: init) {
-      push_back(item);
-    }
-  }
-
   constexpr dual_vector(std::initializer_list<value_type> init) : data_(init) { }
 
   constexpr explicit dual_vector(std::integral auto size) : data_(size) { }

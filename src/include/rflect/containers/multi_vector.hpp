@@ -50,8 +50,8 @@ public:
       data_.[:member:] = decltype(data_.[:member:])(size);
     }
   }
-  // ********** Member functions **********
 
+  // ********** Member functions **********
   template<typename Self>
   constexpr auto at(this Self self, std::size_t const index) {
     return soa_to_zip(self.data_)[index];
@@ -75,6 +75,14 @@ public:
   template<typename Self>
   constexpr auto end(this Self self) {
     return std::end(soa_to_zip(self.data_));
+  }
+
+  constexpr auto cbegin() {
+    return std::cbegin(soa_to_zip(data_));
+  }
+
+  constexpr auto cend() {
+    return std::cend(soa_to_zip(data_));
   }
 
   [[nodiscard]] constexpr std::size_t size() const {
@@ -110,7 +118,7 @@ public:
     bool equal = true;
     template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
       equal &= (vec1.data_.[:member:] == vec2.data_.[:member:]);
-    };
+    }
     return equal;
   }
 

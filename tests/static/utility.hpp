@@ -15,6 +15,8 @@
 
 #include <rflect/rflect.hpp>
 
+#include <cmath>
+
 struct Mock {
   DEFINE_PROXY(id, density, velocity);
 

@@ -19,11 +19,6 @@
 #include <rflect/concepts/layout_concepts.hpp>
 #include <rflect/concepts/proxy_concepts.hpp>
 #include <rflect/containers/iterator.hpp>
-#include <rflect/converters/to_static.hpp>
-#include <rflect/introspection/struct.hpp>
-
-#include <iostream>
-#include <ranges>
 
 namespace rflect {
 
@@ -52,13 +47,13 @@ public:
 
   constexpr dual_vector(std::initializer_list<value_type> init) : data_(init) { }
 
-  constexpr dual_vector(std::integral auto size) : data_(size) { }
+  constexpr explicit dual_vector(std::integral auto size) : data_(size) { }
 
   // ********** Member functions **********
 
   constexpr view_type at(std::size_t const index) { return {data_, index}; }
 
-  constexpr const_view_type at(std::size_t const index) const { return const_view_type {data_, index}; }
+  [[nodiscard]] constexpr const_view_type at(std::size_t const index) const { return const_view_type {data_, index}; }
 
   constexpr view_type operator[](std::size_t const index) { return {data_, index}; }
 

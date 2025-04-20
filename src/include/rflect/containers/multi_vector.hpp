@@ -6,21 +6,30 @@
  * @file multi_vector.hpp
  * @version 1.0
  * @date 4/3/25
- * @brief Short description
- *
- * Longer description
+ * @brief Multi vector class
  */
 
 #pragma once
 
 #include <rflect/converters/soa_to_zip.hpp>
+#include <rflect/converters/struct_to_soa.hpp>
 #include <rflect/converters/to_static.hpp>
 #include <rflect/introspection/struct.hpp>
 
 namespace rflect {
 
-
+/**
+ * @brief Container abstracting struct of vectors conversion
+ *
+ * This class converts an aggregate type into a structure of vectors (SoA - Structure of Arrays), encapsulating the
+ * underlying complexity. It offers a simple and intuitive public interface that closely resembles standard containers
+ * (e.g., std::vector), making it easy to use and integrate.
+ *
+ * @tparam T Aggregate type to be converted
+ * @tparam Alloc Allocator type for vectors
+ */
 template<typename T, template<typename> class Alloc = std::allocator>
+  requires(std::is_aggregate_v<T>) // TODO concept this type trait
 class multi_vector {
 public:
   // ********** Type traits **********
@@ -106,7 +115,7 @@ public:
   }
 
 private:
-  underlying_container data_;
+  underlying_container data_ {};
 };
 
 } // namespace rflect

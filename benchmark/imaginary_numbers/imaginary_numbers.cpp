@@ -18,6 +18,8 @@
 #include <ranges>
 #include <vector>
 #include <rflect/rflect.hpp>
+#include <benchmark/benchmark.h>
+
 
 struct Complex {
   DEFINE_PROXY(real, imag);
@@ -129,6 +131,8 @@ int main() {
   std::vector<double> soa_times;
   std::vector<double> rflect_soa_times;
   std::vector<double> rflect_aos_times;
+
+  benchmark::ClobberMemory();
 
   for (int i = 0; i < NUM_RUNS; ++i) {
     std::cout << std::format("Run number: {}\n", i);

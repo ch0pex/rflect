@@ -6,14 +6,13 @@
  * @file layout_concepts.hpp
  * @version 1.0
  * @date 28/03/2025
- * @brief Short description
- *
- * Longer description
+ * @brief Data layout concepts
  */
 
 #pragma once
 
 #include <rflect/containers/memory_layout.hpp>
+
 #include <concepts>
 
 namespace rflect {

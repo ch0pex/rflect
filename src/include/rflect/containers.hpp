@@ -3,12 +3,10 @@
  * This code is licensed under MIT license (see LICENSE.txt for details)
  ************************************************************************/
 /**
- * @file rflect.hpp
+ * @file containers.hpp
  * @version 1.0
  * @date 4/4/25
- * @brief Short description
- *
- * Longer description
+ * @brief Containers headers
  */
 #pragma once
 

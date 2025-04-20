@@ -6,9 +6,7 @@
  * @file proxy_concepts.hpp
  * @version 1.0
  * @date 4/7/25
- * @brief Short description
- *
- * Longer description
+ * @brief Proxy class concepts
  */
 
 #pragma once

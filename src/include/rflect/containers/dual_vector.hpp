@@ -92,7 +92,7 @@ private:
   underlying_container data_;
 };
 
-// --- Deducing guidelines  ---
+// --- Deduction guides  ---
 template<has_proxy T>
 dual_vector(std::initializer_list<T> init) -> dual_vector<T>;
 

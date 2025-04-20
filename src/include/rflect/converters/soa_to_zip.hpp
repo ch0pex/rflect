@@ -81,9 +81,29 @@ struct soa_to_zip_fn : converter_closure<soa_to_zip_fn<From>> {
 
 } // namespace detail
 
+/**
+ * @brief Type alias that transforms a structure of arrays into a zip-compatible type.
+ *
+ * This alias deduces the resulting type when converting a structure-of-arrays (SoA) layout
+ * into a zipped form (typically a view of tuples, one per element), enabling element-wise
+ * iteration as if it were an array-of-structures (AoS).
+ *
+ * @tparam From The structure-of-arrays type to convert.
+ */
 template<typename From>
 using as_zip = typename detail::soa_to_zip_fn<From>::To;
 
+/**
+ * @brief Converts a structure-of-arrays into a zipped view.
+ *
+ * This function transforms a struct containing arrays or vectors (SoA layout)
+ * into a zip-like structure that allows iteration as if it were an array of structs,
+ * where each element is a tuple of references to the corresponding fields.
+ *
+ * @tparam From The type of the structure-of-arrays.
+ * @param from The SoA instance to convert.
+ * @return A zipped view that enables element-wise access in AoS fashion.
+ */
 constexpr auto soa_to_zip = []<typename From>(From&& from) {
   static constexpr auto fn = detail::soa_to_zip_fn<From>{};
   return fn(std::forward<From>(from));

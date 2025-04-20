@@ -6,8 +6,7 @@
  * @file converters.hpp
  * @version 1.0
  * @date 4/4/25
- * @brief Converters include file
- *
+ * @brief Converters headers
  */
 
 #pragma once

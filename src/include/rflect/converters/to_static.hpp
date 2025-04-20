@@ -8,7 +8,8 @@
  * @date 4/4/25
  * @brief Static array utilitites
  *
- * These utilities are workarounds that are needed by now due to the proposal implementation status
+ * These utilities are workarounds that are needed by now due to the
+ * proposal implementation status
  */
 
 #pragma once

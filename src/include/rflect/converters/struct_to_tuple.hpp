@@ -55,13 +55,31 @@ struct struct_to_tuple_fn : converter_closure<struct_to_tuple_fn<From>> {
 
 } // namespace detail
 
+/**
+ * @brief Type alias that maps a struct type to its corresponding tuple type.
+ *
+ * This alias uses metaprogramming to deduce a `std::tuple` type representing
+ * the member types of a given struct.
+ *
+ * @tparam From Struct type to be converted to a tuple of types.
+ */
 template<typename From>
 using as_tuple = [:detail::as_tuple_type(^^From):];
 
-inline constexpr auto struct_to_tuple = []<typename From>(From && from) {
-  static constexpr auto fn = detail::struct_to_tuple_fn<From>{};
+/**
+ * @brief Converts a struct instance into a tuple of its member values.
+ *
+ * This function takes a struct and returns a `std::tuple` containing the values
+ * (or references, depending on value category) of its members, preserving their declaration order.
+ *
+ * @tparam From Type of the struct to convert.
+ * @param from The struct instance to convert.
+ * @return A tuple containing the member values (or references) of the given struct.
+ */
+template<typename From>
+constexpr auto struct_to_tuple(From&& from) {
+  static constexpr auto fn = detail::struct_to_tuple_fn<From> {};
   return fn(from);
-};
-// inline constexpr auto to_struct = detail::struct_to_tuple_fn {};
+}
 
 } // namespace rflect

@@ -65,9 +65,29 @@ struct struct_of_vectors {
 
 } // namespace detail
 
+/**
+ * @brief Type alias that generates a structure of `std::vector`s from a given struct type.
+ *
+ * For a given struct type `T`, this alias produces a new struct where each member is
+ * replaced with a `std::vector` of the corresponding type. This allows storing multiple
+ * instances of `T` in a structure-of-arrays (SoA) layout, which is often more cache-friendly.
+ *
+ * @tparam T The struct type to be transformed.
+ * @tparam Alloc Allocator template to be used for each vector (defaults to `std::allocator`).
+ */
 template<typename T, template<class> class Alloc = std::allocator>
 using struct_of_vectors = typename detail::struct_of_vectors<T, Alloc>::impl;
 
+/**
+ * @brief Type alias that generates a structure of `std::array`s from a given struct type.
+ *
+ * Similar to `struct_of_vectors`, this alias transforms a struct `T` into a new struct where
+ * each member becomes a `std::array` of fixed size `N`. This is useful for stack-allocated
+ * structures with SoA layout when the size is known at compile time.
+ *
+ * @tparam T The struct type to be transformed.
+ * @tparam N The fixed size of the arrays.
+ */
 template<typename T, std::size_t N>
 using struct_of_arrays = typename detail::struct_of_arrays<T, N>::impl;
 

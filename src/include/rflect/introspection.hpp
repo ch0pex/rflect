@@ -6,9 +6,7 @@
  * @file introspection.hpp
  * @version 1.0
  * @date 4/4/25
- * @brief Short description
- *
- * Longer description
+ * @brief Introspection headers
  */
 #pragma once
 

@@ -6,9 +6,7 @@
  * @file converter_closure.hpp
  * @version 1.0
  * @date 4/11/25
- * @brief Short description
- *
- * Longer description
+ * @brief Converter closure and concepts
  */
 #pragma once
 

@@ -20,6 +20,15 @@
 
 namespace rflect {
 
+/**
+ * @brief Iterator for iterating over components in dual_vector and dual_array containers.
+ *
+ * This iterator allows iteration over the elements of a `dual_vector` or `dual_array`, independently of whether
+ * they are using a Structure of Arrays (SoA) or Array of Structures (AoS) layout.
+ * It provides standard iterator functionality to access container elements through a proxy type.
+ *
+ * @tparam ViewType Proxy type used to access elements in the container.
+ */
 template<typename ViewType>
 class proxy_iterator {
 public:

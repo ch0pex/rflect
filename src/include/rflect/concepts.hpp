@@ -6,11 +6,12 @@
  * @file concepts.hpp
  * @version 1.0
  * @date 4/4/25
- * @brief Short description
- *
- * Longer description
+ * @brief Concepts headers
  */
 #pragma once
 
 
+#include <rflect/concepts/converter_closure.hpp>
 #include <rflect/concepts/layout_concepts.hpp>
+#include <rflect/concepts/proxy_concepts.hpp>
+#include <rflect/concepts/struct_of_ranges.hpp>

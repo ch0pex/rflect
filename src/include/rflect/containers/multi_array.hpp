@@ -21,9 +21,17 @@ template<typename T, std::size_t N>
   requires(std::is_aggregate_v<T>)
 class multi_array {
 public:
-  // ********** Type traits **********
+  /**********************************
+   *          Member types          *
+   **********************************/
   using value_type           = T;
   using underlying_container = struct_of_arrays<T, N>;
+
+  /**********************************
+   *        Member functions        *
+   **********************************/
+
+  // ********* Constructors *********
 
   constexpr multi_array() = default;
 
@@ -36,7 +44,8 @@ public:
     }
   }
 
-  // ********** Member functions **********
+  // ********* Element access *********
+
   template<typename Self>
   constexpr auto at(this Self self, std::size_t const index) {
     return soa_to_zip(self.data_)[index];
@@ -51,6 +60,20 @@ public:
   constexpr auto front(this Self self) {
     return soa_to_zip(self.data_)[0];
   }
+
+  template<std::size_t Idx, typename Self>
+  constexpr decltype(auto) items(this Self& self) {
+    return (self.data_.[:nonstatic_data_member<underlying_container>(Idx):]);
+  }
+
+  template<char const* name, typename Self>
+  constexpr decltype(auto) items(this Self& self) {
+    return (self.data_.[:nonstatic_data_member<underlying_container>(name):]);
+  }
+
+  constexpr auto as_zip() { return soa_to_zip(data_); }
+
+  // ********* Iterators *********
 
   template<typename Self>
   constexpr auto begin(this Self self) {
@@ -70,6 +93,8 @@ public:
     return std::cend(soa_to_zip(data_));
   }
 
+  // ********* Capacity *********
+
   [[nodiscard]] constexpr std::size_t size() const {
     return data_.[:nonstatic_data_member<underlying_container>(0):].size();
   }
@@ -81,20 +106,6 @@ public:
   [[nodiscard]] constexpr std::size_t empty() const {
     return data_.[:nonstatic_data_member<underlying_container>(0):].empty();
   }
-
-  // *** Multi Array Functions ***
-
-  template<std::size_t Idx, typename Self>
-  constexpr decltype(auto) items(this Self& self) {
-    return (self.data_.[:nonstatic_data_member<underlying_container>(Idx):]);
-  }
-
-  template<char const* name, typename Self>
-  constexpr decltype(auto) items(this Self& self) {
-    return (self.data_.[:nonstatic_data_member<underlying_container>(name):]);
-  }
-
-  constexpr auto as_zip() { return soa_to_zip(data_); }
 
 private:
   underlying_container data_ {};

@@ -32,11 +32,18 @@ template<typename T, template<typename> class Alloc = std::allocator>
   requires(std::is_aggregate_v<T>) // TODO concept this type trait
 class multi_vector {
 public:
-  // ********** Type traits **********
+  /**********************************
+   *          Member types          *
+   **********************************/
   using value_type           = T;
   using underlying_container = struct_of_vectors<T, Alloc>;
 
-  // ********** Constructors **********
+  /**********************************
+   *        Member functions        *
+   **********************************/
+
+  // ********* Constructors *********
+
   constexpr multi_vector() = default;
 
   constexpr multi_vector(std::initializer_list<value_type> init) {
@@ -51,7 +58,8 @@ public:
     }
   }
 
-  // ********** Member functions **********
+  // ********** Element access **********
+
   template<typename Self>
   constexpr auto at(this Self self, std::size_t const index) {
     return soa_to_zip(self.data_)[index];
@@ -66,6 +74,25 @@ public:
   constexpr auto front(this Self self) {
     return soa_to_zip(self.data_)[0];
   }
+
+  template<typename Self>
+  constexpr auto back(this Self self) {
+    return soa_to_zip(self.data_)[self.size() - 1];
+  }
+
+  template<std::size_t N, typename Self>
+  constexpr decltype(auto) items(this Self& self) {
+    return (self.data_.[:nonstatic_data_member<underlying_container>(N):]);
+  }
+
+  template<char const* name, typename Self>
+  constexpr decltype(auto) items(this Self& self) {
+    return (self.data_.[:nonstatic_data_member<underlying_container>(name):]);
+  }
+
+  constexpr auto as_zip() { return soa_to_zip(data_); }
+
+  // ********* Iterators *********
 
   template<typename Self>
   constexpr auto begin(this Self self) {
@@ -85,9 +112,7 @@ public:
     return std::cend(soa_to_zip(data_));
   }
 
-  [[nodiscard]] constexpr std::size_t size() const {
-    return data_.[:nonstatic_data_member<underlying_container>(0):].size();
-  }
+  // ********* Modifiers *********
 
   constexpr void push_back(value_type const& item) {
     template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
@@ -102,17 +127,25 @@ public:
     }
   }
 
-  template<std::size_t N, typename Self>
-  constexpr decltype(auto) items(this Self& self) {
-    return (self.data_.[:nonstatic_data_member<underlying_container>(N):]);
+  // ********* Capacity *********
+
+  [[nodiscard]] constexpr std::size_t empty() const {
+    return data_.[:nonstatic_data_member<underlying_container>(0):].empty();
   }
 
-  template<char const* name, typename Self>
-  constexpr decltype(auto) items(this Self& self) {
-    return (self.data_.[:nonstatic_data_member<underlying_container>(name):]);
+  [[nodiscard]] constexpr std::size_t size() const {
+    return data_.[:nonstatic_data_member<underlying_container>(0):].size();
   }
 
-  constexpr auto as_zip() { return soa_to_zip(data_); }
+  [[nodiscard]] constexpr std::size_t max_size() const {
+    return data_.[:nonstatic_data_member<underlying_container>(0):].max_size();
+  }
+
+  [[nodiscard]] constexpr std::size_t capacity() const {
+    return data_.[:nonstatic_data_member<underlying_container>(0):].capacity();
+  }
+
+  // ********* Comparison *********
 
   friend constexpr bool operator==(multi_vector const& vec1, multi_vector const& vec2) {
     bool equal = true;

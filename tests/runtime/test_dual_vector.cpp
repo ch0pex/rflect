@@ -14,21 +14,24 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
-#include "utility.hpp"
+#include "test_containers.hpp"
 
 using namespace rflect;
+
+template<typename Layout>
+using container = dual_vector<Mock, Layout>;
 
 TEST_SUITE_BEGIN("Dual Vector");
 
 TEST_CASE_TEMPLATE("Constructor with initializer list", T, layout::aos, layout::soa) {
-  dual_vector<Mock, T> mock_vector {mock_0, mock_1, mock_2};
+  container<T> mock_vector {mock_0, mock_1, mock_2};
 
   CHECK(mock_vector.size() == 3U);
 }
 
 TEST_CASE_TEMPLATE("push_back", T, layout::aos, layout::soa) {
-  dual_vector<Mock, T> mock_vector {mock_0, mock_1, mock_2};
-  dual_vector<Mock, T> mock_vector_2;
+  container<T> mock_vector {mock_0, mock_1, mock_2};
+  container<T> mock_vector_2;
   mock_vector_2.push_back(mock_0);
   mock_vector_2.push_back(mock_1);
   mock_vector_2.push_back(mock_2);
@@ -43,36 +46,11 @@ TEST_CASE_TEMPLATE("push_back", T, layout::aos, layout::soa) {
 }
 
 TEST_CASE_TEMPLATE("Accessors", T, layout::aos, layout::soa) {
-  dual_vector<Mock, T> mock {mock_0, mock_1, mock_2};
-
-  CHECK(mock.at(0) == mock_0);
-  CHECK(mock.at(1) == mock_1);
-  CHECK(mock.at(2) == mock_2);
-
-  SUBCASE("at") {
-    auto mock_view = mock.at(0);
-    mock_view.id() = 1;
-
-    CHECK(mock_view.id() == mock_1.id);
-  }
-
-  SUBCASE("front") {
-    auto mock_view   = mock.front();
-    auto mock_view_2 = mock.at(0);
-
-    CHECK(mock_view == mock_view_2);
-  }
-
-  SUBCASE("back") {
-    auto mock_view   = mock.back();
-    auto mock_view_2 = mock.at(mock.size() - 1);
-
-    CHECK(mock_view == mock_view_2);
-  }
+  test_element_access<container<T>>();
 }
 
 TEST_CASE_TEMPLATE("operator[]", T, layout::aos, layout::soa) {
-  dual_vector<Mock, T> mock {mock_0, mock_1, mock_2};
+  container<T> mock {mock_0, mock_1, mock_2};
 
   CHECK(mock[0] == mock_0);
   CHECK(mock[1] == mock_1);
@@ -80,9 +58,9 @@ TEST_CASE_TEMPLATE("operator[]", T, layout::aos, layout::soa) {
 }
 
 TEST_CASE_TEMPLATE("size", T, layout::aos, layout::soa) {
-  dual_vector<Mock, T> vec_0;
-  dual_vector<Mock, T> vec_1 {mock_0, mock_1};
-  dual_vector<Mock, T> vec_2 {mock_0, mock_1, mock_2};
+  container<T> vec_0;
+  container<T> vec_1 {mock_0, mock_1};
+  container<T> vec_2 {mock_0, mock_1, mock_2};
 
   CHECK(vec_0.size() == 0U);
   CHECK(vec_1.size() == 2U);
@@ -90,7 +68,7 @@ TEST_CASE_TEMPLATE("size", T, layout::aos, layout::soa) {
 }
 
 TEST_CASE_TEMPLATE("Vector proxy iterator", T, layout::aos, layout::soa) {
-  dual_vector<Mock, T> vec {mock_0, mock_1, mock_2, mock_3};
+  container<T> vec {mock_0, mock_1, mock_2, mock_3};
   constexpr auto vec_size = 4;
 
   std::int32_t i  = 0;
@@ -105,7 +83,7 @@ TEST_CASE_TEMPLATE("Vector proxy iterator", T, layout::aos, layout::soa) {
 }
 
 TEST_CASE_TEMPLATE("range iteration", T, layout::aos, layout::soa) {
-  dual_vector<Mock, T> vec {mock_0, mock_1, mock_2, mock_3};
+  container<T> vec {mock_0, mock_1, mock_2, mock_3};
   constexpr auto vec_size = 4;
 
   std::int32_t i  = 0;

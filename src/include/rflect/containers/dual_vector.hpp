@@ -25,7 +25,9 @@ namespace rflect {
 template<has_proxy T, memory_layout Layout = layout::aos, template<typename> class Alloc = std::allocator>
 class dual_vector {
 public:
-  // ********** Type traits **********
+  /**********************************
+   *          Member types          *
+   **********************************/
   using value_type           = T;
   using underlying_container = typename Layout::template vector<T, Alloc>;
   using view_type            = typename T::template proxy_type<dual_vector>;
@@ -33,41 +35,64 @@ public:
   using memory_layout        = Layout;
   using iterator             = proxy_iterator<view_type>;
   using const_iterator       = proxy_iterator<const_view_type>;
+  using size_type            = std::size_t;
+  using difference_type      = std::ptrdiff_t;
 
-  // ********** Constructors **********
+  /**********************************
+   *        Member functions        *
+   **********************************/
+
+  // ********* Constructors *********
+
   constexpr dual_vector() = default;
 
   constexpr dual_vector(std::initializer_list<value_type> init) : data_(init) { }
 
-  constexpr explicit dual_vector(std::integral auto size) : data_(size) { }
+  constexpr explicit dual_vector(size_type size) : data_(size) { }
 
-  // ********** Member functions **********
+  // ********* Element access *********
 
-  constexpr view_type at(std::size_t const index) { return {data_, index}; }
+  constexpr view_type at(size_type const index) { return {data_, index}; }
 
-  [[nodiscard]] constexpr const_view_type at(std::size_t const index) const { return const_view_type {data_, index}; }
+  [[nodiscard]] constexpr const_view_type at(size_type const index) const { return const_view_type {data_, index}; }
 
-  constexpr view_type operator[](std::size_t const index) { return {data_, index}; }
+  constexpr view_type operator[](size_type const index) { return {data_, index}; }
 
-  constexpr const_view_type operator[](std::size_t const index) const { return {data_, index}; }
+  constexpr const_view_type operator[](size_type const index) const { return {data_, index}; }
 
   constexpr view_type front() { return {data_, 0}; }
 
   constexpr view_type back() { return {data_, size() - 1}; }
 
-  constexpr auto begin() { return iterator {data_, 0}; }
+  // ********* Iterators *********
 
-  constexpr auto end() { return iterator {data_, size()}; }
+  constexpr iterator begin() { return {data_, 0}; }
 
-  constexpr auto begin() const { return const_iterator {data_, 0}; }
+  constexpr iterator end() { return {data_, size()}; }
 
-  constexpr auto end() const { return const_iterator {data_, size()}; }
+  [[nodiscard]] constexpr const_iterator begin() const { return {data_, 0}; }
+
+  [[nodiscard]] constexpr const_iterator end() const { return {data_, size()}; }
+
+  [[nodiscard]] constexpr const_iterator cbegin() const { return {data_, 0}; }
+
+  [[nodiscard]] constexpr const_iterator cend() const { return {data_, size()}; }
+
+  // ********* Capacity *********
+
+  [[nodiscard]] constexpr size_type empty() const { return data_.size(); }
+
+  [[nodiscard]] constexpr size_type size() const { return data_.size(); }
+
+  [[nodiscard]] constexpr size_type max_size() const { return data_.size(); }
+
+  [[nodiscard]] constexpr size_type capacity() const { return data_.size(); }
+
+  // ********* Modifiers *********
 
   constexpr void push_back(value_type const& item) { data_.push_back(item); }
 
   constexpr void push_back(view_type const view) { data_.push_back(*view); }
-
-  [[nodiscard]] constexpr std::size_t size() const { return data_.size(); }
 
   // ********** Operators **********
 
@@ -76,12 +101,13 @@ public:
   }
 
 private:
-  underlying_container data_;
+  underlying_container data_ {};
 };
 
-// --- Deduction guides  ---
+/**********************************
+ *        Deduction guides        *
+ **********************************/
 template<has_proxy T>
 dual_vector(std::initializer_list<T> init) -> dual_vector<T>;
-
 
 } // namespace rflect

@@ -76,34 +76,34 @@ public:
   // ********* Iterators *********
 
   template<typename Self>
-  constexpr auto begin(this Self self) {
+  constexpr auto begin(this Self self) noexcept {
     return std::begin(soa_to_zip(self.data_));
   }
 
   template<typename Self>
-  constexpr auto end(this Self self) {
+  constexpr auto end(this Self self) noexcept {
     return std::end(soa_to_zip(self.data_));
   }
 
-  constexpr auto cbegin() const {
+  constexpr auto cbegin() const noexcept {
     return std::cbegin(soa_to_zip(data_));
   }
 
-  constexpr auto cend() {
+  constexpr auto cend() noexcept {
     return std::cend(soa_to_zip(data_));
   }
 
   // ********* Capacity *********
 
-  [[nodiscard]] constexpr std::size_t size() const {
+  [[nodiscard]] constexpr std::size_t size() const noexcept {
     return data_.[:nonstatic_data_member<underlying_container>(0):].size();
   }
 
-  [[nodiscard]] constexpr std::size_t max_size() const {
+  [[nodiscard]] constexpr std::size_t max_size() const noexcept {
     return data_.[:nonstatic_data_member<underlying_container>(0):].max_size();
   }
 
-  [[nodiscard]] constexpr std::size_t empty() const {
+  [[nodiscard]] constexpr std::size_t empty() const noexcept {
     return data_.[:nonstatic_data_member<underlying_container>(0):].empty();
   }
 

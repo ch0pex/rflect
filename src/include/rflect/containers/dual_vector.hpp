@@ -66,27 +66,27 @@ public:
 
   // ********* Iterators *********
 
-  constexpr iterator begin() { return {data_, 0}; }
+  constexpr iterator begin() noexcept { return {data_, 0}; }
 
-  constexpr iterator end() { return {data_, size()}; }
+  constexpr iterator end() noexcept { return {data_, size()}; }
 
-  [[nodiscard]] constexpr const_iterator begin() const { return {data_, 0}; }
+  [[nodiscard]] constexpr const_iterator begin() const noexcept { return {data_, 0}; }
 
-  [[nodiscard]] constexpr const_iterator end() const { return {data_, size()}; }
+  [[nodiscard]] constexpr const_iterator end() const noexcept { return {data_, size()}; }
 
-  [[nodiscard]] constexpr const_iterator cbegin() const { return {data_, 0}; }
+  [[nodiscard]] constexpr const_iterator cbegin() const noexcept { return {data_, 0}; }
 
-  [[nodiscard]] constexpr const_iterator cend() const { return {data_, size()}; }
+  [[nodiscard]] constexpr const_iterator cend() const noexcept { return {data_, size()}; }
 
   // ********* Capacity *********
 
-  [[nodiscard]] constexpr size_type empty() const { return data_.size(); }
+  [[nodiscard]] constexpr size_type empty() const noexcept { return data_.size(); }
 
-  [[nodiscard]] constexpr size_type size() const { return data_.size(); }
+  [[nodiscard]] constexpr size_type size() const noexcept { return data_.size(); }
 
-  [[nodiscard]] constexpr size_type max_size() const { return data_.size(); }
+  [[nodiscard]] constexpr size_type max_size() const noexcept { return data_.size(); }
 
-  [[nodiscard]] constexpr size_type capacity() const { return data_.size(); }
+  [[nodiscard]] constexpr size_type capacity() const noexcept { return data_.size(); }
 
   // ********* Modifiers *********
 

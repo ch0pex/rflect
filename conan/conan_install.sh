@@ -70,6 +70,8 @@ for build_type in "${BUILD_TYPES[@]}"; do
   echo "--- Running conan install for build_type: $build_type ---"
 
   conan install . \
+    --profile:host=c++26-rflection \
+    --profile:build=c++26-rflection \
     --settings=build_type="$build_type" \
     --build=missing
 

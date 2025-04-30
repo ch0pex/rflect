@@ -25,6 +25,7 @@ target_sources(rflect
         include/rflect/containers/proxy.hpp
         include/rflect/containers/iterator.hpp
         include/rflect/containers/memory_layout.hpp
+        include/rflect/containers/comparison.hpp
 
         # Converters
         include/rflect/converters/soa_to_zip.hpp

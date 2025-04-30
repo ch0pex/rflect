@@ -104,13 +104,9 @@ public:
     return std::end(soa_to_zip(self.data_));
   }
 
-  constexpr auto cbegin() noexcept {
-    return std::cbegin(soa_to_zip(data_));
-  }
+  constexpr auto cbegin() noexcept { return std::cbegin(soa_to_zip(data_)); }
 
-  constexpr auto cend() noexcept {
-    return std::cend(soa_to_zip(data_));
-  }
+  constexpr auto cend() noexcept { return std::cend(soa_to_zip(data_)); }
 
   // ********* Modifiers *********
 
@@ -143,16 +139,6 @@ public:
 
   [[nodiscard]] constexpr std::size_t capacity() const noexcept {
     return data_.[:nonstatic_data_member<underlying_container>(0):].capacity();
-  }
-
-  // ********* Comparison *********
-
-  friend constexpr bool operator==(multi_vector const& vec1, multi_vector const& vec2) {
-    bool equal = true;
-    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
-      equal &= (vec1.data_.[:member:] == vec2.data_.[:member:]);
-    }
-    return equal;
   }
 
 private:

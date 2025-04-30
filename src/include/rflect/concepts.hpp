@@ -14,4 +14,3 @@
 #include <rflect/concepts/converter_closure.hpp>
 #include <rflect/concepts/layout_concepts.hpp>
 #include <rflect/concepts/proxy_concepts.hpp>
-#include <rflect/concepts/struct_of_ranges.hpp>

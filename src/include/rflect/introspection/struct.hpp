@@ -16,6 +16,8 @@
 
 #include <rflect/converters/to_static.hpp>
 
+#include <functional>
+
 namespace rflect {
 
 /**
@@ -66,6 +68,17 @@ consteval auto member_function(std::size_t index) {
     return member_functions[index];
   }
   throw std::invalid_argument("No such member function");
+}
+
+template<typename T, typename Filter>
+consteval auto members(Filter filter = {}) {
+  return members_of(^^T) | std::views::filter(filter) | to_static_array;
+}
+
+template<typename T, typename Filter = std::identity>
+consteval auto member_count(Filter filter = {}) {
+  auto members = members_of(^^T) | std::views::filter(filter);
+  return members.size();
 }
 
 } // namespace rflect

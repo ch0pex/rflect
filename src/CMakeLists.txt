@@ -16,6 +16,7 @@ target_sources(rflect
         include/rflect/concepts/layout_concepts.hpp
         include/rflect/concepts/proxy_concepts.hpp
         include/rflect/concepts/converter_closure.hpp
+        include/rflect/concepts/enum_concepts.hpp
 
         # Containers
         include/rflect/containers/multi_array.hpp

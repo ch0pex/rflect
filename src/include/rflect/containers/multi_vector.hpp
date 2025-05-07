@@ -52,7 +52,7 @@ public:
     }
   }
 
-  constexpr multi_vector(std::integral auto size) {
+  constexpr explicit multi_vector(std::integral auto size) {
     template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
       data_.[:member:] = decltype(data_.[:member:])(size);
     }
@@ -62,7 +62,8 @@ public:
 
   template<typename Self>
   constexpr auto at(this Self self, std::size_t const index) {
-    return soa_to_zip(self.data_)[index];
+    static auto zip = soa_to_zip(self.data_);
+    return zip[index];
   }
 
   template<typename Self>
@@ -117,7 +118,7 @@ public:
   }
 
   constexpr void push_back(auto const value) {
-    constexpr auto size = (nonstatic_data_members_of(^^underlying_container) | to_static_array).size();
+    static constexpr auto size = (nonstatic_data_members_of(^^underlying_container)).size();
     template for (constexpr auto index: static_iota<size>()) {
       data_.[:nonstatic_data_member<underlying_container>([:index:]):].push_back(std::get<[:index:]>(value));
     }

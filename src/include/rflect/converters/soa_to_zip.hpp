@@ -74,7 +74,8 @@ struct soa_to_zip_fn : converter_closure<soa_to_zip_fn<From>> {
   using To = [:as_zip_type<std::remove_reference_t<From>>():];
 
   constexpr auto operator()(From&& from) const {
-    return detail::get_soa_to_zip_helper<From, To>()(std::forward<From>(from));
+    static constexpr auto fn = detail::get_soa_to_zip_helper<From, To>();
+    return fn(std::forward<From>(from));
   }
 
 };

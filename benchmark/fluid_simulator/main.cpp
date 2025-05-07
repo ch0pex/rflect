@@ -14,7 +14,7 @@
 
 int main() {
   try {
-    test_simulation("large", 1000);
+    test_simulation("large", 2000);
   }
   catch (...) {
     std::cout << "Something went wrong\n";

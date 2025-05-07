@@ -237,8 +237,7 @@ void Block::calcDensities(FluidProperties const& properties, std::span<u32> adja
  */
 void Block::calcAccelerations(FluidProperties const& properties, std::span<u32> adjacent, std::vector<Block>& blocks) {
   for (size_t i = 0; i < particles.size(); ++i) {
-    for (size_t j = i + 1; j < particles.size();
-         ++j) { // Evitamos repetir calculos entre particulas inicializando j=i+1
+    for (size_t j = i + 1; j < particles.size(); ++j) {
       incrementAccelerations(properties, particles[i], particles[j]);
     }
     for (auto const& adjacent_index: adjacent) {

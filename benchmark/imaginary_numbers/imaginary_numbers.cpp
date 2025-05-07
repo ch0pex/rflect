@@ -27,7 +27,7 @@ struct ComplexSoA {
 };
 
 static void benchmark_aos(benchmark::State& state) {
-  std::size_t const n = static_cast<std::size_t>(state.range(0));
+  auto const n = static_cast<std::size_t>(state.range(0));
     std::vector<Complex> a(n);
     std::vector<Complex> b(n);
     float v = 0.0F;
@@ -63,7 +63,8 @@ static void benchmark_soa(benchmark::State& state) {
 template<rflect::memory_layout Layout>
 static void benchmark_rflect(benchmark::State& state) {
   auto n = static_cast<std::size_t>(state.range(0));
-    rflect::dual_vector<Complex, Layout> a(n), b(n);
+    rflect::dual_vector<Complex, Layout> a(n);
+    rflect::dual_vector<Complex, Layout> b(n);
     float v = 0.0F;
     for (auto [x,y] : std::views::zip(a, b)) {
       x.real() = v++;

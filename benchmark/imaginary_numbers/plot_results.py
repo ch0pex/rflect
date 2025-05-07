@@ -2,25 +2,25 @@ import subprocess
 import json
 import statistics
 import matplotlib
+
 # Use non-interactive backend for remote environments
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import argparse
-import os
 
 # Configuration
-benchmark_executable_debug = "../build/Debug/benchmark/imaginary_numbers/imaginary_numbers"
-benchmark_executable_release = "../build/Release/benchmark/imaginary_numbers/imaginary_numbers"
+benchmark_executable_debug = "../../build/Debug/benchmark/imaginary_numbers/imaginary_numbers"
+benchmark_executable_release = "../../build/Release/benchmark/imaginary_numbers/imaginary_numbers"
 
-output_json_debug  = "../build/Debug/benchmark/imaginary_numbers/results_debug.json"
-output_json_release  = "../build/Release/benchmark/imaginary_numbers/results_release.json"
+output_json_debug = "../../build/Debug/benchmark/imaginary_numbers/results_debug.json"
+output_json_release = "../../build/Release/benchmark/imaginary_numbers/results_release.json"
 
 # Output image paths
-output_plot_debug   = "../build/Debug/benchmark/imaginary_numbers/plot_debug.png"
-output_plot_release = "../build/Release/benchmark/imaginary_numbers/plot_release.png"
+output_plot_debug = "results/debug.png"
+output_plot_release = "results/release.png"
 
-output_plot_debug_bars   = "../build/Debug/benchmark/imaginary_numbers/plot_debug_bars.png"
-output_plot_release_bars = "../build/Release/benchmark/imaginary_numbers/plot_release_bars.png"
+output_plot_debug_bars = "results/debug_bars.png"
+output_plot_release_bars = "results/release_bars.png"
 
 
 def run_benchmark(executable_path, output_json_path):
@@ -101,7 +101,7 @@ def plot_comparison_bars(series_dict, title, output_path):
         ('benchmark_soa', 'SoA'),
         ('RflectSoa', 'Rflect SoA'),
     ]
-    plt.figure(figsize=(12, 7))
+    plt.figure(figsize=(14, 8)) # Aumentamos ligeramente el tamaño para acomodar el texto
 
     all_sizes = set()
     for base, _ in label_map:
@@ -123,7 +123,18 @@ def plot_comparison_bars(series_dict, title, output_path):
             continue
         heights = [data.get(size, 0) for size in all_sizes]
         x_offset = [xi + offset * width for xi in x]
-        plt.bar(x_offset, heights, width=width, label=label, color=color)
+        #
+        # # Plot the bars
+        bars = plt.bar(x_offset, heights, width=width, label=label, color=color)
+        #
+        # # Add text labels on top of the bars
+        # for bar in bars:
+        #     yval = bar.get_height()
+        #     if yval > 0: # Only add text if the height is greater than 0
+        #         # Format the text, rounding to a reasonable number of decimal places
+        #         # You can adjust the format specifier (e.g., f'.2f') as needed
+        #         label_text = f'{yval:.2f}'
+        #         plt.text(bar.get_x() + bar.get_width()/2.0, yval, label_text, va='bottom', ha='center', fontsize=8, rotation=45) # Adjust va, ha, fontsize, rotation as needed
 
     plt.yscale('log')
     plt.xlabel('Vector size')
@@ -131,7 +142,7 @@ def plot_comparison_bars(series_dict, title, output_path):
     plt.title(title + " (Bars)")
     plt.xticks(ticks=x, labels=[str(size) for size in all_sizes])
     plt.legend()
-    plt.grid(True, which="both", linestyle='--', linewidth=0.5)
+    plt.grid(True, which="both", linestyle='--', linewidth=0.5, axis='y') # Grid only on Y axis might be cleaner
     plt.tight_layout()
     plt.savefig(output_path)
     print(f"Bar plot saved to {output_path}")
@@ -152,19 +163,29 @@ if __name__ == "__main__":
         print("Skipping benchmark execution; using existing JSON results.")
 
     # Load and aggregate results
-    debug_results = load_results(output_json_debug)
-    release_results = load_results(output_json_release)
+    debug_results = None
+    release_results = None
+
+    try:
+        debug_results = load_results(output_json_debug)
+        release_results = load_results(output_json_release)
+    except FileNotFoundError:
+        print("Results file not found, running benchmarks...")
+        run_benchmark(benchmark_executable_debug, output_json_debug)
+        run_benchmark(benchmark_executable_release, output_json_release)
+        debug_results = load_results(output_json_debug)
+        release_results = load_results(output_json_release)
 
     # Split aggregated results
     debug_series = split_results(debug_results)
     release_series = split_results(release_results)
 
     # Plot and save
-    print("Plotting and saving Debug results (lines)...")
-    plot_comparison(debug_series, "Debug Results", output_plot_debug)
-
-    print("Plotting and saving Release results (lines)...")
-    plot_comparison(release_series, "Release Results", output_plot_release)
+    # print("Plotting and saving Debug results (lines)...")
+    # plot_comparison(debug_series, "Debug Results", output_plot_debug)
+    #
+    # print("Plotting and saving Release results (lines)...")
+    # plot_comparison(release_series, "Release Results", output_plot_release)
 
     print("Plotting and saving Debug results (bars)...")
     plot_comparison_bars(debug_series, "Debug Results", output_plot_debug_bars)

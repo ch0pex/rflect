@@ -3,20 +3,13 @@
  * This code is licensed under MIT license (see LICENSE.txt for details)
  ************************************************************************/
 /**
- * @file main.cpp
+ * @file for_each.hpp
  * @version 1.0
- * @date 23/03/2025
- * @brief Benchmark entrypoint
+ * @date 4/30/25
+ * @brief Short description
  *
+ * Longer description
  */
+#pragma once
 
-#include "common.hpp"
-
-int main() {
-  try {
-    test_simulation("large", 1000);
-  }
-  catch (...) {
-    std::cout << "Something went wrong\n";
-  }
-}
+#include <rflect/converters/to_static.hpp>

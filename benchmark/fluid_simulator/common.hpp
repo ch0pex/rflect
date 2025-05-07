@@ -14,7 +14,7 @@
 inline std::filesystem::path const current_path =
     std::filesystem::path(std::source_location::current().file_name()).parent_path();
 
-auto run_sim(std::span<char const*> const args) {
+inline auto run_sim(std::span<char const*> const args) {
   auto const init = std::chrono::high_resolution_clock::now();
 
   auto result = //
@@ -36,7 +36,7 @@ auto run_sim(std::span<char const*> const args) {
   return 0;
 }
 
-bool compare_files(std::string const& file1, std::string const& file2) {
+inline bool compare_files(std::string const& file1, std::string const& file2) {
   std::ifstream f1(file1, std::ios::binary);
   std::ifstream f2(file2, std::ios::binary);
 
@@ -69,7 +69,7 @@ inline void test_simulation(std::string_view file_name, sim::i32 iterations) {
     std::string const result_string = compare_files(out_file, expected_file) ? "Sim correct\n" : "Sim incorrect :(\n";
     std::cout << result_string;
     remove_all(tmp_dir);
-  std::cout << "---------------------------------------\n";
+    std::cout << "---------------------------------------\n";
     return;
   }
   std::cout << "Sim correct :)\n";

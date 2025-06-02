@@ -35,10 +35,6 @@ public:
     for (u64 i = 0; i < num_blocks_; ++i) {
       calculateAdjacentAndLimitBlocks(i);
     }
-
-    std::cout << "Grid size: " << grid_size_ << "\n";
-    std::cout << "Number of blocks: " << num_blocks_ << "\n";
-    std::cout << "Block size: " << block_size_ << "\n";
   }
 
   void repositioning();

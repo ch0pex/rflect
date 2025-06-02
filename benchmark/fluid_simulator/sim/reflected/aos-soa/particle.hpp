@@ -74,17 +74,19 @@ inline math::scalar densityIncrement(FluidProperties const& particles_params, ma
  * @return Un vector 3D que representa el incremento de aceleración entre las partículas.
  */
 auto accelerationIncrement(
-    FluidProperties const& params, auto particle_i, auto particle_j,
+    FluidProperties const& params, auto particle_i, auto particle_j, auto const direction,
     math::scalar const squared_distance
 ) {
+  auto const density_i = particle_i.density();
+  auto const density_j = particle_j.density();
 
   math::scalar const distance = squared_distance > min_distance ? std::sqrt(squared_distance) : min_distance_sqrt;
-  math::vec3 const left       = (particle_i.position() - particle_j.position()) * params.mass_pressure_05 *
+  math::vec3 const left       = direction * params.mass_pressure_05 *
                           (std::pow(params.smoothing - distance, 2) / distance) *
-                          (particle_i.density() + particle_j.density() - density_times_2);
+                          (density_i + density_j - density_times_2);
 
   math::vec3 const right         = (particle_j.velocity() - particle_i.velocity()) * params.mass_goo;
-  math::scalar const denominator = particle_i.density() * particle_j.density();
+  math::scalar const denominator = density_i * density_j;
   return ((left + right) * params.f45_pi_smooth_6 / denominator);
 }
 
@@ -112,10 +114,12 @@ inline void incrementDensities(FluidProperties const& particles_params, auto par
  * @param particle_i Primera partícula.
  * @param particle_j Segunda partícula.
  */
-inline void incrementAccelerations(FluidProperties const& properties, auto particle_i, auto particle_j) {
-  if (auto const squared_distance = squaredDistance(particle_i.position(), particle_j.position());
+void incrementAccelerations(FluidProperties const& properties, auto particle_i, auto particle_j) {
+  auto const position_i = particle_i.position();
+  auto const position_j = particle_j.position();
+  if (auto const squared_distance = squaredDistance(position_i, position_j);
       squared_distance < properties.smoothing_pow_2) {
-    math::vec3 const incr = accelerationIncrement(properties, particle_i, particle_j, squared_distance);
+    math::vec3 const incr = accelerationIncrement(properties, particle_i, particle_j, position_i - position_j, squared_distance);
     particle_i.acceleration() += incr;
     particle_j.acceleration() -= incr;
   }

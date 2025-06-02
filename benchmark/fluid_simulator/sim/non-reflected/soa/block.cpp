@@ -222,7 +222,7 @@ void Block::calcDensities(FluidProperties const& properties, std::span<u32> adja
          ++j) { // Evitamos repetir calculos entre particulas inicializando j=i+1
       incrementDensities(properties, particles_view[i], particles_view[j]);
     }
-    for (auto const& adjacent_index: adjacent) {
+    for (auto const adjacent_index: adjacent) {
       for (auto particle_j: blocks[adjacent_index].particles()) {
         incrementDensities(properties, particles_view[i], particle_j);
       }
@@ -250,7 +250,7 @@ void Block::calcAccelerations(FluidProperties const& properties, std::span<u32> 
       // Evitamos repetir calculos entre particulas inicializando j=i+1
       incrementAccelerations(properties, particles_view[i], particles_view[j]);
     }
-    for (auto const& adjacent_index: adjacent) {
+    for (auto const adjacent_index: adjacent) {
       for (auto particle_j: blocks[adjacent_index].particles()) {
         incrementAccelerations(properties, particles_view[i], particle_j);
       }

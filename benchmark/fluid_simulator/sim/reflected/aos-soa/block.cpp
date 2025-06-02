@@ -214,7 +214,7 @@ void Block::calcDensities(FluidProperties const& properties, std::span<u32> adja
     for (size_t j = i + 1; j < particles.size(); ++j) {
       incrementDensities(properties, particles[i], particles[j]);
     }
-    for (auto const& adjacent_index: adjacent) {
+    for (auto const adjacent_index: adjacent) {
       for (auto const particle_j: blocks[adjacent_index].particles) {
         incrementDensities(properties, particles[i], particle_j);
       }
@@ -236,15 +236,16 @@ void Block::calcDensities(FluidProperties const& properties, std::span<u32> adja
  * @param blocks Un vector de bloques conteniendo partículas.
  */
 void Block::calcAccelerations(FluidProperties const& properties, std::span<u32> adjacent, std::vector<Block>& blocks) {
-  for (size_t i = 0; i < particles.size(); ++i) {
-    for (size_t j = i + 1; j < particles.size(); ++j) {
-      incrementAccelerations(properties, particles[i], particles[j]);
+  for (i32 i = 0; auto const particle_i : particles) {
+    for (i32 j = i + 1; j < particles.size(); ++j) {
+      incrementAccelerations(properties, particle_i, particles[j]);
     }
-    for (auto const& adjacent_index: adjacent) {
+    for (auto const adjacent_index: adjacent) {
       for (auto const particle_j: blocks[adjacent_index].particles) {
-        incrementAccelerations(properties, particles[i], particle_j);
+        incrementAccelerations(properties, particle_i, particle_j);
       }
     }
+  ++i;
   }
 }
 

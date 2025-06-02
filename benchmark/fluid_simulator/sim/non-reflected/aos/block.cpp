@@ -237,12 +237,12 @@ void Block::calcDensities(FluidProperties const& properties, std::span<u32> adja
  * @param blocks Un vector de bloques conteniendo partículas.
  */
 void Block::calcAccelerations(FluidProperties const& properties, std::span<u32> adjacent, std::vector<Block>& blocks) {
-  for (size_t i = 0; i < particles.size(); ++i) {
-    for (size_t j = i + 1; j < particles.size();
-         ++j) { // Evitamos repetir calculos entre particulas inicializando j=i+1
+  auto const size = particles.size();
+  for (size_t i = 0; i < size; ++i) {
+    for (size_t j = i + 1; j < size; ++j) {
       incrementAccelerations(properties, particles[i], particles[j]);
     }
-    for (auto& adjacent_index: adjacent) {
+    for (auto const adjacent_index: adjacent) {
       for (auto& particle_j: blocks[adjacent_index].particles) {
         incrementAccelerations(properties, particles[i], particle_j);
       }

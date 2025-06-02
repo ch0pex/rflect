@@ -12,11 +12,20 @@
 
 #include "common.hpp"
 
-int main() {
-  try {
-    test_simulation("large", 2000);
-  }
-  catch (...) {
-    std::cout << "Something went wrong\n";
-  }
-}
+int main() { test_simulation("large", 1000); }
+
+// int main() {
+//
+//   // Check correctness
+//   for (sim::i8 i = 1; i <= 5; ++i) {
+//     test_simulation("large", i);
+//   }
+//   for (sim::i8 i = 1; i <= 5; ++i) {
+//     test_simulation("small", i);
+//   }
+//
+//   // Benchmark
+//   for (sim::i8 i = 1; i <= 1; ++i) {
+//     test_simulation("large", 1000);
+//   }
+// }

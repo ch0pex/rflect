@@ -22,8 +22,8 @@ namespace rflect {
  *
  * These macros are used to simplify the creation of proxy classes that interact with containers, enabling
  * layout-agnostic operations (e.g., assignment, dereferencing, member access) for both AoS (Array of Structures)
- * and SoA (Structure of Arrays) layouts. They allow the automatic generation of proxy methods, reducing boilerplate code
- * and providing a flexible interface for interacting with container elements.
+ * and SoA (Structure of Arrays) layouts. They allow the automatic generation of proxy methods, reducing boilerplate
+ * code and providing a flexible interface for interacting with container elements.
  *
  * - `EXPAND`, `EXPAND1` through `EXPAND4`: Recursively expand macro arguments to ensure full macro expansion.
  * - `FOR_EACH`: Iterates over variadic arguments, applying a macro to each argument.
@@ -121,8 +121,9 @@ public:
   constexpr proxy_type& operator=(value_type const& value)
     requires(soa_layout<container>)
   {
-    template for (constexpr auto member: nonstatic_data_members_of(^^value_type) | to_static_array) {
-      constexpr auto identifier                          = std::meta::define_static_string(identifier_of(member));
+    template for (constexpr auto member:
+                  nonstatic_data_members_of(^^value_type, std::meta::access_context::unchecked()) | to_static_array) {
+      constexpr auto identifier                          = std::define_static_string(identifier_of(member));
       container_.template items<identifier>().at(index_) = value.[:member:];
     }
     return static_cast<proxy_type&>(*this);
@@ -143,8 +144,10 @@ public:
     if (this == &value)
       return static_cast<proxy_type&>(*this);
 
-    auto tuple          = *static_cast<proxy_type const&>(value);
-    constexpr auto size = (nonstatic_data_members_of(^^underlying_container) | to_static_array).size();
+    auto tuple = *static_cast<proxy_type const&>(value);
+    constexpr auto size =
+        (nonstatic_data_members_of(^^underlying_container, std::meta::access_context::unchecked()) | to_static_array)
+            .size();
     template for (constexpr auto index: static_iota<size>()) {
       container_.[:nonstatic_data_member<underlying_container>([:index:]):].at(index_) = std::get<[:index:]>(tuple);
     }
@@ -211,8 +214,8 @@ private:
  *
  *   // *** Getters ***
  *   consteval {
- *     template for (auto identifier : nonstatic_data_members_of(^^value_type) | std::views::transform(std::meta::identifier_of)) {
- *       proxy_member(identifier);
+ *     template for (auto identifier : nonstatic_data_members_of(^^value_type) |
+ * std::views::transform(std::meta::identifier_of)) { proxy_member(identifier);
  *     }
  *   }
  *

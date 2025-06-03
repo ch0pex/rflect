@@ -53,7 +53,7 @@ public:
   }
 
   constexpr explicit multi_vector(std::integral auto size) {
-    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
+    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container, std::meta::access_context::unchecked()) | to_static_array) {
       data_.[:member:] = decltype(data_.[:member:])(size);
     }
   }
@@ -112,13 +112,13 @@ public:
   // ********* Modifiers *********
 
   constexpr void push_back(value_type const& item) {
-    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container) | to_static_array) {
+    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container, std::meta::access_context::unchecked()) | to_static_array) {
       data_.[:member:].push_back(item.[:nonstatic_data_member<value_type>(identifier_of(member)):]);
     }
   }
 
   constexpr void push_back(auto const value) {
-    static constexpr auto size = (nonstatic_data_members_of(^^underlying_container)).size();
+    static constexpr auto size = (nonstatic_data_members_of(^^underlying_container, std::meta::access_context::unchecked())).size();
     template for (constexpr auto index: static_iota<size>()) {
       data_.[:nonstatic_data_member<underlying_container>([:index:]):].push_back(std::get<[:index:]>(value));
     }

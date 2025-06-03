@@ -24,7 +24,7 @@ namespace detail {
 template<typename From>
 consteval auto as_zip_type() -> std::meta::info {
   // clang-format off
-  constexpr auto raw_members = nonstatic_data_members_of(^^From)
+  constexpr auto raw_members = nonstatic_data_members_of(^^From, std::meta::access_context::unchecked())
                                | std::views::transform(std::meta::type_of)
                                | std::views::transform(std::meta::remove_cvref)
                                | to_static_array;
@@ -56,8 +56,8 @@ template<typename From, typename To>
 consteval auto get_soa_to_zip_helper() {
 
   std::vector args = {^^To, ^^From};
-  for (auto mem: nonstatic_data_members_of(^^std::remove_reference_t<From>)) {
-    args.push_back(reflect_value(mem));
+  for (auto mem: nonstatic_data_members_of(^^std::remove_reference_t<From>, std::meta::access_context::unchecked())) {
+    args.push_back(reflect_constant(mem));
   }
 
   return extract<To (*)(From&&)>(substitute(^^soa_to_zip_helper, args));

@@ -25,13 +25,13 @@ struct struct_of_arrays {
   struct impl;
 
   consteval {
-    std::vector<std::meta::info> old_members = nonstatic_data_members_of(^^T);
+    std::vector<std::meta::info> old_members = nonstatic_data_members_of(^^T, std::meta::access_context::unchecked());
     std::vector<std::meta::info> new_members = {};
     for (std::meta::info member: old_members) {
       auto array_type = substitute(
           ^^std::array,
           {
-            type_of(member), std::meta::reflect_value(N)
+            type_of(member), std::meta::reflect_constant(N)
           }
       );
       auto mem_descr = data_member_spec(array_type, {.name = identifier_of(member)});
@@ -48,7 +48,7 @@ struct struct_of_vectors {
 
   consteval {
     // clang-format off
-    std::vector<std::meta::info> old_members = nonstatic_data_members_of(^^T);
+    std::vector<std::meta::info> old_members = nonstatic_data_members_of(^^T, std::meta::access_context::unchecked());
     std::vector<std::meta::info> new_members = {};
 
     for (std::meta::info member: old_members) {

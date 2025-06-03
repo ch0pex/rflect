@@ -24,7 +24,7 @@ namespace detail {
 consteval auto as_tuple_type(std::meta::info type) {
   return substitute(
       ^^std::tuple, //
-      nonstatic_data_members_of(type) //
+      nonstatic_data_members_of(type, std::meta::access_context::unchecked()) //
           | std::views::transform(std::meta::type_of) //
           | std::views::transform(std::meta::remove_cvref) //
           | std::ranges::to<std::vector>() //
@@ -40,8 +40,8 @@ template<typename From, typename To>
 consteval auto get_struct_to_tuple_helper() {
 
   std::vector args = {^^To, ^^From};
-  for (auto mem: nonstatic_data_members_of(^^From)) {
-    args.push_back(reflect_value(mem));
+  for (auto mem: nonstatic_data_members_of(^^From, std::meta::access_context::unchecked())) {
+    args.push_back(reflect_constant(mem));
   }
 
   return extract<To (*)(From const&)>(substitute(^^struct_to_tuple_helper, args));

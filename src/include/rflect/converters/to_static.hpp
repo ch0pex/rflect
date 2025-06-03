@@ -20,11 +20,11 @@ namespace rflect {
 
 template<std::size_t N>
 consteval auto static_iota() {
-  return define_static_array(template_arguments_of(dealias(^^std::make_index_sequence<N>)) | std::views::drop(1));
+  return define_static_array(template_arguments_of(underlying_entity_of(^^std::make_index_sequence<N>)) | std::views::drop(1));
 }
 
 consteval auto operator""_ss(char const* str, [[maybe_unused]] size_t length) -> char const* {
-  return std::meta::define_static_string(str);
+  return std::define_static_string(str);
 }
 
 struct to_static_fn : converter_closure<to_static_fn>  {

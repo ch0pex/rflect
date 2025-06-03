@@ -15,7 +15,7 @@
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "$env{HOME}/reflection/install/bin/clang++",
         "CMAKE_CXX_STANDARD": "26",
-        "CMAKE_CXX_FLAGS": "-nostdinc++ -freflection-latest -fexpansion-statements -fno-access-contexts -Wall -Wextra -Wc++26-extensions",
+        "CMAKE_CXX_FLAGS": "-nostdinc++ -freflection-latest -fexpansion-statements -Wall -Wextra -Wc++26-extensions",
         "CMAKE_CXX_STANDARD_LIBRARIES": "-lc++ -lc++abi -L$env{HOME}/reflection/install/lib/x86_64-unknown-linux-gnu/libc++.so -L$env{HOME}/reflection/install/lib/x86_64-unknown-linux-gnu/libc++abi.so",
         "CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES": "$env{HOME}/reflection/install/include/c++/v1/;$env{HOME}/reflection/install/include/x86_64-unknown-linux-gnu/c++/v1/;/usr/lib/llvm-19/lib/clang/19/include"
       }

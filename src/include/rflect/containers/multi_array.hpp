@@ -37,7 +37,9 @@ public:
 
   constexpr multi_array(std::initializer_list<value_type> init) {
     for (std::size_t i = 0; auto const& item: init) {
-      template for (constexpr auto member : nonstatic_data_members_of(^^underlying_container) | to_static_array) {
+      template for (constexpr auto member:
+                    nonstatic_data_members_of(^^underlying_container, std::meta::access_context::unchecked()) |
+                        to_static_array) {
         data_.[:member:][i] = item.[:nonstatic_data_member<value_type>(identifier_of(member)):];
       }
       ++i;
@@ -85,13 +87,9 @@ public:
     return std::end(soa_to_zip(self.data_));
   }
 
-  constexpr auto cbegin() const noexcept {
-    return std::cbegin(soa_to_zip(data_));
-  }
+  constexpr auto cbegin() const noexcept { return std::cbegin(soa_to_zip(data_)); }
 
-  constexpr auto cend() noexcept {
-    return std::cend(soa_to_zip(data_));
-  }
+  constexpr auto cend() noexcept { return std::cend(soa_to_zip(data_)); }
 
   // ********* Capacity *********
 
@@ -111,4 +109,4 @@ private:
   underlying_container data_ {};
 };
 
-}
+} // namespace rflect

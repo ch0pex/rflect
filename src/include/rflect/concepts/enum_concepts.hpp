@@ -12,12 +12,16 @@
  */
 #pragma once
 
-#include <experimental/meta>
 #include <concepts>
+#include <experimental/meta>
 
 namespace rflect {
 
+/**
+ * Concept to check if some type is an Enum with complete definition
+ * @note is_enumerable_type checks if a type has complete definition despite it's confusing name imo :)
+ */
 template<typename E>
-concept is_enum = std::is_enum_v<E>;
+concept complete_enum = std::is_enum_v<E> and is_enumerable_type(^^E);
 
-}
+} // namespace rflect

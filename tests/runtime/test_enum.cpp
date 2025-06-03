@@ -12,20 +12,23 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
-#include <rflect/rflect.hpp>
+#include <rflect/introspection/enum.hpp>
 
 #include <optional>
-#include <sstream>
-#include <string>
-#include <string_view>
+
 
 enum class Color : std::int8_t { Red = 0, Green = 2, Blue = 3 };
 
 enum Status : std::int32_t { Ok = 0, Warning = 1, Error = -1 };
 
+
 TEST_SUITE_BEGIN("Enum");
 
+
 TEST_CASE("enum_name returns correct names for enum class") {
+  Color color = Color::Blue;
+
+  CHECK(rflect::enum_name(color) == "Blue");
   CHECK(rflect::enum_name(Color::Red) == "Red");
   CHECK(rflect::enum_name(Color::Green) == "Green");
   CHECK(rflect::enum_name(Color::Blue) == "Blue");
@@ -47,6 +50,8 @@ TEST_CASE("enum_name returns correct names for unscoped enum") {
 
 
 TEST_CASE("enum_value returns correct enum value from index for enum class") {
+  int i = 0;
+  CHECK(rflect::enum_value<Color>(i) == Color::Red);
   CHECK(rflect::enum_value<Color>(0) == Color::Red);
   CHECK(rflect::enum_value<Color>(1) == Color::Green);
   CHECK(rflect::enum_value<Color>(2) == Color::Blue);
@@ -106,4 +111,16 @@ TEST_CASE("enum_count returns correct number of enumerators for enum class") {
 TEST_CASE("enum_count returns correct number of enumerators for unscoped enum") {
   CHECK(rflect::enum_count<Status>() == 3);
 }
+
+TEST_CASE("enum_switch function") {
+  Color color = Color::Blue;
+
+  rflect::enum_switch<Color>([](auto val) {
+    constexpr auto value = val;
+    CHECK(value == Color::Blue);
+  }, color);
+
+}
+
 TEST_SUITE_END();
+

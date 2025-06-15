@@ -94,6 +94,18 @@ public:
 
   constexpr void push_back(view_type const view) { data_.push_back(*view); }
 
+  constexpr iterator erase(iterator const iterator) {
+    typename iterator::difference_type const diff = iterator - begin();
+    data_.erase(data_.begin() + diff);
+    return iterator;
+  }
+
+  constexpr const_iterator erase(const_iterator const iterator) {
+    typename const_iterator::difference_type const diff = iterator - cbegin();
+    data_.erase(data_.cbegin() + diff);
+    return iterator;
+  }
+
   // ********** Operators **********
 
   friend constexpr bool operator==(dual_vector const& vec1, dual_vector const& vec2) {

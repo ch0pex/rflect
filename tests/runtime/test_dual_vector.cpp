@@ -45,6 +45,29 @@ TEST_CASE_TEMPLATE("push_back", T, layout::aos, layout::soa) {
   CHECK(mock_vector == mock_vector_2);
 }
 
+TEST_CASE_TEMPLATE("Comparison", T, layout::aos, layout::soa) {
+  container<T> vec1 {mock_0, mock_1, mock_2, mock_3};
+  container<T> vec2 {mock_0, mock_1, mock_2, mock_3};
+  container<T> vec3 {mock_0, mock_1, mock_2};
+
+  CHECK(vec1 == vec2);
+  CHECK(vec1 != vec3);
+}
+
+TEST_CASE_TEMPLATE("erase", T, layout::aos, layout::soa) {
+  container<T> vec1 {mock_0, mock_1, mock_2, mock_3};
+  container<T> vec2 {mock_0, mock_1, mock_2, mock_3};
+  container<T> vec3 {mock_0, mock_1, mock_2};
+
+  auto iterator = vec1.erase(vec1.begin() + 3);
+  CHECK(iterator == vec1.end());
+  CHECK(vec1 == vec3);
+  CHECK(vec1 != vec2);
+
+  vec2.erase(vec3.begin() + 3);
+  CHECK(vec1 == vec2);
+}
+
 TEST_CASE_TEMPLATE("Accessors", T, layout::aos, layout::soa) { test_element_access<container<T>>(); }
 
 TEST_CASE_TEMPLATE("operator[]", T, layout::aos, layout::soa) {
@@ -95,13 +118,5 @@ TEST_CASE_TEMPLATE("range iteration", T, layout::aos, layout::soa) {
   }
 }
 
-TEST_CASE_TEMPLATE("Comparison", T, layout::aos, layout::soa) {
-  container<T> vec1 {mock_0, mock_1, mock_2, mock_3};
-  container<T> vec2 {mock_0, mock_1, mock_2, mock_3};
-  container<T> vec3 {mock_0, mock_1, mock_2};
-
-  CHECK(vec1 == vec2);
-  CHECK(vec1 != vec3);
-}
 
 TEST_SUITE_END();

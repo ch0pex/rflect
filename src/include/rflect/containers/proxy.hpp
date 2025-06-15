@@ -45,10 +45,6 @@ namespace rflect {
 #define FOR_EACH_AGAIN() FOR_EACH_HELPER
 
 #define EXPAND_PROXY_METHOD(name, ...)                                                                                 \
-  auto name() -> decltype(auto) {                                                                                      \
-    using namespace rflect;                                                                                            \
-    return (this->template member<#name##_ss>());                                                                      \
-  }                                                                                                                    \
   auto name() const -> decltype(auto) {                                                                                \
     using namespace rflect;                                                                                            \
     return (this->template member<#name##_ss>());                                                                      \
@@ -153,7 +149,6 @@ public:
     }
     return static_cast<proxy_type&>(*this);
   }
-
 
   template<typename Self>
   constexpr auto operator*(this Self&& self)

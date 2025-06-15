@@ -59,14 +59,25 @@ public:
     return {*self.container_, self.index_};
   }
 
+  friend constexpr proxy_iterator operator+(proxy_iterator const& proxy1, difference_type const index) {
+    return {*proxy1.container_, proxy1.index_ + index};
+  }
+
+  friend constexpr proxy_iterator operator-(proxy_iterator const& proxy1, difference_type const index) {
+    return {*proxy1.container_, proxy1.index_ - index};
+  }
+
+  friend constexpr difference_type operator-(proxy_iterator const& proxy1, proxy_iterator const& proxy2) {
+    return proxy1.index_ - proxy2.index_;
+  }
+
   friend constexpr bool operator==(proxy_iterator const& proxy1, proxy_iterator const& proxy2) {
-    // TODO compare std::addressof(proxy1.container.begin()) == std::addressof(proxy2.container.begin())
-    return proxy1.index_ == proxy2.index_;
+    return proxy1.index_ == proxy2.index_ and proxy1.container_ == proxy2.container_;
   }
 
 private:
-  std::size_t index_{};
+  std::size_t index_ {};
   container* container_;
 };
 
-} // namespace rflect::
+} // namespace rflect

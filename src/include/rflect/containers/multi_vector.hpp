@@ -37,6 +37,8 @@ public:
    **********************************/
   using value_type           = T;
   using underlying_container = struct_of_vectors<T, Alloc>;
+  using iterator             = decltype(std::begin(std::declval<as_zip<underlying_container>>()));
+  using const_iterator       = decltype(std::cbegin(std::declval<as_zip<underlying_container>>()));
 
   /**********************************
    *        Member functions        *
@@ -53,7 +55,9 @@ public:
   }
 
   constexpr explicit multi_vector(std::integral auto size) {
-    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container, std::meta::access_context::unchecked()) | to_static_array) {
+    template for (constexpr auto member:
+                  nonstatic_data_members_of(^^underlying_container, std::meta::access_context::unchecked()) |
+                      to_static_array) {
       data_.[:member:] = decltype(data_.[:member:])(size);
     }
   }
@@ -96,13 +100,13 @@ public:
   // ********* Iterators *********
 
   template<typename Self>
-  constexpr auto begin(this Self self) noexcept {
-    return std::begin(soa_to_zip(self.data_));
+  constexpr auto begin(this Self&& self) noexcept {
+    return std::begin(soa_to_zip(std::forward<Self>(self).data_));
   }
 
   template<typename Self>
-  constexpr auto end(this Self self) noexcept {
-    return std::end(soa_to_zip(self.data_));
+  constexpr auto end(this Self&& self) noexcept {
+    return std::end(soa_to_zip(std::forward<Self>(self).data_));
   }
 
   constexpr auto cbegin() noexcept { return std::cbegin(soa_to_zip(data_)); }
@@ -112,16 +116,36 @@ public:
   // ********* Modifiers *********
 
   constexpr void push_back(value_type const& item) {
-    template for (constexpr auto member: nonstatic_data_members_of(^^underlying_container, std::meta::access_context::unchecked()) | to_static_array) {
+    template for (constexpr auto member:
+                  nonstatic_data_members_of(^^underlying_container, std::meta::access_context::unchecked()) |
+                      to_static_array) {
       data_.[:member:].push_back(item.[:nonstatic_data_member<value_type>(identifier_of(member)):]);
     }
   }
 
   constexpr void push_back(auto const value) {
-    static constexpr auto size = (nonstatic_data_members_of(^^underlying_container, std::meta::access_context::unchecked())).size();
-    template for (constexpr auto index: static_iota<size>()) {
+    template for (constexpr auto index: static_iota<members_count>()) {
       data_.[:nonstatic_data_member<underlying_container>([:index:]):].push_back(std::get<[:index:]>(value));
     }
+  }
+
+  constexpr auto erase(iterator const it) {
+    auto const diff = it - cbegin();
+    template for (constexpr auto index: static_iota<members_count>()) {
+      constexpr auto member = nonstatic_data_member<underlying_container>([:index:]);
+      data_.[:member:].erase(data_.[:member:].begin() + diff);
+    }
+    return begin() + diff;
+  }
+
+  constexpr auto erase(iterator const begin, iterator const end) {
+    auto const diff_begin = begin - cbegin();
+    auto const diff_end   = end - cbegin();
+    template for (constexpr auto index: static_iota<members_count>()) {
+      constexpr auto member = nonstatic_data_member<underlying_container>([:index:]);
+      data_.[:member:].erase(data_.[:member:].begin() + diff_begin, data_.[:member:].begin() + diff_end);
+    }
+    return begin() + diff_end;
   }
 
   // ********* Capacity *********
@@ -143,6 +167,8 @@ public:
   }
 
 private:
+  static constexpr auto members_count =
+      (nonstatic_data_members_of(^^underlying_container, std::meta::access_context::unchecked())).size();
   underlying_container data_ {};
 };
 

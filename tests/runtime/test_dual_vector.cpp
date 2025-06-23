@@ -68,6 +68,18 @@ TEST_CASE_TEMPLATE("erase", T, layout::aos, layout::soa) {
   CHECK(vec1 == vec2);
 }
 
+TEST_CASE_TEMPLATE("pop_back", T, layout::aos, layout::soa) {
+  container<T> vec1 {mock_0, mock_1, mock_2, mock_3};
+  container<T> vec2 {mock_0, mock_1, mock_2, mock_3};
+  container<T> vec3 {mock_0, mock_1, mock_2};
+
+  vec1.pop_back();
+  CHECK(vec1 == vec3);
+  CHECK(vec1 != vec2);
+  vec2.pop_back();
+  CHECK(vec1 == vec2);
+}
+
 TEST_CASE_TEMPLATE("Accessors", T, layout::aos, layout::soa) { test_element_access<container<T>>(); }
 
 TEST_CASE_TEMPLATE("operator[]", T, layout::aos, layout::soa) {

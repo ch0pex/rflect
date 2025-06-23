@@ -109,7 +109,7 @@ public:
     return std::end(soa_to_zip(std::forward<Self>(self).data_));
   }
 
-  constexpr auto cbegin() noexcept { return std::cbegin(soa_to_zip(data_)); }
+  constexpr auto cbegin() noexcept { return std::cbegin(data_ | soa_to_zip); }
 
   constexpr auto cend() noexcept { return std::cend(soa_to_zip(data_)); }
 

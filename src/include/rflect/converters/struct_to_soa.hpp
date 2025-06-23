@@ -63,7 +63,40 @@ struct struct_of_vectors {
   }
 };
 
+template<class T>
+struct struct_of_pointers {
+  struct impl;
+
+  consteval {
+    // clang-format off
+    std::vector<std::meta::info> old_members = nonstatic_data_members_of(^^T, std::meta::access_context::unchecked());
+    std::vector<std::meta::info> new_members = {};
+
+    for (std::meta::info member: old_members) {
+      auto pointer_type = add_pointer(type_of(member));
+      auto mem_descr = data_member_spec(pointer_type, {.name = identifier_of(member)});
+      new_members.push_back(mem_descr);
+    }
+
+    define_aggregate(^^impl, new_members);
+    // clang-format on
+  }
+};
+
 } // namespace detail
+
+/**
+ * @brief Type alias that generates a structure of pointers`s from a given struct type.
+ *
+ * For a given struct type `T`, this alias produces a new struct where each member is
+ * replaced with a `std::vector` of the corresponding type. This allows storing multiple
+ * instances of `T` in a structure-of-arrays (SoA) layout, which is often more cache-friendly.
+ *
+ * @tparam T The struct type to be transformed.
+ * @tparam Alloc Allocator template to be used for each vector (defaults to `std::allocator`).
+ */
+template<typename T, template<class> class Alloc = std::allocator>
+using struct_of_pointers = typename detail::struct_of_vectors<T, Alloc>::impl;
 
 /**
  * @brief Type alias that generates a structure of `std::vector`s from a given struct type.

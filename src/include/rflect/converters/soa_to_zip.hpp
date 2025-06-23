@@ -69,11 +69,11 @@ consteval auto get_soa_to_zip_helper() {
  * @param from Struct to be converted
  * @return From represented as zip_view of its members
  */
-template<typename From>
-struct soa_to_zip_fn : converter_closure<soa_to_zip_fn<From>> {
-  using To = [:as_zip_type<std::remove_reference_t<From>>():];
+struct soa_to_zip_fn : converter_closure<soa_to_zip_fn> {
 
+  template<typename From>
   constexpr auto operator()(From&& from) const {
+    using To = [:as_zip_type<std::remove_reference_t<From>>():];
     static constexpr auto fn = detail::get_soa_to_zip_helper<From, To>();
     return fn(std::forward<From>(from));
   }
@@ -92,7 +92,7 @@ struct soa_to_zip_fn : converter_closure<soa_to_zip_fn<From>> {
  * @tparam From The structure-of-arrays type to convert.
  */
 template<typename From>
-using as_zip = typename detail::soa_to_zip_fn<From>::To;
+using as_zip = [:detail::as_zip_type<std::remove_reference_t<From>>():];
 
 /**
  * @brief Converts a structure-of-arrays into a zipped view.
@@ -105,9 +105,6 @@ using as_zip = typename detail::soa_to_zip_fn<From>::To;
  * @param from The SoA instance to convert.
  * @return A zipped view that enables element-wise access in AoS fashion.
  */
-constexpr auto soa_to_zip = []<typename From>(From&& from) {
-  static constexpr auto fn = detail::soa_to_zip_fn<From>{};
-  return fn(std::forward<From>(from));
-};
+inline constexpr auto soa_to_zip = detail::soa_to_zip_fn{};
 
 } // namespace rflect

@@ -13,6 +13,7 @@
 #include <experimental/meta>
 
 namespace rflect {
+
 template<typename Tp>
   requires std::is_class_v<Tp> and std::same_as<Tp, std::remove_cv_t<Tp>>
 struct converter_closure { };
@@ -20,9 +21,9 @@ struct converter_closure { };
 template<class Tp>
 concept converter = std::is_base_of_v<converter_closure<Tp>, Tp>;
 
-template<std::ranges::input_range R, converter Cv>
-consteval auto operator|(R&& r, Cv const& self) {
+template<typename R, converter Cv>
+constexpr auto operator|(R&& r, Cv const& self) {
   return self(std::forward<R>(r));
 }
 
-}
+} // namespace rflect

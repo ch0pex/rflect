@@ -47,10 +47,13 @@ consteval auto get_struct_to_tuple_helper() {
   return extract<To (*)(From const&)>(substitute(^^struct_to_tuple_helper, args));
 }
 
-template<typename From>
-struct struct_to_tuple_fn : converter_closure<struct_to_tuple_fn<From>> {
-  using To = [:as_tuple_type(^^From):];
-  constexpr auto operator()(From const& from) { return get_struct_to_tuple_helper<From, To>()(from); }
+struct struct_to_tuple_fn : converter_closure<struct_to_tuple_fn> {
+
+  template<typename FromType>
+  constexpr auto operator()(FromType const& from) {
+    using To = [:as_tuple_type(^^FromType):];
+    return get_struct_to_tuple_helper<FromType, To>()(from);
+  }
 };
 
 } // namespace detail
@@ -76,10 +79,6 @@ using as_tuple = [:detail::as_tuple_type(^^From):];
  * @param from The struct instance to convert.
  * @return A tuple containing the member values (or references) of the given struct.
  */
-template<typename From>
-constexpr auto struct_to_tuple(From&& from) {
-  static constexpr auto fn = detail::struct_to_tuple_fn<From> {};
-  return fn(from);
-}
+inline constexpr auto struct_to_tuple = detail::struct_to_tuple_fn {};
 
 } // namespace rflect

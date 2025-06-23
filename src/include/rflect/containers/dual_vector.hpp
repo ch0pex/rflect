@@ -94,6 +94,8 @@ public:
 
   constexpr void push_back(view_type const view) { data_.push_back(*view); }
 
+  constexpr void pop_back() { data_.pop_back(); }
+
   constexpr iterator erase(iterator const iterator) {
     typename iterator::difference_type const diff = iterator - begin();
     data_.erase(data_.begin() + diff);

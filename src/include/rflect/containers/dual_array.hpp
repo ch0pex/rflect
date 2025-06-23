@@ -83,7 +83,7 @@ public:
 
   [[nodiscard]] constexpr size_type size() const noexcept { return data_.size(); }
 
-  [[nodiscard]] constexpr size_type max_size() const noexcept { return data_.size(); }
+  [[nodiscard]] constexpr size_type max_size() const noexcept { return data_.max_size(); }
 
   [[nodiscard]] constexpr size_type empty() const noexcept { return data_.empty(); }
 

@@ -129,6 +129,12 @@ public:
     }
   }
 
+  constexpr void pop_back() {
+    template for (constexpr auto index: static_iota<members_count>()) {
+      data_.[:nonstatic_data_member<underlying_container>([:index:]):].pop_back();
+    }
+  }
+
   constexpr auto erase(iterator const it) {
     auto const diff = it - cbegin();
     template for (constexpr auto index: static_iota<members_count>()) {

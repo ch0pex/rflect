@@ -1,6 +1,8 @@
 {
   "version": 6,
-  "include": ["./conan/ConanPresets.json"],
+  "include": [
+    "./conan/ConanPresets.json"
+  ],
   "cmakeMinimumRequired": {
     "major": 3,
     "minor": 30,
@@ -13,17 +15,20 @@
       "generator": "Unix Makefiles",
       "binaryDir": "build/${presetName}",
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "$env{HOME}/reflection/install/bin/clang++",
+        "CMAKE_CXX_COMPILER": "$env{HOME}/reflection/bin/clang++",
         "CMAKE_CXX_STANDARD": "26",
         "CMAKE_CXX_FLAGS": "-nostdinc++ -freflection-latest -fexpansion-statements -Wall -Wextra -Wc++26-extensions",
-        "CMAKE_CXX_STANDARD_LIBRARIES": "-lc++ -lc++abi -L$env{HOME}/reflection/install/lib/x86_64-unknown-linux-gnu/libc++.so -L$env{HOME}/reflection/install/lib/x86_64-unknown-linux-gnu/libc++abi.so",
-        "CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES": "$env{HOME}/reflection/install/include/c++/v1/;$env{HOME}/reflection/install/include/x86_64-unknown-linux-gnu/c++/v1/;/usr/lib/llvm-19/lib/clang/19/include"
+        "CMAKE_CXX_STANDARD_LIBRARIES": "-lc++ -lc++abi -L$env{HOME}/reflection/lib/x86_64-unknown-linux-gnu/libc++.so -L$env{HOME}/reflection/lib/x86_64-unknown-linux-gnu/libc++abi.so",
+        "CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES": "$env{HOME}/reflection/include/c++/v1/;$env{HOME}/reflection/include/x86_64-unknown-linux-gnu/c++/v1/;/usr/lib/llvm-19/lib/clang/19/include"
       }
     },
     {
       "name": "Debug",
       "displayName": "Debug",
-      "inherits": ["common", "conan-debug"],
+      "inherits": [
+        "common",
+        "conan-debug"
+      ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -fno-omit-frame-pointer"
@@ -32,7 +37,10 @@
     {
       "name": "Release",
       "displayName": "Release",
-      "inherits": ["common", "conan-release"],
+      "inherits": [
+        "common",
+        "conan-release"
+      ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_FLAGS_RELEASE": "-march=native -O3 -ffast-math -ftree-vectorize"
@@ -41,7 +49,10 @@
     {
       "name": "RelWithDebInfo",
       "displayName": "RelWithDebInfo",
-      "inherits": ["common", "conan-relwithdebinfo"],
+      "inherits": [
+        "common",
+        "conan-relwithdebinfo"
+      ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
         "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-march=native -O2 -g"

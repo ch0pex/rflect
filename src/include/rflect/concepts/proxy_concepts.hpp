@@ -11,8 +11,8 @@
 
 #pragma once
 
-#include <experimental/meta>
 #include <concepts>
+#include <experimental/meta>
 
 
 namespace rflect {
@@ -24,5 +24,4 @@ concept has_proxy = requires(T element) {
   // Restrict to structs with at least 1 nonstatic data member
 };
 
-}
-
+} // namespace rflect

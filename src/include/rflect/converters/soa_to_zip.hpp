@@ -30,8 +30,10 @@ consteval auto as_zip_type() -> std::meta::info {
                                | to_static_array;
 
   std::vector<std::meta::info> value_members;
+  static_assert(raw_members.size() > 0);
 
   template for (constexpr auto member: raw_members) {
+    static_assert(std::ranges::input_range<[:member:]>);
     std::meta::info new_member;
     if constexpr (std::is_const_v<std::remove_reference_t<From>>) {
       new_member = add_lvalue_reference(^^typename[:member:] const);

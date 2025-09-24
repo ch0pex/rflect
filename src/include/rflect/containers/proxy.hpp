@@ -14,6 +14,7 @@
 #pragma once
 
 #include <rflect/converters/soa_to_zip.hpp>
+#include "rflect/concepts/layout_concepts.hpp"
 
 namespace rflect {
 
@@ -114,6 +115,7 @@ public:
     return static_cast<proxy_type&>(*this);
   }
 
+
   constexpr proxy_type& operator=(value_type const& value)
     requires(soa_layout<container>)
   {
@@ -209,8 +211,9 @@ private:
  *
  *   // *** Getters ***
  *   consteval {
- *     template for (auto identifier : nonstatic_data_members_of(^^value_type) |
- * std::views::transform(std::meta::identifier_of)) { proxy_member(identifier);
+ *     template for (auto identifier : nonstatic_data_members_of(^^value_type)
+ *                                   | std::views::transform(std::meta::identifier_of)) {
+ *       proxy_member(identifier);
  *     }
  *   }
  *

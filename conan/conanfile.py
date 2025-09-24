@@ -36,7 +36,7 @@ class RflectConan(ConanFile):
     def build_requirements(self):
         # Test requires are not forwarded as rflect dependencies
         self.test_requires("doctest/2.4.11")
-        self.test_requires("benchmark/1.9.1")
+        self.test_requires("benchmark/1.9.4")
 
     def package(self):
         copy(self, "*.hpp", self.source_folder, self.package_folder)

@@ -26,7 +26,7 @@ consteval auto members(Filter filter = std::identity()) {
 }
 
 template<typename T, typename Filter = std::identity>
-consteval auto member_count(Filter filter = std::identity()) {
+consteval std::size_t member_count(Filter filter = std::identity()) {
   auto members = members_of(^^T, std::meta::access_context::unchecked()) | std::views::filter(filter);
   return members.size();
 }

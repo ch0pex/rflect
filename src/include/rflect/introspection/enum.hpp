@@ -17,7 +17,7 @@
 #include <rflect/concepts/enum_concepts.hpp>
 #include <rflect/converters/to_static.hpp>
 
-#include <experimental/meta>
+#include <meta>
 #include <map>
 #include <ranges>
 

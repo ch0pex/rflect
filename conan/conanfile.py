@@ -23,14 +23,20 @@ class RflectConan(ConanFile):
     no_copy_source = True
 
     def layout(self):
-        self.folders.root = '..'
-        cmake_layout(self)
+        self.folders.root = ".."
+        compiler_name = str(self.settings.compiler).lower()
+        build_type = str(self.settings.build_type).lower()
+        base_path = f"build/{compiler_name}/{build_type}"
+        self.folders.build = base_path
+        self.folders.generators = f"{base_path}/generators"
+        self.folders.source = "."
 
     def generate(self):
         deps = CMakeDeps(self)
+        deps.check_components_exist = False
         deps.generate()
         tc = CMakeToolchain(self)
-        tc.user_presets_path = 'conan/ConanPresets.json'
+        tc.user_presets_path = ""
         tc.generate()
 
     def build_requirements(self):

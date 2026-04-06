@@ -4,7 +4,7 @@
 #include "math/vector.hpp"
 #include "particle.hpp"
 
-#include <__flat_map/flat_map.h>
+#include <flat_map>
 #include <map>
 #include <set>
 #include <vector>

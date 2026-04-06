@@ -15,16 +15,30 @@
 
 #include <rflect/converters/to_static.hpp>
 
+#include <meta>
 #include <ranges>
+#include <source_location>
 
 namespace rflect {
 
 namespace detail {
 
+constexpr std::string to_string_constexpr(unsigned int value) {
+  if (value == 0)
+    return "0";
+  std::string res;
+  while (value > 0) {
+    res += static_cast<char>('0' + (value % 10));
+    value /= 10;
+  }
+  std::reverse(res.begin(), res.end());
+  return res;
+}
+
 template<typename From>
-consteval auto as_zip_type() -> std::meta::info {
+consteval auto as_zip_type() -> std::meta::info try {
   // clang-format off
-  constexpr auto raw_members = nonstatic_data_members_of(^^From, std::meta::access_context::unchecked())
+  static constexpr auto raw_members = nonstatic_data_members_of(^^From, std::meta::access_context::current())
                                | std::views::transform(std::meta::type_of)
                                | std::views::transform(std::meta::remove_cvref)
                                | to_static_array;
@@ -33,19 +47,25 @@ consteval auto as_zip_type() -> std::meta::info {
   static_assert(raw_members.size() > 0);
 
   template for (constexpr auto member: raw_members) {
-    static_assert(std::ranges::input_range<[:member:]>);
     std::meta::info new_member;
     if constexpr (std::is_const_v<std::remove_reference_t<From>>) {
-      new_member = add_lvalue_reference(^^typename[:member:] const);
+      using member_type = typename[:member:] const;
+      new_member = add_lvalue_reference(^^member_type);
     }
     else {
-      new_member = add_lvalue_reference(^^typename[:member:]);
+      using member_type = typename[:member:];
+      new_member = add_lvalue_reference(^^member_type);
     }
 
     value_members.push_back(substitute(^^std::views::all_t, { new_member }));
   }
 
   return substitute(^^std::ranges::zip_view, value_members);
+} catch(std::meta::exception const& e) {
+  using std::string_literals::operator""s;
+  std::source_location sl = e.where();
+  std::string error_message = "Error in as_zip_type for type "s + identifier_of(^^From) + "in line "s + to_string_constexpr(sl.line()) + ": "s + e.what();
+  throw std::meta::exception(error_message, ^^as_zip_type);
 }
 
 template<typename To, typename From, std::meta::info... members>

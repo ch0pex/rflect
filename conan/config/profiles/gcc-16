@@ -1,0 +1,11 @@
+[settings]
+arch=x86_64
+os=Linux
+compiler=gcc
+compiler.version=16
+compiler.cppstd=26
+compiler.cstd=gnu11
+compiler.libcxx=libstdc++11
+build_type=Debug
+[conf]
+tools.cmake.cmaketoolchain:generator=Ninja

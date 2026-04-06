@@ -146,8 +146,8 @@ public:
     constexpr auto size =
         (nonstatic_data_members_of(^^underlying_container, std::meta::access_context::unchecked()) | to_static_array)
             .size();
-    template for (constexpr auto index: static_iota<size>()) {
-      container_.[:nonstatic_data_member<underlying_container>([:index:]):].at(index_) = std::get<[:index:]>(tuple);
+    template for (constexpr auto index: std::views::iota(0UZ, size)) {
+      container_.[:nonstatic_data_member<underlying_container>([:index:]):].at(index_) = std::get<([:index:])>(tuple);
     }
     return static_cast<proxy_type&>(*this);
   }
@@ -163,7 +163,7 @@ public:
   constexpr auto operator*(this Self&& self)
     requires(soa_layout<container>)
   {
-    return self.container_.as_zip()[self.index_];
+    return self.container_.to_zip()[self.index_];
   }
 
 protected:
@@ -258,7 +258,7 @@ private:
  *
  *     auto tuple          = *value;
  *     constexpr auto size = (nonstatic_data_members_of(^^underlying_container) | to_static_array).size();
- *     template for (constexpr auto index: static_iota<size>()) {
+ *     template for (constexpr auto index: std::views::iota(0UZ, size)) {
  *       container_.[:nonstatic_data_member<underlying_container>([:index:]):].at(index_) = std::get<[:index:]>(tuple);
  *     }
  *     return *this;

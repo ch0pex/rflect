@@ -73,7 +73,7 @@ public:
     return (self.data_.[:nonstatic_data_member<underlying_container>(name):]);
   }
 
-  constexpr auto as_zip() { return soa_to_zip(data_); }
+  constexpr auto to_zip() { return soa_to_zip(data_); }
 
   // ********* Iterators *********
 

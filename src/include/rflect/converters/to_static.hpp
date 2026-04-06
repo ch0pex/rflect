@@ -16,24 +16,28 @@
 
 #include <rflect/concepts/converter_closure.hpp>
 
+#include <meta>
+#include <ranges>
+
 namespace rflect {
 
 template<std::size_t N>
 consteval auto static_iota() {
-  return define_static_array(template_arguments_of(underlying_entity_of(^^std::make_index_sequence<N>)) | std::views::drop(1));
+  return std::views::iota(0ZU, N);
 }
 
 consteval auto operator""_ss(char const* str, [[maybe_unused]] size_t length) -> char const* {
-  return std::define_static_string(str);
+  std::string_view const sv {str, length};
+  return std::define_static_string(sv);
 }
 
-struct to_static_fn : converter_closure<to_static_fn>  {
-  template <std::ranges::input_range R>
+struct to_static_fn : converter_closure<to_static_fn> {
+  template<std::ranges::input_range R>
   consteval auto operator()(R&& r) const {
     return define_static_array(r);
   }
 };
 
-inline constexpr auto to_static_array = to_static_fn{};
+inline constexpr auto to_static_array = to_static_fn {};
 
 } // namespace rflect

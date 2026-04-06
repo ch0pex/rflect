@@ -1,0 +1,15 @@
+{
+ "remotes": [
+  {
+   "name": "monostudio-conan-local",
+   "url": "http://77.42.44.81:30812/artifactory/api/conan/monostudio-conan-local",
+   "verify_ssl": true
+  },
+  {
+   "name": "conancenter",
+   "url": "https://center2.conan.io",
+   "verify_ssl": true,
+   "disabled": true
+  }
+ ]
+}

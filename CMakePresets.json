@@ -1,62 +1,500 @@
 {
   "version": 6,
-  "include": [
-    "./conan/ConanPresets.json"
-  ],
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 30,
-    "patch": 0
+    "minor": 30
   },
   "configurePresets": [
     {
-      "name": "common",
+      "name": "base",
       "hidden": true,
-      "generator": "Unix Makefiles",
-      "binaryDir": "build/${presetName}",
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "$env{HOME}/reflection/bin/clang++",
-        "CMAKE_CXX_STANDARD": "26",
-        "CMAKE_CXX_FLAGS": "-nostdinc++ -freflection-latest -fexpansion-statements -Wall -Wextra -Wc++26-extensions",
-        "CMAKE_CXX_STANDARD_LIBRARIES": "-lc++ -lc++abi -L$env{HOME}/reflection/lib/x86_64-unknown-linux-gnu/libc++.so -L$env{HOME}/reflection/lib/x86_64-unknown-linux-gnu/libc++abi.so",
-        "CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES": "$env{HOME}/reflection/include/c++/v1/;$env{HOME}/reflection/include/x86_64-unknown-linux-gnu/c++/v1/;/usr/lib/llvm-19/lib/clang/19/include"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "BUILD_TESTING": true
       }
     },
     {
-      "name": "Debug",
-      "displayName": "Debug",
-      "inherits": [
-        "common",
-        "conan-debug"
-      ],
+      "name": "base-msvc",
+      "inherits": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
       "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "/W4 /WX /permissive- /EHsc "
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio"
+        }
+      }
+    },
+    {
+      "name": "Debug-msvc",
+      "inherits": "base-msvc",
+      "binaryDir": "${sourceDir}/build/msvc/debug",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/msvc/debug/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "Release-msvc",
+      "inherits": "base-msvc",
+      "binaryDir": "${sourceDir}/build/msvc/release",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/msvc/release/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "RelWithDebInfo-msvc",
+      "inherits": "base-msvc",
+      "binaryDir": "${sourceDir}/build/msvc/relwithdebinfo",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/msvc/relwithdebinfo/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "Sanitize-msvc",
+      "inherits": "base-msvc",
+      "binaryDir": "${sourceDir}/build/msvc/sanitize",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/msvc/sanitize/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "base-gcc",
+      "inherits": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "/home/ch0pe/.local/gcc-16/bin/gcc",
+        "CMAKE_CXX_COMPILER": "/home/ch0pe/.local/gcc-16/bin/g++",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_FLAGS": "-freflection"
+      }
+    },
+    {
+      "name": "Debug-gcc",
+      "inherits": "base-gcc",
+      "binaryDir": "${sourceDir}/build/gcc/debug",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/debug/generators/conan_toolchain.cmake",
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0 -fno-omit-frame-pointer"
+        "CMAKE_CXX_FLAGS_DEBUG": "-g -O0"
       }
     },
     {
-      "name": "Release",
-      "displayName": "Release",
-      "inherits": [
-        "common",
-        "conan-release"
-      ],
+      "name": "Release-gcc",
+      "inherits": "base-gcc",
+      "binaryDir": "${sourceDir}/build/gcc/release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS_RELEASE": "-march=native -O3 -ffast-math -ftree-vectorize"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/release/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
-      "name": "RelWithDebInfo",
-      "displayName": "RelWithDebInfo",
-      "inherits": [
-        "common",
-        "conan-relwithdebinfo"
-      ],
+      "name": "RelWithDebInfo-gcc",
+      "inherits": "base-gcc",
+      "binaryDir": "${sourceDir}/build/gcc/relwithdebinfo",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-        "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-march=native -O2 -g"
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/relwithdebinfo/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
       }
+    },
+    {
+      "name": "Sanitize-gcc",
+      "inherits": "base-gcc",
+      "binaryDir": "${sourceDir}/build/gcc/sanitize",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/sanitize/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "Coverage-gcc",
+      "inherits": "base-gcc",
+      "binaryDir": "${sourceDir}/build/gcc/coverage",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/coverage/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_COVERAGE": "-coverage -fprofile-arcs -ftest-coverage",
+        "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "--coverage"
+      }
+    },
+    {
+      "name": "base-clang",
+      "inherits": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_FLAGS": "-Wextra -Wall -Werror -Wpedantic -Wunused -Wshadow -Wconversion -Wsign-conversion -Wold-style-cast -Wformat=2 -Wdouble-promotion -Wno-#warnings -Wno-gnu-zero-variadic-macro-arguments",
+        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF"
+      }
+    },
+    {
+      "name": "Debug-clang",
+      "inherits": "base-clang",
+      "binaryDir": "${sourceDir}/build/clang/debug",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/clang/debug/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "Release-clang",
+      "inherits": "base-clang",
+      "binaryDir": "${sourceDir}/build/clang/release",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/clang/release/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "RelWithDebInfo-clang",
+      "inherits": "base-clang",
+      "binaryDir": "${sourceDir}/build/clang/relwithdebinfo",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/clang/relwithdebinfo/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "Sanitize-clang",
+      "inherits": "base-clang",
+      "binaryDir": "${sourceDir}/build/clang/sanitize",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/clang/sanitize/generators/conan_toolchain.cmake",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "Debug-msvc",
+      "configurePreset": "Debug-msvc"
+    },
+    {
+      "name": "Release-msvc",
+      "configurePreset": "Release-msvc"
+    },
+    {
+      "name": "RelWithDebInfo-msvc",
+      "configurePreset": "RelWithDebInfo-msvc"
+    },
+    {
+      "name": "Sanitize-msvc",
+      "configurePreset": "Sanitize-msvc"
+    },
+    {
+      "name": "Debug-gcc",
+      "configurePreset": "Debug-gcc"
+    },
+    {
+      "name": "Release-gcc",
+      "configurePreset": "Release-gcc"
+    },
+    {
+      "name": "RelWithDebInfo-gcc",
+      "configurePreset": "RelWithDebInfo-gcc"
+    },
+    {
+      "name": "Sanitize-gcc",
+      "configurePreset": "Sanitize-gcc"
+    },
+    {
+      "name": "Coverage-gcc",
+      "configurePreset": "Coverage-gcc"
+    },
+    {
+      "name": "Debug-clang",
+      "configurePreset": "Debug-clang"
+    },
+    {
+      "name": "Release-clang",
+      "configurePreset": "Release-clang"
+    },
+    {
+      "name": "RelWithDebInfo-clang",
+      "configurePreset": "RelWithDebInfo-clang"
+    },
+    {
+      "name": "Sanitize-clang",
+      "configurePreset": "Sanitize-clang"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "base-test",
+      "hidden": true,
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true,
+        "jobs": 8
+      }
+    },
+    {
+      "name": "Debug-msvc",
+      "inherits": "base-test",
+      "configurePreset": "Debug-msvc"
+    },
+    {
+      "name": "Release-msvc",
+      "inherits": "base-test",
+      "configurePreset": "Release-msvc"
+    },
+    {
+      "name": "RelWithDebInfo-msvc",
+      "inherits": "base-test",
+      "configurePreset": "RelWithDebInfo-msvc"
+    },
+    {
+      "name": "Sanitize-msvc",
+      "inherits": "base-test",
+      "configurePreset": "Sanitize-msvc"
+    },
+    {
+      "name": "Debug-gcc",
+      "inherits": "base-test",
+      "configurePreset": "Debug-gcc"
+    },
+    {
+      "name": "Release-gcc",
+      "inherits": "base-test",
+      "configurePreset": "Release-gcc"
+    },
+    {
+      "name": "RelWithDebInfo-gcc",
+      "inherits": "base-test",
+      "configurePreset": "RelWithDebInfo-gcc"
+    },
+    {
+      "name": "Sanitize-gcc",
+      "inherits": "base-test",
+      "configurePreset": "Sanitize-gcc"
+    },
+    {
+      "name": "Coverage-gcc",
+      "inherits": "base-test",
+      "configurePreset": "Coverage-gcc"
+    },
+    {
+      "name": "Debug-clang",
+      "inherits": "base-test",
+      "configurePreset": "Debug-clang"
+    },
+    {
+      "name": "Release-clang",
+      "inherits": "base-test",
+      "configurePreset": "Release-clang"
+    },
+    {
+      "name": "RelWithDebInfo-clang",
+      "inherits": "base-test",
+      "configurePreset": "RelWithDebInfo-clang"
+    },
+    {
+      "name": "Sanitize-clang",
+      "inherits": "base-test",
+      "configurePreset": "Sanitize-clang"
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "Debug-msvc",
+      "displayName": "Debug MSVC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Debug-msvc"
+        },
+        {
+          "type": "build",
+          "name": "Debug-msvc"
+        },
+        {
+          "type": "test",
+          "name": "Debug-msvc"
+        }
+      ]
+    },
+    {
+      "name": "Release-msvc",
+      "displayName": "Release MSVC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Release-msvc"
+        },
+        {
+          "type": "build",
+          "name": "Release-msvc"
+        },
+        {
+          "type": "test",
+          "name": "Release-msvc"
+        }
+      ]
+    },
+    {
+      "name": "Sanitize-msvc",
+      "displayName": "Sanitize MSVC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Sanitize-msvc"
+        },
+        {
+          "type": "build",
+          "name": "Sanitize-msvc"
+        },
+        {
+          "type": "test",
+          "name": "Sanitize-msvc"
+        }
+      ]
+    },
+    {
+      "name": "Debug-gcc",
+      "displayName": "Debug GCC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Debug-gcc"
+        },
+        {
+          "type": "build",
+          "name": "Debug-gcc"
+        },
+        {
+          "type": "test",
+          "name": "Debug-gcc"
+        }
+      ]
+    },
+    {
+      "name": "Release-gcc",
+      "displayName": "Release GCC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Release-gcc"
+        },
+        {
+          "type": "build",
+          "name": "Release-gcc"
+        },
+        {
+          "type": "test",
+          "name": "Release-gcc"
+        }
+      ]
+    },
+    {
+      "name": "Sanitize-gcc",
+      "displayName": "Sanitize GCC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Sanitize-gcc"
+        },
+        {
+          "type": "build",
+          "name": "Sanitize-gcc"
+        },
+        {
+          "type": "test",
+          "name": "Sanitize-gcc"
+        }
+      ]
+    },
+    {
+      "name": "Coverage-gcc",
+      "displayName": "Coverage GCC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Coverage-gcc"
+        },
+        {
+          "type": "build",
+          "name": "Coverage-gcc"
+        }
+      ]
+    },
+    {
+      "name": "Debug-clang",
+      "displayName": "Debug Clang",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Debug-clang"
+        },
+        {
+          "type": "build",
+          "name": "Debug-clang"
+        },
+        {
+          "type": "test",
+          "name": "Debug-clang"
+        }
+      ]
+    },
+    {
+      "name": "Release-clang",
+      "displayName": "Release Clang",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Release-clang"
+        },
+        {
+          "type": "build",
+          "name": "Release-clang"
+        },
+        {
+          "type": "test",
+          "name": "Release-clang"
+        }
+      ]
+    },
+    {
+      "name": "Sanitize-clang",
+      "displayName": "Sanitize Clang",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Sanitize-clang"
+        },
+        {
+          "type": "build",
+          "name": "Sanitize-clang"
+        },
+        {
+          "type": "test",
+          "name": "Sanitize-clang"
+        }
+      ]
     }
   ]
 }

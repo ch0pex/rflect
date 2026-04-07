@@ -15,7 +15,6 @@
 #include <rflect/converters/struct_to_soa.hpp>
 #include <rflect/converters/to_static.hpp>
 #include <rflect/introspection/struct.hpp>
-#include <utility>
 
 namespace rflect {
 
@@ -41,9 +40,6 @@ public:
   using iterator             = decltype(std::begin(std::declval<as_zip<underlying_container>>()));
   using const_iterator       = decltype(std::cbegin(std::declval<as_zip<underlying_container>>()));
 
-  /**********************************
-   *        Member functions        *
-   **********************************/
 
   // ********* Constructors *********
 
@@ -63,37 +59,41 @@ public:
     }
   }
 
+  /**********************************
+   *        Member functions        *
+   **********************************/
+
   // ********** Element access **********
 
   template<typename Self>
   constexpr auto at(this Self&& self, std::size_t const index) {
-    static auto zip = soa_to_zip(std::forward<Self>(self).data_);
+    static auto zip = soa_to_zip(self.data_);
     return zip[index];
   }
 
   template<typename Self>
   constexpr auto operator[](this Self&& self, std::size_t const index) {
-    return std::forward<Self>(self).at(index);
+    return self.at(index);
   }
 
   template<typename Self>
   constexpr auto front(this Self&& self) {
-    return soa_to_zip(std::forward<Self>(self).data_)[0];
+    return soa_to_zip(self.data_)[0];
   }
 
   template<typename Self>
   constexpr auto back(this Self&& self) {
-    return soa_to_zip(std::forward<Self>(self).data_)[self.size() - 1];
+    return soa_to_zip(self.data_)[self.size() - 1];
   }
 
   template<std::size_t N, typename Self>
   constexpr decltype(auto) items(this Self& self) {
-    return (std::forward<Self>(self).data_.[:nonstatic_data_member<underlying_container>(N):]);
+    return (self.data_.[:nonstatic_data_member<underlying_container>(N):]);
   }
 
   template<char const* name, typename Self>
   constexpr decltype(auto) items(this Self& self) {
-    return (std::forward<Self>(self).data_.[:nonstatic_data_member<underlying_container>(name):]);
+    return (self.data_.[:nonstatic_data_member<underlying_container>(name):]);
   }
 
   constexpr auto to_zip() { return soa_to_zip(data_); }
@@ -110,9 +110,9 @@ public:
     return std::end(soa_to_zip(std::forward<Self>(self).data_));
   }
 
-  constexpr auto cbegin() noexcept { return std::cbegin(data_ | soa_to_zip); }
+  constexpr auto cbegin() const noexcept { return std::cbegin(data_ | soa_to_zip); }
 
-  constexpr auto cend() noexcept { return std::cend(soa_to_zip(data_)); }
+  constexpr auto cend() const noexcept { return std::cend(soa_to_zip(data_)); }
 
   // ********* Modifiers *********
 
@@ -137,7 +137,7 @@ public:
   }
 
   constexpr auto erase(iterator const it) {
-    auto const diff = it - cbegin();
+    auto const diff = it - begin();
     template for (constexpr auto index: std::views::iota(0UZ, members_count)) {
       constexpr auto member = nonstatic_data_member<underlying_container>(index);
       data_.[:member:].erase(data_.[:member:].begin() + diff);
@@ -145,9 +145,9 @@ public:
     return begin() + diff;
   }
 
-  constexpr auto erase(iterator const begin, iterator const end) {
-    auto const diff_begin = begin - cbegin();
-    auto const diff_end   = end - cbegin();
+  constexpr auto erase(iterator const begin_it, iterator const end_it) {
+    auto const diff_begin = begin_it - begin();
+    auto const diff_end   = end_it - begin();
     template for (constexpr auto index: std::views::iota(0UZ, members_count)) {
       constexpr auto member = nonstatic_data_member<underlying_container>(index);
       data_.[:member:].erase(data_.[:member:].begin() + diff_begin, data_.[:member:].begin() + diff_end);

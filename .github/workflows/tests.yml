@@ -1,0 +1,94 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  tests:
+    name: GCC 16 ${{ matrix.preset }}
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [Debug-gcc, Release-gcc]
+        include:
+          - preset: Debug-gcc
+            build_dir: build/gcc/debug
+          - preset: Release-gcc
+            build_dir: build/gcc/release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install GCC 16 and tools
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+          sudo apt-get update
+          sudo apt-get install -y gcc-16 g++-16 ninja-build ccache
+
+      - name: Set up GCC 16 at expected path
+        run: |
+          sudo mkdir -p /home/ch0pe/.local/gcc-16/bin
+          sudo ln -sf "$(which gcc-16)" /home/ch0pe/.local/gcc-16/bin/gcc
+          sudo ln -sf "$(which g++-16)" /home/ch0pe/.local/gcc-16/bin/g++
+
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.31'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Conan
+        run: pip install "conan>=2.0.15"
+
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2/p
+          key: conan-${{ runner.os }}-gcc16-${{ hashFiles('conan/conanfile.py') }}
+          restore-keys: |
+            conan-${{ runner.os }}-gcc16-
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: ccache-${{ matrix.preset }}-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ matrix.preset }}-${{ runner.os }}-
+
+      - name: Configure Conan
+        run: conan config install conan/config
+
+      - name: Authenticate Conan remote
+        run: conan remote login monostudio-conan-local "${{ secrets.CONAN_USERNAME }}" --password "${{ secrets.CONAN_PASSWORD }}"
+
+      - name: Install Conan dependencies
+        env:
+          PYTHON_EXE: python3
+        run: ./conan/install.sh ${{ matrix.preset }}
+
+      - name: Configure
+        run: cmake --preset ${{ matrix.preset }}
+
+      - name: Build
+        run: cmake --build --preset ${{ matrix.preset }}
+
+      - name: Test
+        run: ctest --preset ${{ matrix.preset }}
+
+      - name: Publish test results
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: ${{ matrix.build_dir }}/junit/*.xml
+          check_name: Test Results (${{ matrix.preset }})

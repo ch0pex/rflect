@@ -63,7 +63,11 @@ public:
 
   constexpr view_type front() { return {data_, 0}; }
 
+  [[nodiscard]] constexpr const_view_type front() const { return {data_, 0}; }
+
   constexpr view_type back() { return {data_, size() - 1}; }
+
+  [[nodiscard]] constexpr const_view_type back() const { return {data_, size() - 1}; }
 
   // ********* Iterators *********
 

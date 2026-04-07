@@ -39,9 +39,9 @@ public:
   using pointer           = ViewType*;
   using container         = typename ViewType::underlying_container;
 
-  proxy_iterator() = default;
+  constexpr proxy_iterator() = default;
 
-  proxy_iterator(container& container, std::size_t const index) : index_(index), container_(&container) { }
+  constexpr proxy_iterator(container& container, std::size_t const index) : index_(index), container_(&container) { }
 
   constexpr proxy_iterator& operator++() {
     ++index_;
@@ -56,7 +56,7 @@ public:
 
   template<typename Self>
   constexpr value_type operator*(this Self&& self) {
-    return {*self.container_, self.index_};
+    return {*std::forward<Self>(self).container_, std::forward<Self>(self).index_};
   }
 
   friend constexpr proxy_iterator operator+(proxy_iterator const& proxy1, difference_type const index) {

@@ -128,8 +128,8 @@
       "binaryDir": "${sourceDir}/build/gcc/coverage",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/gcc/coverage/generators/conan_toolchain.cmake",
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS_COVERAGE": "-coverage -fprofile-arcs -ftest-coverage",
+        "CMAKE_BUILD_TYPE": "Coverage",
+        "CMAKE_CXX_FLAGS_COVERAGE": "-g -O0 --coverage",
         "CMAKE_EXE_LINKER_FLAGS_COVERAGE": "--coverage"
       }
     },
@@ -438,6 +438,10 @@
         },
         {
           "type": "build",
+          "name": "Coverage-gcc"
+        },
+        {
+          "type": "test",
           "name": "Coverage-gcc"
         }
       ]

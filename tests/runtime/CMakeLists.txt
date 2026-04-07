@@ -20,5 +20,7 @@ endmacro(add_rflect_test)
 
 add_rflect_test(test_dual_vector test_dual_vector.cpp)
 add_rflect_test(test_dual_array test_dual_array.cpp)
+add_rflect_test(test_multi_array test_multi_array.cpp)
+add_rflect_test(test_multi_vector test_multi_vector.cpp)
 add_rflect_test(test_proxy test_proxy.cpp)
 add_rflect_test(test_enum test_enum.cpp)

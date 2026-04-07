@@ -89,7 +89,7 @@ public:
 
   constexpr auto cbegin() const noexcept { return std::cbegin(soa_to_zip(data_)); }
 
-  constexpr auto cend() noexcept { return std::cend(soa_to_zip(data_)); }
+  constexpr auto cend() const noexcept { return std::cend(soa_to_zip(data_)); }
 
   // ********* Capacity *********
 
